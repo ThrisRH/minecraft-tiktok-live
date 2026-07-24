@@ -16,6 +16,17 @@ export class SandService {
     }
   }
 
+  async reset(x: number, y: number, z: number) {
+    const width = 8;
+    const height = 36;
+
+    await this.minecraft.execute(
+      `fill ${x} ${y} ${z} ${x + width - 1} ${y + height - 1} ${z + width - 1} air`,
+    );
+
+    await this.createSandTower(x, y, z);
+  }
+
   private randomSand() {
     const blocks = [
       "sand",

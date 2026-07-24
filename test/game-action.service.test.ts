@@ -56,6 +56,37 @@ test("spawns a primed TNT and an armored zombie for gift events", async () => {
       (command) =>
         command.includes("summon zombie") && command.includes("iron_helmet"),
     ).length,
-    1,
+    3,
+  );
+});
+
+test("finishes a round with countdown and reset", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  let resetCalls = 0;
+  const sandService = {
+    reset: async () => {
+      resetCalls += 1;
+    },
+  };
+
+  const service = new GameActionService(minecraft, sandService as never);
+
+  await service.startRound(-560, 63, 259);
+
+  for (let i = 0; i < 64; i++) {
+    await service.handleSandMined();
+  }
+
+  assert.equal(resetCalls, 1);
+  assert.equal(
+    commands.filter((command) => command.includes("title @a title")).length,
+    6,
   );
 });
