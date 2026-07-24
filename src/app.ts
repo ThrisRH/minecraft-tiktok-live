@@ -1,6 +1,7 @@
 import { MinecraftService } from "./minecraft/minecraft.service.js";
 import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
+import { SandService } from "./game/sand.service.js";
 
 async function bootstrap() {
   const mc = new MinecraftService();
@@ -12,14 +13,11 @@ async function bootstrap() {
 
     const game = new GameActionService(mc);
 
-    const dispatcher = new Dispatcher(game);
+    // const dispatcher = new Dispatcher(game);
 
-    await dispatcher.dispatch({
-      type: "gift",
-      giftName: "Rose",
-      count: 10,
-      username: "torilatoiday",
-    });
+    const sand = new SandService(mc);
+
+    await sand.createSandTower(-560, 63, 259);
   } catch (error) {
     console.error(error);
   } finally {
