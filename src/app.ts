@@ -17,7 +17,9 @@ async function bootstrap() {
 
     const sand = new SandService(mc);
 
-    await sand.createSandTower(-560, 63, 259);
+    // await sand.createSandTower(-560, 63, 259);
+
+    await game.rosaGift({ username: "Ada", count: 2 });
   } catch (error) {
     console.error(error);
   } finally {

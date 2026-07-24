@@ -1,0 +1,61 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { GameActionService } from "../src/game/game-action.service.js";
+import { MinecraftService } from "../src/minecraft/minecraft.service.js";
+
+test("spawns zombies once per 50-like milestone", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+
+  await service.like(49);
+  assert.equal(
+    commands.filter((command) => command.includes("summon zombie")).length,
+    0,
+  );
+
+  await service.like(1);
+  assert.equal(
+    commands.filter((command) => command.includes("summon zombie")).length,
+    1,
+  );
+
+  await service.like(50);
+  assert.equal(
+    commands.filter((command) => command.includes("summon zombie")).length,
+    2,
+  );
+});
+
+test("spawns a primed TNT and an armored zombie for gift events", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+
+  await service.roseGift({ username: "Ada", count: 2 });
+  await service.rosaGift({ username: "Grace", count: 1 });
+
+  assert.equal(
+    commands.filter((command) => command.includes("summon tnt")).length,
+    1,
+  );
+  assert.equal(
+    commands.filter(
+      (command) =>
+        command.includes("summon zombie") && command.includes("iron_helmet"),
+    ).length,
+    1,
+  );
+});
