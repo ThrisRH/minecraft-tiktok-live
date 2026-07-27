@@ -59,7 +59,10 @@ export function createGiftActionRegistry(
   );
   actions.set("Cap", (gift) => service.capGift({ ...gift, giftName: "Cap" }));
   actions.set("Doughnut", (gift) =>
-    service.doughnutGift({ ...gift, giftName: "CaDoughnutp" }),
+    service.doughnutGift({ ...gift, giftName: "Doughnut" }),
+  );
+  actions.set("Confetti", (gift) =>
+    service.confettiGift({ ...gift, giftName: "Confetti" }),
   );
 
   for (const giftName of supportedGiftNames) {

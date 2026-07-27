@@ -53,6 +53,9 @@ export class GameActionService {
   async doughnutGift(gift: GiftEvent) {
     return this.giftActions.doughnutGift(gift);
   }
+  async confettiGift(gift: GiftEvent) {
+    return this.giftActions.confettiGift(gift);
+  }
 
   async startRound(x: number, y: number, z: number) {
     this.roundPosition = { x, y, z };

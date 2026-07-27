@@ -4,16 +4,16 @@ Tài liệu này ghi lại quà nào sẽ triệu hồi vật gì trong Minecraf
 
 ## Bảng đơn giản
 
-| Quà      | Triệu hồi       | Ghi chú                                |
-| -------- | --------------- | -------------------------------------- |
-| Heart    | Không triệu hồi | Chỉ hiện thông báo và title            |
-| Rose     | Zombie giáp     | Mỗi lần quà sẽ triệu hồi 1 zombie giáp |
-| Rosa     | Zombie giáp     | Mỗi lần quà sẽ triệu hồi 5 zombie giáp |
-| TikTok   | Creeper         | Triệu hồi creeper                      |
-| Perfume  | Lightning bolt  | Triệu hồi sấm sét                      |
-| Cap      | Wither          | Triệu hồi wither                       |
-| Doughnut | Ravager         | Triệu hồi ravager                      |
-| Corgi    | TNT rain        | Triệu hồi entity TNT rain              |
+| Quà      | Triệu hồi       | Ghi chú                                | Xu  |
+| -------- | --------------- | -------------------------------------- | --- |
+| Heart    | Không triệu hồi | Chỉ hiện thông báo và title            | 1   |
+| Rose     | Zombie giáp     | Mỗi lần quà sẽ triệu hồi 1 zombie giáp | 1   |
+| Rosa     | Zombie giáp     | Mỗi lần quà sẽ triệu hồi 5 zombie giáp | 10  |
+| TikTok   | Creeper         | Triệu hồi creeper                      | 1   |
+| Perfume  | Pillager        | Triệu hồi Pillage                      | 20  |
+| Cap      | Wither          | Triệu hồi wither                       | 99  |
+| Doughnut | Ravager         | Triệu hồi ravager                      | 30  |
+| Corgi    | TNT rain        | Triệu hồi entity TNT rain              | 299 |
 
 ## Nơi xử lý
 
