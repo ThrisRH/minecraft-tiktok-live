@@ -24,23 +24,21 @@ export class GameActionService {
       return;
     }
 
-    await this.minecraft.say(`${gift.username} đã gửi x${gift.count} Rose!`);
+    await this.sendMessage(`${gift.username} đã gửi x${gift.count} Rose!`);
     await this.showLiveParticipant(gift.username);
-    await this.minecraft.execute(
-      "execute at @a run summon tnt ~ ~ ~ {Fuse:20}",
-    );
-  }
-
-  async rosaGift(gift: GiftEvent) {
-    await this.minecraft.say(`${gift.username} đã gửi x${gift.count} Rosa!`);
-    await this.showLiveParticipant(gift.username);
-
     const command =
       'execute at @a run summon zombie ~ ~ ~ {ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}]}';
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < gift.count; i++) {
       await this.minecraft.execute(command);
     }
+  }
+
+  async rosaGift(gift: GiftEvent) {
+    await this.sendMessage(`${gift.username} đã gửi x${gift.count} Rosa!`);
+    await this.showLiveParticipant(gift.username);
+
+    await this.minecraft.execute("execute at @a run summon tnt ~ ~ ~ {Fuse:5}");
   }
 
   async startRound(x: number, y: number, z: number) {
@@ -113,7 +111,7 @@ export class GameActionService {
     const previousMilestone = Math.floor(this.lastProcessedMilestone / 50);
     const currentMilestone = Math.floor(this.totalLikes / 50);
 
-    await this.minecraft.say("👍 Có người vừa Like!");
+    await this.sendMessage("👍 Có người vừa Like!");
 
     for (
       let milestone = previousMilestone + 1;
@@ -127,6 +125,13 @@ export class GameActionService {
     if (username) {
       await this.showLiveParticipant(username);
     }
+  }
+
+  private async sendMessage(text: string) {
+    const safeText = text.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    await this.minecraft.execute(
+      `tellraw @a {"text":"[Bề trên] ","color":"gold","bold":true,"extra":[{"text":"${safeText}","color":"white"}]}`,
+    );
   }
 
   private async showTitle(text: string) {

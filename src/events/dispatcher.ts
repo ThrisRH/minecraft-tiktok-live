@@ -5,7 +5,8 @@ export class Dispatcher {
   constructor(private game: GameActionService) {}
 
   private giftActions = new Map<string, (gift: Gift) => Promise<void>>([
-    ["Rose", (gift) => this.game.roseGift(gift)],
+    ["Rose", (gift) => this.game.roseGift({ ...gift, giftName: "Rose" })],
+    ["Rosa", (gift) => this.game.rosaGift({ ...gift, giftName: "Rosa" })],
   ]);
 
   async dispatch(event: GameEvent) {
@@ -24,7 +25,7 @@ export class Dispatcher {
       }
 
       case "like":
-        await this.game.like();
+        await this.game.like(event.count, event.username);
         break;
     }
   }
