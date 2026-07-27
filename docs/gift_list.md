@@ -8,42 +8,10 @@ This file contains the master list of supported TikTok gifts.
 
 ## Gift List
 
-- Mic x10
 - Heart
-- Zombie
 - Rose
-- Creeper
 - TikTok
-- Iron Golem
-- Lightning
 - Perfume
-- Lucky Box
-- Cap
-- Bat
-- GG Coin
-- Cage
-- Sunflower
-- Cake
-- Fox
-- Steve
-- Boxing Gloves
-- Sand Block
-- TNT
-- Ice
-- Paintings
-- Origami Bird
-- Wolf
-- GG
-- Bomb
-- Meat
-- Golden Apple
-- Chips
-- End Portal
-- Fish
-- Iron Golem Statue
-- Straw Hat
-- Rifle
-- Love Glasses
 
 ## Agent Requirements
 

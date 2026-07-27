@@ -1,7 +1,6 @@
 import { MinecraftService } from "./minecraft/minecraft.service.js";
 import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
-import { SandService } from "./game/sand.service.js";
 import { TikTokService } from "./tiktok/tiktok.service.js";
 
 async function bootstrap() {
@@ -12,8 +11,7 @@ async function bootstrap() {
 
     console.log("Connected to MC");
 
-    const sand = new SandService(mc);
-    const game = new GameActionService(mc, sand);
+    const game = new GameActionService(mc);
     const dispatcher = new Dispatcher(game);
     const tikTok = new TikTokService(dispatcher);
 
@@ -21,6 +19,28 @@ async function bootstrap() {
     const giftName = process.argv[3];
     const count = Number(process.argv[4] ?? 1);
     const username = process.argv[5] ?? "local-test";
+
+    if (mode === "gifts") {
+      const username = process.env.TIKTOK_USERNAME ?? process.argv[3];
+
+      if (!username) {
+        throw new Error("TikTok username is required");
+      }
+
+      await tikTok.connect(username);
+
+      const gifts = await tikTok.fetchAvailableGifts();
+
+      console.table(
+        gifts.map((g: any) => ({
+          id: g.id,
+          name: g.name,
+          diamonds: g.diamond_count,
+        })),
+      );
+
+      return;
+    }
 
     if (mode === "gift") {
       await dispatcher.dispatch({
@@ -36,9 +56,6 @@ async function bootstrap() {
       await game.like(count, username);
       return;
     }
-
-    await sand.createSandTower(-560, 63, 259);
-    await game.startBackgroundCountdown(-560, 63, 259);
 
     const tikTokUsername = process.env.TIKTOK_USERNAME ?? process.argv[2];
 

@@ -86,6 +86,32 @@ test("dispatches supported gifts from the documented list", async () => {
   );
 });
 
+test("routes perfume gift to its dedicated handler", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Perfume",
+    count: 1,
+    username: "Ada",
+  });
+
+  assert.equal(
+    commands.filter((command) => command.includes("summon lightning_bolt"))
+      .length,
+    1,
+  );
+});
+
 test("finishes a round with countdown and reset", async () => {
   const commands: string[] = [];
   const minecraft = {

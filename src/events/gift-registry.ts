@@ -28,16 +28,42 @@ export function createGiftActionRegistry(
 ): Map<string, (gift: GiftEvent) => Promise<void>> {
   const actions = new Map<string, (gift: GiftEvent) => Promise<void>>();
   const supportedGiftNames = loadSupportedGiftNames();
+  const explicitGiftNames = new Set([
+    "Heart",
+    "Rose",
+    "Rosa",
+    "Perfume",
+    "TikTok",
+    "Corgi",
+    "Cap",
+    "Doughnut",
+  ]);
 
+  actions.set("Heart", (gift) =>
+    service.heartGift({ ...gift, giftName: "Heart" }),
+  );
   actions.set("Rose", (gift) =>
     service.roseGift({ ...gift, giftName: "Rose" }),
+  );
+  actions.set("TikTok", (gift) =>
+    service.tiktokGift({ ...gift, giftName: "TikTok" }),
   );
   actions.set("Rosa", (gift) =>
     service.rosaGift({ ...gift, giftName: "Rosa" }),
   );
+  actions.set("Perfume", (gift) =>
+    service.perfumeGift({ ...gift, giftName: "Perfume" }),
+  );
+  actions.set("Corgi", (gift) =>
+    service.corgiGift({ ...gift, giftName: "Corgi" }),
+  );
+  actions.set("Cap", (gift) => service.capGift({ ...gift, giftName: "Cap" }));
+  actions.set("Doughnut", (gift) =>
+    service.doughnutGift({ ...gift, giftName: "CaDoughnutp" }),
+  );
 
   for (const giftName of supportedGiftNames) {
-    if (giftName === "Rose" || giftName === "Rosa") {
+    if (explicitGiftNames.has(giftName)) {
       continue;
     }
 

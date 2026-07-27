@@ -1,5 +1,6 @@
 import { GiftEvent } from "../events/event.types.js";
 import { MinecraftService } from "../minecraft/minecraft.service.js";
+import { GiftActionService } from "./gift-actions.js";
 import { SandService } from "./sand.service.js";
 
 export class GameActionService {
@@ -8,180 +9,49 @@ export class GameActionService {
   private remainingSand = 0;
   private isRoundFinished = false;
   private roundPosition: { x: number; y: number; z: number } | null = null;
+  private readonly giftActions: GiftActionService;
 
   constructor(
     private readonly minecraft: MinecraftService,
     private readonly sandService?: SandService,
-  ) {}
-
-  async roseGift(gift: GiftEvent) {
-    if (gift.giftName === "Rosa") {
-      await this.rosaGift(gift);
-      return;
-    }
-
-    await this.sendMessage(`${gift.username} đã gửi x${gift.count} Rose!`);
-    await this.showLiveParticipant(gift.username);
-    const command =
-      'execute at @a run summon zombie ~ ~ ~ {ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}]}';
-
-    for (let i = 0; i < gift.count; i++) {
-      await this.minecraft.execute(command);
-    }
-  }
-
-  async rosaGift(gift: GiftEvent) {
-    await this.sendMessage(`${gift.username} đã gửi x${gift.count} Rosa!`);
-    await this.showLiveParticipant(gift.username);
-
-    await this.minecraft.execute("execute at @a run summon tnt ~ ~ ~ {Fuse:5}");
+  ) {
+    this.giftActions = new GiftActionService({
+      execute: (command: string) => this.minecraft.execute(command),
+      sendMessage: (text: string) => this.sendMessage(text),
+      showLiveParticipant: (username: string) =>
+        this.showLiveParticipant(username),
+    });
   }
 
   async defaultGift(gift: GiftEvent) {
-    await this.sendMessage(
-      `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
-    );
-    await this.showLiveParticipant(gift.username);
-  }
-
-  async micX10Gift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    return this.giftActions.defaultGift(gift);
   }
 
   async heartGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    return this.giftActions.heartGift(gift);
   }
 
-  async zombieGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+  async roseGift(gift: GiftEvent) {
+    return this.giftActions.roseGift(gift);
+  }
+  async tiktokGift(gift: GiftEvent) {
+    return this.giftActions.tiktokGift(gift);
   }
 
-  async creeperGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+  async rosaGift(gift: GiftEvent) {
+    return this.giftActions.rosaGift(gift);
   }
-
-  async tikTokGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async ironGolemGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async lightningGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
   async perfumeGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    return this.giftActions.perfumeGift(gift);
   }
-
-  async luckyBoxGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+  async corgiGift(gift: GiftEvent) {
+    return this.giftActions.corgiGift(gift);
   }
-
   async capGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    return this.giftActions.capGift(gift);
   }
-
-  async batGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async ggCoinGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async cageGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async sunflowerGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async cakeGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async foxGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async steveGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async boxingGlovesGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async sandBlockGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async tntGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async iceGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async paintingsGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async origamiBirdGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async wolfGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async ggGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async bombGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async meatGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async goldenAppleGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async chipsGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async endPortalGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async fishGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async ironGolemStatueGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async strawHatGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async rifleGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async loveGlassesGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+  async doughnutGift(gift: GiftEvent) {
+    return this.giftActions.doughnutGift(gift);
   }
 
   async startRound(x: number, y: number, z: number) {

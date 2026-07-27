@@ -52,4 +52,8 @@ export class TikTokService {
 
     console.log("TikTok connected");
   }
+
+  async fetchAvailableGifts() {
+    return this.connection.fetchAvailableGifts();
+  }
 }
