@@ -15,3 +15,7 @@ export interface Gift {
   username: string;
   count: number;
 }
+
+export interface GiftEvent extends Gift {
+  giftName?: string;
+}

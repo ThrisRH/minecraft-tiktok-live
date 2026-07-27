@@ -1,18 +1,20 @@
 import { GameActionService } from "../game/game-action.service.js";
 import { GameEvent, Gift } from "./event.types.js";
+import { createGiftActionRegistry } from "./gift-registry.js";
 
 export class Dispatcher {
-  constructor(private game: GameActionService) {}
+  private readonly giftActions: Map<string, (gift: Gift) => Promise<void>>;
 
-  private giftActions = new Map<string, (gift: Gift) => Promise<void>>([
-    ["Rose", (gift) => this.game.roseGift({ ...gift, giftName: "Rose" })],
-    ["Rosa", (gift) => this.game.rosaGift({ ...gift, giftName: "Rosa" })],
-  ]);
+  constructor(private game: GameActionService) {
+    this.giftActions = createGiftActionRegistry(this.game);
+  }
 
   async dispatch(event: GameEvent) {
     switch (event.type) {
       case "gift": {
-        const action = this.giftActions.get(event.giftName);
+        const action =
+          this.giftActions.get(event.giftName) ??
+          this.giftActions.get("Default");
 
         if (action) {
           await action({

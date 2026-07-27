@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { GameActionService } from "../src/game/game-action.service.js";
+import { Dispatcher } from "../src/events/dispatcher.js";
 import { MinecraftService } from "../src/minecraft/minecraft.service.js";
 
 test("spawns zombies once per 50-like milestone", async () => {
@@ -56,7 +57,32 @@ test("spawns a primed TNT and an armored zombie for gift events", async () => {
       (command) =>
         command.includes("summon zombie") && command.includes("iron_helmet"),
     ).length,
-    3,
+    2,
+  );
+});
+
+test("dispatches supported gifts from the documented list", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Heart",
+    count: 1,
+    username: "Ada",
+  });
+
+  assert.equal(
+    commands.filter((command) => command.includes("tellraw")).length,
+    1,
   );
 });
 

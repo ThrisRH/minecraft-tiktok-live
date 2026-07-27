@@ -17,13 +17,33 @@ async function bootstrap() {
     const dispatcher = new Dispatcher(game);
     const tikTok = new TikTokService(dispatcher);
 
+    const mode = process.argv[2];
+    const giftName = process.argv[3];
+    const count = Number(process.argv[4] ?? 1);
+    const username = process.argv[5] ?? "local-test";
+
+    if (mode === "gift") {
+      await dispatcher.dispatch({
+        type: "gift",
+        giftName: giftName ?? "Heart",
+        count,
+        username,
+      });
+      return;
+    }
+
+    if (mode === "like") {
+      await game.like(count, username);
+      return;
+    }
+
     await sand.createSandTower(-560, 63, 259);
     await game.startBackgroundCountdown(-560, 63, 259);
 
-    const username = process.env.TIKTOK_USERNAME ?? process.argv[2];
+    const tikTokUsername = process.env.TIKTOK_USERNAME ?? process.argv[2];
 
-    if (username) {
-      await tikTok.connect(username);
+    if (tikTokUsername) {
+      await tikTok.connect(tikTokUsername);
     } else {
       console.log(
         "No TikTok username provided. Pass it as TIKTOK_USERNAME or as the first CLI argument.",

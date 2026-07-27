@@ -1,10 +1,6 @@
-import { Gift } from "../events/event.types.js";
+import { GiftEvent } from "../events/event.types.js";
 import { MinecraftService } from "../minecraft/minecraft.service.js";
 import { SandService } from "./sand.service.js";
-
-interface GiftEvent extends Gift {
-  giftName?: string;
-}
 
 export class GameActionService {
   private totalLikes = 0;
@@ -39,6 +35,153 @@ export class GameActionService {
     await this.showLiveParticipant(gift.username);
 
     await this.minecraft.execute("execute at @a run summon tnt ~ ~ ~ {Fuse:5}");
+  }
+
+  async defaultGift(gift: GiftEvent) {
+    await this.sendMessage(
+      `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+    );
+    await this.showLiveParticipant(gift.username);
+  }
+
+  async micX10Gift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async heartGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async zombieGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async creeperGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async tikTokGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async ironGolemGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async lightningGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async perfumeGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async luckyBoxGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async capGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async batGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async ggCoinGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async cageGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async sunflowerGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async cakeGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async foxGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async steveGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async boxingGlovesGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async sandBlockGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async tntGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async iceGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async paintingsGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async origamiBirdGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async wolfGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async ggGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async bombGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async meatGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async goldenAppleGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async chipsGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async endPortalGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async fishGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async ironGolemStatueGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async strawHatGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async rifleGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
+  }
+
+  async loveGlassesGift(gift: GiftEvent) {
+    return this.defaultGift(gift);
   }
 
   async startRound(x: number, y: number, z: number) {
