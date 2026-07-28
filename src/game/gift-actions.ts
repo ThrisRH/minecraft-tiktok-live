@@ -23,10 +23,19 @@ export class GiftActionService {
     amount = 1,
     option?: string,
   ) {
-    await this.context.sendMessage(
-      `${gift.username} đã gửi x${gift.count} ${giftName}!`,
-    );
-    await this.context.showLiveParticipant(gift.username);
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} ${giftName}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(gift.username);
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
 
     const total = gift.count * amount;
 
@@ -37,9 +46,38 @@ export class GiftActionService {
     const taggedCommand = this.buildTaggedCommand(command, safeName, option);
 
     for (let i = 0; i < total; i++) {
-      await this.context.execute(taggedCommand);
+      await this.executeWithRetry(taggedCommand);
       await sleep(500);
     }
+  }
+
+  private async executeWithRetry(command: string, attempt = 0) {
+    const maxAttempts = 3;
+
+    try {
+      await this.context.execute(command);
+      return;
+    } catch (error) {
+      const nextAttempt = attempt + 1;
+      if (nextAttempt >= maxAttempts) {
+        console.warn(
+          `Gift command failed after ${maxAttempts} attempts:`,
+          error,
+        );
+        return;
+      }
+
+      console.warn(
+        `Gift command failed, retrying (${nextAttempt}/${maxAttempts}):`,
+        error,
+      );
+      await this.delay(1000 * nextAttempt);
+      return this.executeWithRetry(command, nextAttempt);
+    }
+  }
+
+  private delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private buildTaggedCommand(
@@ -57,8 +95,7 @@ export class GiftActionService {
   }
 
   async heartGift(gift: GiftEvent) {
-    const command = "summon zombie" as const;
-    await this.handleGiftEffect(gift, "Heart", command, 1);
+    return this.defaultGift(gift);
   }
 
   // rose zombie thuong

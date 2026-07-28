@@ -34,7 +34,7 @@ test("spawns zombies once per 50-like milestone", async () => {
   );
 });
 
-test("spawns a primed TNT and an armored zombie for gift events", async () => {
+test("spawns a rose and armored zombie gift events", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -49,15 +49,15 @@ test("spawns a primed TNT and an armored zombie for gift events", async () => {
   await service.rosaGift({ username: "Grace", count: 1 });
 
   assert.equal(
-    commands.filter((command) => command.includes("summon tnt")).length,
-    1,
+    commands.filter((command) => command.includes("summon zombie")).length,
+    7,
   );
   assert.equal(
     commands.filter(
       (command) =>
         command.includes("summon zombie") && command.includes("iron_helmet"),
     ).length,
-    2,
+    5,
   );
 });
 
@@ -86,6 +86,27 @@ test("dispatches supported gifts from the documented list", async () => {
   );
 });
 
+test("continues spawning after a transient execute failure", async () => {
+  const commands: string[] = [];
+  let attempt = 0;
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      attempt += 1;
+      if (attempt === 2) {
+        throw new Error("transient failure");
+      }
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+
+  await service.roseGift({ username: "Ada", count: 2 });
+
+  assert.equal(commands.length, 3);
+});
+
 test("routes perfume gift to its dedicated handler", async () => {
   const commands: string[] = [];
   const minecraft = {
@@ -106,9 +127,8 @@ test("routes perfume gift to its dedicated handler", async () => {
   });
 
   assert.equal(
-    commands.filter((command) => command.includes("summon lightning_bolt"))
-      .length,
-    1,
+    commands.filter((command) => command.includes("summon pillager")).length,
+    2,
   );
 });
 

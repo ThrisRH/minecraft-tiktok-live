@@ -22,18 +22,36 @@ export class MinecraftService {
 
   async execute(command: string) {
     if (!this.connected || !this.rcon) {
-      console.warn(
-        `Minecraft RCON not connected, skipping command: ${command}`,
-      );
-      return;
+      try {
+        await this.connect();
+      } catch (error) {
+        console.warn(
+          `Minecraft RCON not connected and reconnect failed for command: ${command}`,
+          error,
+        );
+        return;
+      }
     }
 
     try {
-      return await this.rcon.send(command);
+      return await this.rcon!.send(command);
     } catch (error) {
       console.warn("Minecraft command failed:", error);
       this.connected = false;
       this.rcon = undefined;
+
+      try {
+        await this.connect();
+      } catch (reconnectError) {
+        console.warn("Minecraft RCON reconnect failed:", reconnectError);
+        return;
+      }
+
+      try {
+        return await this.rcon!.send(command);
+      } catch (retryError) {
+        console.warn("Minecraft command retry failed:", retryError);
+      }
     }
   }
 
