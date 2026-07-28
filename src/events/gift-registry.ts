@@ -29,7 +29,8 @@ export function createGiftActionRegistry(
   const actions = new Map<string, (gift: GiftEvent) => Promise<void>>();
   const supportedGiftNames = loadSupportedGiftNames();
   const explicitGiftNames = new Set([
-    "Heart",
+    "Heart Me",
+    "Shamrock",
     "Rose",
     "Rosa",
     "Perfume",
@@ -39,8 +40,11 @@ export function createGiftActionRegistry(
     "Doughnut",
   ]);
 
-  actions.set("Heart", (gift) =>
-    service.heartGift({ ...gift, giftName: "Heart" }),
+  actions.set("Heart Me", (gift) =>
+    service.heartGift({ ...gift, giftName: "Heart Me" }),
+  );
+  actions.set("Shamrock", (gift) =>
+    service.shamrockGift({ ...gift, giftName: "Shamrock" }),
   );
   actions.set("Rose", (gift) =>
     service.roseGift({ ...gift, giftName: "Rose" }),

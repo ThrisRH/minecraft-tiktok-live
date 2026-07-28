@@ -42,6 +42,24 @@ async function bootstrap() {
       return;
     }
 
+    if (mode === "sim-gacha") {
+      console.log("⚡ Mô phỏng User1 và User2 tặng quà Gacha cùng lúc trong 1 process...");
+      const p1 = dispatcher.dispatch({
+        type: "gift",
+        giftName: "Heart",
+        count: 1,
+        username: "User1",
+      });
+      const p2 = dispatcher.dispatch({
+        type: "gift",
+        giftName: "Shamrock",
+        count: 1,
+        username: "User2",
+      });
+      await Promise.all([p1, p2]);
+      return;
+    }
+
     if (mode === "gift") {
       await dispatcher.dispatch({
         type: "gift",

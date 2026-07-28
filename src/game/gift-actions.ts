@@ -4,6 +4,7 @@ interface GiftActionContext {
   execute(command: string): Promise<unknown>;
   sendMessage(text: string): Promise<void>;
   showLiveParticipant(username: string): Promise<void>;
+  gachaGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
@@ -51,7 +52,7 @@ export class GiftActionService {
     }
   }
 
-  private async executeWithRetry(command: string, attempt = 0) {
+  private async executeWithRetry(command: string, attempt = 0): Promise<void> {
     const maxAttempts = 3;
 
     try {
@@ -95,6 +96,9 @@ export class GiftActionService {
   }
 
   async heartGift(gift: GiftEvent) {
+    if (this.context.gachaGift) {
+      return this.context.gachaGift({ ...gift, giftName: "Heart" });
+    }
     return this.defaultGift(gift);
   }
 
@@ -129,7 +133,7 @@ export class GiftActionService {
         ? "{HandItems:[{id:'minecraft:iron_axe',Count:1b},{}]}"
         : "{HandItems:[{id:'minecraft:crossbow',Count:1b},{}]}";
 
-    await this.handleGiftEffect(gift, "Perfume", command, 2, option);
+    await this.handleGiftEffect(gift, "Perfume", command, 5, option);
   }
 
   // cap wither
@@ -140,9 +144,10 @@ export class GiftActionService {
   }
 
   async shamrockGift(gift: GiftEvent) {
-    const command = "summon creeper" as const;
-
-    await this.handleGiftEffect(gift, "TikTok", command);
+    if (this.context.gachaGift) {
+      return this.context.gachaGift({ ...gift, giftName: "Shamrock" });
+    }
+    return this.defaultGift(gift);
   }
 
   // Doughnut ravager
@@ -152,16 +157,16 @@ export class GiftActionService {
     await this.handleGiftEffect(gift, "Doughnut", command);
   }
 
-  // corgi tnt rain
+  // corgi phobos
   async corgiGift(gift: GiftEvent) {
-    const command = "summon luckytntmod:tnt_rain" as const;
+    const command = "summon luckytntmod:phobos" as const;
 
     await this.handleGiftEffect(gift, "Corgi", command);
   }
 
   // Confetti grande_finale
   async confettiGift(gift: GiftEvent) {
-    const command = "summon luckytntmod:grande_finale" as const;
+    const command = "summon luckytntmod:compact_tnt" as const;
 
     await this.handleGiftEffect(gift, "Confetti", command);
   }

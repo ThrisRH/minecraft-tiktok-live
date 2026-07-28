@@ -6,7 +6,8 @@ Tài liệu này ghi lại quà nào sẽ triệu hồi vật gì trong Minecraf
 
 | Quà      | Triệu hồi       | Ghi chú                                | Xu  |
 | -------- | --------------- | -------------------------------------- | --- |
-| Heart    | Không triệu hồi | Chỉ hiện thông báo và title            | 1   |
+| Heart    | Quay Gacha 1    | Quay Gacha custom option ngẫu nhiên    | 1   |
+| Shamrock | Quay Gacha 1    | Quay Gacha custom option ngẫu nhiên    | 1   |
 | Rose     | Zombie giáp     | Mỗi lần quà sẽ triệu hồi 1 zombie giáp | 1   |
 | Rosa     | Zombie giáp     | Mỗi lần quà sẽ triệu hồi 5 zombie giáp | 10  |
 | TikTok   | Creeper         | Triệu hồi creeper                      | 1   |

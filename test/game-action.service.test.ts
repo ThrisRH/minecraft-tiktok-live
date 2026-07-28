@@ -82,7 +82,7 @@ test("dispatches supported gifts from the documented list", async () => {
 
   assert.equal(
     commands.filter((command) => command.includes("tellraw")).length,
-    1,
+    2,
   );
 });
 

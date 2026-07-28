@@ -2,6 +2,11 @@ import { GiftEvent } from "../events/event.types.js";
 import { MinecraftService } from "../minecraft/minecraft.service.js";
 import { GiftActionService } from "./gift-actions.js";
 import { SandService } from "./sand.service.js";
+import {
+  defaultGachaOptions,
+  GachaOption,
+  getRandomGachaOption,
+} from "../config/gacha-config.js";
 
 export class GameActionService {
   private totalLikes = 0;
@@ -10,6 +15,10 @@ export class GameActionService {
   private isRoundFinished = false;
   private roundPosition: { x: number; y: number; z: number } | null = null;
   private readonly giftActions: GiftActionService;
+
+  private isGachaSpinning = false;
+  private gachaQueue: Array<() => Promise<void>> = [];
+  private isProcessingGachaQueue = false;
 
   constructor(
     private readonly minecraft: MinecraftService,
@@ -20,6 +29,7 @@ export class GameActionService {
       sendMessage: (text: string) => this.sendMessage(text),
       showLiveParticipant: (username: string) =>
         this.showLiveParticipant(username),
+      gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
     });
   }
 
@@ -29,6 +39,10 @@ export class GameActionService {
 
   async heartGift(gift: GiftEvent) {
     return this.giftActions.heartGift(gift);
+  }
+
+  async shamrockGift(gift: GiftEvent) {
+    return this.giftActions.shamrockGift(gift);
   }
 
   async roseGift(gift: GiftEvent) {
@@ -164,10 +178,131 @@ export class GameActionService {
   }
 
   private async showLiveParticipant(username: string) {
+    if (this.isGachaSpinning) {
+      return;
+    }
     const safeName = username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     await this.minecraft.execute(
       `title @a title {"text":"${safeName}","color":"aqua","bold":true}`,
     );
+  }
+
+  async gachaGift(
+    gift: GiftEvent,
+    customOptions?: GachaOption[],
+    animationSpeed = 1,
+  ) {
+    const options = customOptions ?? defaultGachaOptions;
+
+    return new Promise<void>((resolve, reject) => {
+      this.gachaQueue.push(async () => {
+        try {
+          await this.executeGachaRolls(gift, options, animationSpeed);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+      void this.processGachaQueue();
+    });
+  }
+
+  private async processGachaQueue() {
+    if (this.isProcessingGachaQueue) return;
+    this.isProcessingGachaQueue = true;
+
+    while (this.gachaQueue.length > 0) {
+      const task = this.gachaQueue.shift();
+      if (task) {
+        await task();
+      }
+    }
+
+    this.isProcessingGachaQueue = false;
+  }
+
+  private async executeGachaRolls(
+    gift: GiftEvent,
+    options: GachaOption[],
+    animationSpeed = 1,
+  ) {
+    this.isGachaSpinning = true;
+    try {
+      await this.sendMessage(
+        `🎲 ${gift.username} đã kích hoạt Vòng Quay Gacha (x${gift.count})!`,
+      );
+
+      for (let i = 0; i < gift.count; i++) {
+        const winningOption = getRandomGachaOption(options);
+        const steps = 14;
+        let delayMs = 60 * animationSpeed;
+
+        for (let step = 0; step < steps; step++) {
+          const displayOpt =
+            step === steps - 1
+              ? winningOption
+              : options[Math.floor(Math.random() * options.length)];
+
+          const color = displayOpt.color ?? "gold";
+          const safeName = displayOpt.name
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"');
+
+          await this.minecraft.execute(
+            `title @a title {"text":"🎲 ${safeName} 🎲","color":"${color}","bold":true}`,
+          );
+
+          if (animationSpeed > 0) {
+            await this.minecraft.execute(
+              "playsound block.note_block.hat master @a ~ ~ ~ 1 1.5 1",
+            );
+            await this.delay(delayMs);
+            delayMs = Math.min(350 * animationSpeed, delayMs * 1.2);
+          }
+        }
+
+        const winColor = winningOption.color ?? "gold";
+        const safeWinName = winningOption.name
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"');
+        const safeUser = gift.username
+          .replace(/\\/g, "\\\\")
+          .replace(/"/g, '\\"');
+
+        await this.minecraft.execute(
+          `title @a title {"text":"🎉 TRÚNG: ${safeWinName} 🎉","color":"${winColor}","bold":true}`,
+        );
+        await this.minecraft.execute(
+          `title @a subtitle {"text":"Người quay: ${safeUser}","color":"yellow"}`,
+        );
+
+        await this.sendMessage(
+          `🎉 ${gift.username} đã quay Gacha trúng: ${winningOption.name}!`,
+        );
+
+        if (animationSpeed > 0) {
+          await this.minecraft.execute(
+            "playsound entity.player.levelup master @a ~ ~ ~ 1 1 1",
+          );
+          await this.delay(1200 * animationSpeed);
+        }
+
+        let command = winningOption.command;
+        if (command.includes("{username}")) {
+          command = command.replace(/\{username\}/g, safeUser);
+        }
+
+        const spawnCount = winningOption.count ?? 1;
+        for (let c = 0; c < spawnCount; c++) {
+          await this.minecraft.execute(command);
+          if (spawnCount > 1 && c < spawnCount - 1 && animationSpeed > 0) {
+            await this.delay(300);
+          }
+        }
+      }
+    } finally {
+      this.isGachaSpinning = false;
+    }
   }
 
   private async summonZombie() {

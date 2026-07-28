@@ -8,17 +8,16 @@ This file contains the master list of supported TikTok gifts.
 
 ## Gift List
 
-- Heart - 1
 - Rose - 1 done
 - TikTok - 1 done
 - Rosa - 10 done
 - Perfume - 20 u done
 - Cap - 99 u done
 - Doughnut - 30 u done
-- Shamrock - gacha 10
-- Glow Stick - 1
+- Shamrock / Heart Me - gacha 10 done+
 - Corgi - 299 done
-- Confetti - Grande_finale
+- Confetti - 100 Grande_finale done
+- compress tnt
 
 ## Agent Requirements
 
