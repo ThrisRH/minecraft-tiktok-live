@@ -11,14 +11,38 @@ export class TikTokService {
   constructor(private readonly dispatcher: Dispatcher) {}
 
   async connect(username: string) {
-    this.connection = new TikTokLiveConnection(
-      username,
-      {},
-    ) as TikTokConnection;
+    this.connection = new TikTokLiveConnection(username, {
+      enableExtendedGiftInfo: true,
+    }) as TikTokConnection;
 
     this.connection.on(WebcastEvent.GIFT, (data: any) => {
+      const giftType =
+        data?.giftType ?? data?.gift_type ?? data?.gift?.type ?? 0;
+      const isStreak = giftType === 1;
+      const isStreakEnd = Boolean(
+        data?.repeatEnd ?? data?.repeat_end ?? data?.gift?.repeat_end,
+      );
+
+      // Bỏ qua các sự kiện trung gian trong chuỗi tặng quà (gift streak)
+      if (isStreak && !isStreakEnd) {
+        return;
+      }
+
       const giftName = data?.gift?.name ?? data?.giftName ?? "";
-      const count = Number(data?.gift?.count ?? data?.count ?? 1);
+      const rawCount =
+        data?.repeatCount ??
+        data?.repeat_count ??
+        data?.comboCount ??
+        data?.combo_count ??
+        data?.groupCount ??
+        data?.group_count ??
+        data?.gift?.repeat_count ??
+        data?.gift?.combo_count ??
+        data?.gift?.count ??
+        data?.count ??
+        1;
+
+      const count = Math.max(1, Number(rawCount));
       const username =
         data?.user?.uniqueId ??
         data?.user?.nickname ??

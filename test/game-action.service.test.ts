@@ -128,7 +128,7 @@ test("routes perfume gift to its dedicated handler", async () => {
 
   assert.equal(
     commands.filter((command) => command.includes("summon pillager")).length,
-    2,
+    5,
   );
 });
 
@@ -161,4 +161,23 @@ test("finishes a round with countdown and reset", async () => {
     commands.filter((command) => command.includes("title @a title")).length,
     6,
   );
+});
+
+test("spawns exactly 50 zombies when receiving a bulk Rose x50 gift event", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+
+  await service.roseGift({ username: "BulkTester", count: 50 });
+
+  const zombieSpawns = commands.filter((command) =>
+    command.includes("summon zombie"),
+  );
+  assert.equal(zombieSpawns.length, 50);
 });

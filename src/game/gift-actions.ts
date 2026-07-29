@@ -46,9 +46,14 @@ export class GiftActionService {
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     const taggedCommand = this.buildTaggedCommand(command, safeName, option);
 
+    // Delay cố định 500ms giữa mỗi con mob theo yêu cầu
+    const delayMs = 500;
+
     for (let i = 0; i < total; i++) {
       await this.executeWithRetry(taggedCommand);
-      await sleep(500);
+      if (i < total - 1) {
+        await sleep(delayMs);
+      }
     }
   }
 

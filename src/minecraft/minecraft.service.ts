@@ -5,6 +5,8 @@ import { summonZombie } from "./commands/mob.command.js";
 export class MinecraftService {
   private rcon?: Rcon;
   private connected = false;
+  private commandQueue: Array<() => Promise<void>> = [];
+  private isProcessingQueue = false;
 
   async connect() {
     this.rcon = await connectRcon();
@@ -20,7 +22,31 @@ export class MinecraftService {
     this.rcon = undefined;
   }
 
-  async execute(command: string) {
+  async execute(command: string): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      this.commandQueue.push(async () => {
+        const res = await this.executeInternal(command);
+        resolve(res);
+      });
+      void this.processQueue();
+    });
+  }
+
+  private async processQueue() {
+    if (this.isProcessingQueue) return;
+    this.isProcessingQueue = true;
+
+    while (this.commandQueue.length > 0) {
+      const task = this.commandQueue.shift();
+      if (task) {
+        await task();
+      }
+    }
+
+    this.isProcessingQueue = false;
+  }
+
+  private async executeInternal(command: string): Promise<string | undefined> {
     if (!this.connected || !this.rcon) {
       try {
         await this.connect();
