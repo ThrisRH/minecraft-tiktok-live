@@ -4,6 +4,7 @@ import { GiftActionService } from "./gift-actions.js";
 import { SandService } from "./sand.service.js";
 import {
   defaultGachaOptions,
+  rosaGachaOptions,
   GachaOption,
   getRandomGachaOption,
 } from "../config/gacha-config.js";
@@ -30,6 +31,7 @@ export class GameActionService {
       showLiveParticipant: (username: string) =>
         this.showLiveParticipant(username),
       gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
+      rosaGachaGift: (gift: GiftEvent) => this.rosaGachaGift(gift),
     });
   }
 
@@ -69,6 +71,15 @@ export class GameActionService {
   }
   async confettiGift(gift: GiftEvent) {
     return this.giftActions.confettiGift(gift);
+  }
+  async fingerHeartGift(gift: GiftEvent) {
+    return this.giftActions.fingerHeartGift(gift);
+  }
+  async journeyPassGift(gift: GiftEvent) {
+    return this.giftActions.journeyPassGift(gift);
+  }
+  async ggGift(gift: GiftEvent) {
+    return this.giftActions.ggGift(gift);
   }
 
   async startRound(x: number, y: number, z: number) {
@@ -197,7 +208,39 @@ export class GameActionService {
     return new Promise<void>((resolve, reject) => {
       this.gachaQueue.push(async () => {
         try {
-          await this.executeGachaRolls(gift, options, animationSpeed);
+          await this.executeGachaRolls(
+            gift,
+            options,
+            animationSpeed,
+            "🎲",
+            "Vòng Quay Gacha",
+          );
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+      void this.processGachaQueue();
+    });
+  }
+
+  async rosaGachaGift(
+    gift: GiftEvent,
+    customOptions?: GachaOption[],
+    animationSpeed = 1,
+  ) {
+    const options = customOptions ?? rosaGachaOptions;
+
+    return new Promise<void>((resolve, reject) => {
+      this.gachaQueue.push(async () => {
+        try {
+          await this.executeGachaRolls(
+            gift,
+            options,
+            animationSpeed,
+            "🌹",
+            "Vòng Quay Rosa Gacha",
+          );
           resolve();
         } catch (err) {
           reject(err);
@@ -225,11 +268,13 @@ export class GameActionService {
     gift: GiftEvent,
     options: GachaOption[],
     animationSpeed = 1,
+    iconPrefix = "🎲",
+    gachaName = "Vòng Quay Gacha",
   ) {
     this.isGachaSpinning = true;
     try {
       await this.sendMessage(
-        `🎲 ${gift.username} đã kích hoạt Vòng Quay Gacha (x${gift.count})!`,
+        `${iconPrefix} ${gift.username} đã kích hoạt ${gachaName} (x${gift.count})!`,
       );
 
       for (let i = 0; i < gift.count; i++) {
@@ -249,7 +294,7 @@ export class GameActionService {
             .replace(/"/g, '\\"');
 
           await this.minecraft.execute(
-            `title @a title {"text":"🎲 ${safeName} 🎲","color":"${color}","bold":true}`,
+            `title @a title {"text":"${iconPrefix} ${safeName} ${iconPrefix}","color":"${color}","bold":true}`,
           );
 
           if (animationSpeed > 0) {

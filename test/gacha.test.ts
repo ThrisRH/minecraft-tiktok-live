@@ -101,3 +101,66 @@ test("Gacha title lock prevents live participant title from overriding screen ti
     "Live participant title should be suppressed during Gacha spin",
   );
 });
+
+test("Rosa gift triggers independent Rosa Gacha spin with rosa options", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  const customRosaOptions: GachaOption[] = [
+    {
+      id: "rosa_test",
+      name: "Rosa Special Mob",
+      command: "execute at @a run summon witch ~ ~ ~",
+      weight: 10,
+    },
+  ];
+
+  await service.rosaGachaGift(
+    { username: "Charlie", count: 1, giftName: "Rosa" },
+    customRosaOptions,
+    0,
+  );
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("Vòng Quay Rosa Gacha")),
+    "Should announce Rosa Gacha spin",
+  );
+  assert.ok(
+    commands.some((cmd) => cmd.includes("summon witch")),
+    "Should execute landed rosa option command",
+  );
+
+  // Test Rosa gift dispatched via dispatcher
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Rosa",
+    count: 1,
+    username: "Dave",
+  });
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("Dave")),
+    "Dispatcher should invoke rosa gift",
+  );
+
+  // Test Finger Heart gift via dispatcher
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Finger Heart",
+    count: 1,
+    username: "Eve",
+  });
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("Eve")),
+    "Dispatcher should invoke finger heart gift",
+  );
+});

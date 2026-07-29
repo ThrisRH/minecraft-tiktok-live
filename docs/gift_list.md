@@ -10,13 +10,16 @@ This file contains the master list of supported TikTok gifts.
 
 - Rose - 1 done
 - TikTok - 1 done
-- Rosa - 10 done
-- Perfume - 20 u done
+- Rosa - 10 done (Rosa Gacha)
+- Perfume - 20 u done (5 Pillager)
 - Cap - 99 u done
 - Doughnut - 30 u done
 - Shamrock / Heart Me - gacha 10 done+
 - Corgi - 299 done
 - Confetti - 100 Grande_finale done
+- Finger Heart - 5 done (Gacha)
+- Journey Pass - 10 done (Full Leather Armor)
+- GG - 1 done (Fireworks)
 - compress tnt
 
 ## Agent Requirements

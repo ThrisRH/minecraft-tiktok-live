@@ -5,6 +5,7 @@ interface GiftActionContext {
   sendMessage(text: string): Promise<void>;
   showLiveParticipant(username: string): Promise<void>;
   gachaGift?(gift: GiftEvent): Promise<void>;
+  rosaGachaGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
@@ -14,7 +15,9 @@ export class GiftActionService {
     await this.context.sendMessage(
       `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
     );
-    await this.context.showLiveParticipant(gift.username);
+    await this.context.showLiveParticipant(
+      `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+    );
   }
 
   async handleGiftEffect(
@@ -33,7 +36,9 @@ export class GiftActionService {
     }
 
     try {
-      await this.context.showLiveParticipant(gift.username);
+      await this.context.showLiveParticipant(
+        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+      );
     } catch (error) {
       console.warn("Failed to show live participant:", error);
     }
@@ -115,30 +120,103 @@ export class GiftActionService {
     await this.handleGiftEffect(gift, "TikTok", command);
   }
 
-  // rosa zombie giáp 5 con
+  // rosa Gacha độc lập
   async rosaGift(gift: GiftEvent) {
-    const command = "summon zombie" as const;
-    const option =
-      '{ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}]}' as const;
+    if (this.context.rosaGachaGift) {
+      return this.context.rosaGachaGift({ ...gift, giftName: "Rosa" });
+    }
 
-    await this.handleGiftEffect(gift, "Rosa", command, 5, option);
+    return this.defaultGift(gift);
   }
 
-  // perfum 2 Pillager
+  // perfume 5 Pillager
   async perfumeGift(gift: GiftEvent) {
-    const command = "summon pillager" as const;
+    const command = "summon luckytntmod:gravity_tnt" as const;
 
-    const option =
-      Math.random() < 0.5
-        ? "{HandItems:[{id:'minecraft:iron_axe',Count:1b},{}]}"
-        : "{HandItems:[{id:'minecraft:crossbow',Count:1b},{}]}";
-
-    await this.handleGiftEffect(gift, "Perfume", command, 5, option);
+    await this.handleGiftEffect(gift, "Perfume", command, 10);
   }
 
-  // cap wither
+  // Finger Heart -> táo
+  async fingerHeartGift(gift: GiftEvent) {
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Finger Heart!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(
+        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const item = "golden_apple";
+
+    await this.context.execute(`execute at @a run give @a ${item}`);
+  }
+
+  // Journey Pass -> Give người chơi full giáp da
+  async journeyPassGift(gift: GiftEvent) {
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Journey Pass!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(
+        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const armorItems = [
+      "leather_helmet",
+      "leather_chestplate",
+      "leather_leggings",
+      "leather_boots",
+    ];
+
+    for (let i = 0; i < gift.count; i++) {
+      for (const item of armorItems) {
+        await this.context.execute(`execute at @a run give @a ${item}`);
+      }
+    }
+  }
+
+  // GG -> Pháo hoa ăn mừng
+  async ggGift(gift: GiftEvent) {
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} GG!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(
+        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const item = "bread";
+
+    await this.context.execute(`execute at @a run give @a ${item}`);
+  }
+
+  // cap warden
   async capGift(gift: GiftEvent) {
-    const command = "summon wither" as const;
+    const command = "summon warden" as const;
 
     await this.handleGiftEffect(gift, "Cap", command);
   }
@@ -150,13 +228,6 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // Doughnut ravager
-  async doughnutGift(gift: GiftEvent) {
-    const command = "summon ravager" as const;
-
-    await this.handleGiftEffect(gift, "Doughnut", command);
-  }
-
   // corgi phobos
   async corgiGift(gift: GiftEvent) {
     const command = "summon luckytntmod:phobos" as const;
@@ -166,7 +237,7 @@ export class GiftActionService {
 
   // Confetti grande_finale
   async confettiGift(gift: GiftEvent) {
-    const command = "summon luckytntmod:compact_tnt" as const;
+    const command = "summon ender_dragon" as const;
 
     await this.handleGiftEffect(gift, "Confetti", command);
   }

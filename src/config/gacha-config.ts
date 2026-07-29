@@ -111,6 +111,44 @@ export const defaultGachaOptions: GachaOption[] = [
   },
 ];
 
+export const rosaGachaOptions: GachaOption[] = [
+  // Common
+  {
+    id: "mini_creeper",
+    name: "Anh em Creeper cảm tử",
+    command:
+      'execute at @a run summon mutantmonsters:creeper_minion ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed",Base:1}]}',
+    count: 20,
+    weight: 9,
+    color: "#A855F7",
+  },
+  {
+    id: "mutant_creeper",
+    name: "Creeper đột biến x1",
+    command:
+      'execute at @a run summon mutantmonsters:mutant_creeper ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.5}]}',
+    count: 1,
+    weight: 8,
+    color: "gold",
+  },
+  {
+    id: "mutant_zombie",
+    name: "Zombie đột biến x1",
+    command:
+      'execute at @a run summon mutantmonsters:mutant_zombie ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.5}]}',
+    weight: 9,
+    color: "gold",
+  },
+  {
+    id: "mutant_skeleton",
+    name: "Skeleton đột biến x1",
+    command:
+      'execute at @a run summon mutantmonsters:mutant_skeleton ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed"}]}',
+    weight: 7,
+    color: "gold",
+  },
+];
+
 /**
  * Lựa chọn một option ngẫu nhiên theo trọng số (weight).
  */

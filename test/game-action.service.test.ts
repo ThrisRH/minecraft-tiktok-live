@@ -34,7 +34,7 @@ test("spawns zombies once per 50-like milestone", async () => {
   );
 });
 
-test("spawns a rose and armored zombie gift events", async () => {
+test("spawns rose gift zombies and triggers rosa gacha", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -46,18 +46,15 @@ test("spawns a rose and armored zombie gift events", async () => {
   const service = new GameActionService(minecraft);
 
   await service.roseGift({ username: "Ada", count: 2 });
-  await service.rosaGift({ username: "Grace", count: 1 });
+  await service.rosaGift({ username: "Grace", count: 1 }, undefined, 0);
 
   assert.equal(
     commands.filter((command) => command.includes("summon zombie")).length,
-    7,
+    2,
   );
-  assert.equal(
-    commands.filter(
-      (command) =>
-        command.includes("summon zombie") && command.includes("iron_helmet"),
-    ).length,
-    5,
+  assert.ok(
+    commands.some((command) => command.includes("Vòng Quay Rosa Gacha")),
+    "Rosa gift should trigger Rosa Gacha",
   );
 });
 
@@ -128,7 +125,7 @@ test("routes perfume gift to its dedicated handler", async () => {
 
   assert.equal(
     commands.filter((command) => command.includes("summon pillager")).length,
-    2,
+    5,
   );
 });
 
