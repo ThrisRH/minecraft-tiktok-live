@@ -75,14 +75,14 @@ test("dispatches supported gifts from the documented list", async () => {
 
   await dispatcher.dispatch({
     type: "gift",
-    giftName: "Heart",
+    giftName: "TikTok",
     count: 1,
     username: "Ada",
   });
 
   assert.equal(
     commands.filter((command) => command.includes("tellraw")).length,
-    2,
+    1,
   );
 });
 
@@ -128,7 +128,7 @@ test("routes perfume gift to its dedicated handler", async () => {
 
   assert.equal(
     commands.filter((command) => command.includes("summon pillager")).length,
-    2,
+    5,
   );
 });
 

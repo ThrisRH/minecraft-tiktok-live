@@ -2,6 +2,7 @@ import { MinecraftService } from "./minecraft/minecraft.service.js";
 import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
 import { TikTokService } from "./tiktok/tiktok.service.js";
+import { BossbarTimerService } from "./game/bossbar-timer.service.js";
 
 async function bootstrap() {
   const mc = new MinecraftService();
@@ -14,6 +15,9 @@ async function bootstrap() {
     const game = new GameActionService(mc);
     const dispatcher = new Dispatcher(game);
     const tikTok = new TikTokService(dispatcher);
+    const bossbarTimer = new BossbarTimerService(mc, 3600); // 1 tiếng countdown (3600s)
+
+    await bossbarTimer.start();
 
     const mode = process.argv[2];
     const giftName = process.argv[3];
@@ -70,6 +74,25 @@ async function bootstrap() {
       return;
     }
 
+    if (mode === "clean-bossbars") {
+      console.log("🧹 Đang dọn dẹp sạch tất cả bossbar cũ trên Minecraft Server...");
+      const oldBossbars = [
+        "minecraft:live_timer",
+        "minecraft:top_spacer",
+        "live_timer",
+        "top_spacer",
+        "minecraft:timer",
+        "timer",
+      ];
+      for (const id of oldBossbars) {
+        try {
+          await mc.execute(`bossbar remove ${id}`);
+        } catch {}
+      }
+      console.log("✨ Đã xóa sạch các bossbar cũ!");
+      return;
+    }
+
     if (mode === "like") {
       await game.like(count, username);
       return;
@@ -81,7 +104,7 @@ async function bootstrap() {
       await tikTok.connect(tikTokUsername);
     } else {
       console.log(
-        "No TikTok username provided. Pass it as TIKTOK_USERNAME or as the first CLI argument.",
+        "💡 Chưa cung cấp TIKTOK_USERNAME. Hệ thống đang chạy Bossbar Timer đếm ngược 1 tiếng trên Minecraft...",
       );
     }
   } catch (error) {
