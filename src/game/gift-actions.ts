@@ -138,7 +138,7 @@ export class GiftActionService {
   async perfumeGift(gift: GiftEvent) {
     const command = "summon luckytntmod:gravity_tnt" as const;
 
-    await this.handleGiftEffect(gift, "Perfume", command, 10);
+    await this.handleGiftEffect(gift, "Perfume", command);
   }
 
   // Finger Heart -> táo
@@ -231,6 +231,13 @@ export class GiftActionService {
       return this.context.gachaGift({ ...gift, giftName: "Shamrock" });
     }
     return this.defaultGift(gift);
+  }
+
+  // Doughnut phobos
+  async doughnutGift(gift: GiftEvent) {
+    const command = "summon luckytntmod:meteor_dynamite" as const;
+
+    await this.handleGiftEffect(gift, "Doughnut", command);
   }
 
   // corgi phobos

@@ -5,15 +5,39 @@ type TikTokConnection = TikTokLiveConnection & {
   on(event: string, callback: (data: any) => void): void;
 };
 
+export interface TikTokServiceOptions {
+  enableExtendedGiftInfo?: boolean;
+  signApiKey?: string;
+}
+
 export class TikTokService {
   private connection!: TikTokConnection;
 
   constructor(private readonly dispatcher: Dispatcher) {}
 
-  async connect(username: string) {
-    this.connection = new TikTokLiveConnection(username, {
-      enableExtendedGiftInfo: true,
-    }) as TikTokConnection;
+  async connect(username: string, options?: TikTokServiceOptions) {
+    const signApiKey =
+      options?.signApiKey ??
+      process.env.EULER_SIGN_API_KEY ??
+      process.env.SIGN_API_KEY;
+
+    // EulerStream signature service requires a Business plan for signing Webcast API requests.
+    // enableExtendedGiftInfo triggers signed requests; default to false unless signApiKey is provided.
+    const enableExtendedGiftInfo =
+      options?.enableExtendedGiftInfo ?? Boolean(signApiKey);
+
+    const connectionOptions: Record<string, any> = {
+      enableExtendedGiftInfo,
+    };
+
+    if (signApiKey) {
+      connectionOptions.signApiKey = signApiKey;
+    }
+
+    this.connection = new TikTokLiveConnection(
+      username,
+      connectionOptions,
+    ) as TikTokConnection;
 
     this.connection.on(WebcastEvent.GIFT, (data: any) => {
       const giftType =

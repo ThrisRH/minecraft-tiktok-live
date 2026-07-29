@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { MinecraftService } from "./minecraft/minecraft.service.js";
 import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";

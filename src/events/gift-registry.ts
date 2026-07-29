@@ -81,9 +81,7 @@ export function createGiftActionRegistry(
   actions.set("Journey Pass", (gift) =>
     service.journeyPassGift({ ...gift, giftName: "Journey Pass" }),
   );
-  actions.set("GG", (gift) =>
-    service.ggGift({ ...gift, giftName: "GG" }),
-  );
+  actions.set("GG", (gift) => service.ggGift({ ...gift, giftName: "GG" }));
 
   for (const giftName of supportedGiftNames) {
     if (explicitGiftNames.has(giftName)) {
