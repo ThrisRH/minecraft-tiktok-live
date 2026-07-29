@@ -60,6 +60,25 @@ async function bootstrap() {
       return;
     }
 
+    if (mode === "sim-bulk") {
+      console.log("⚡ Mô phỏng User1 tặng Rose x50 và User2 tặng TikTok x20 cùng lúc...");
+      const p1 = dispatcher.dispatch({
+        type: "gift",
+        giftName: "Rose",
+        count: 50,
+        username: "Viewer1_Rose50",
+      });
+      const p2 = dispatcher.dispatch({
+        type: "gift",
+        giftName: "TikTok",
+        count: 20,
+        username: "Viewer2_TikTok20",
+      });
+      await Promise.all([p1, p2]);
+      console.log("✅ Đã phát xong toàn bộ sự kiện quà bulk vào Minecraft!");
+      return;
+    }
+
     if (mode === "gift") {
       await dispatcher.dispatch({
         type: "gift",
