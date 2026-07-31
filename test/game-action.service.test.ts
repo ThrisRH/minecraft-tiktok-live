@@ -104,7 +104,7 @@ test("continues spawning after a transient execute failure", async () => {
   assert.equal(commands.length, 3);
 });
 
-test("routes perfume gift to its dedicated handler", async () => {
+test("routes perfume gift to its dedicated handler and executes trapped sequence", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -123,9 +123,73 @@ test("routes perfume gift to its dedicated handler", async () => {
     username: "Ada",
   });
 
-  assert.equal(
-    commands.filter((command) => command.includes("summon pillager")).length,
-    5,
+  const bedrockPillars = commands.filter((cmd) =>
+    cmd.includes("fill") && cmd.includes("bedrock") && !cmd.includes("air replace"),
+  );
+  assert.equal(bedrockPillars.length, 4, "Should build 4 bedrock pillars");
+
+  const tntSummon = commands.filter((cmd) => cmd.includes("summon luckytntmod:gravity_tnt"));
+  assert.equal(tntSummon.length, 1, "Should summon gravity_tnt");
+
+  const clearBedrock = commands.filter((cmd) => cmd.includes("fill") && cmd.includes("air replace bedrock"));
+  assert.equal(clearBedrock.length, 1, "Should clear bedrock pillars after 1s");
+});
+
+test("executes give item commands with exact item counts for instant and tap combos", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  // Finger Heart x50 instant/tap combo
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Finger Heart",
+    count: 50,
+    username: "ComboUser",
+  });
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("give @a golden_apple 50")),
+    "Finger Heart x50 should give 50 golden apples",
+  );
+
+  // GG x20 instant/tap combo
+  commands.length = 0;
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "GG",
+    count: 20,
+    username: "ComboUser",
+  });
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("give @a bread 20")),
+    "GG x20 should give 20 bread",
+  );
+
+  // Journey Pass x5 instant/tap combo
+  commands.length = 0;
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Journey Pass",
+    count: 5,
+    username: "ComboUser",
+  });
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("give @a leather_helmet 5")),
+    "Journey Pass x5 should give 5 leather helmets",
+  );
+  assert.ok(
+    commands.some((cmd) => cmd.includes("give @a leather_chestplate 5")),
+    "Journey Pass x5 should give 5 leather chestplates",
   );
 });
 

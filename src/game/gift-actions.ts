@@ -134,89 +134,112 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // perfume 5 Pillager
+  // perfume: 4 cột bedrock 5 block nhốt người chơi + summon gravity_tnt, sau 1s xóa bedrock
   async perfumeGift(gift: GiftEvent) {
-    const command = "summon luckytntmod:gravity_tnt" as const;
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Perfume!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
 
-    await this.handleGiftEffect(gift, "Perfume", command);
+    try {
+      await this.context.showLiveParticipant(
+        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "Perfume"}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const count = Math.max(1, gift.count ?? 1);
+
+    for (let i = 0; i < count; i++) {
+      // 1. Tạo 4 cột bedrock cao 5 block vây quanh vị trí người chơi
+      await this.executeWithRetry(
+        "execute at @a run fill ~1 ~ ~ ~1 ~4 ~ bedrock",
+      );
+      await this.executeWithRetry(
+        "execute at @a run fill ~-1 ~ ~ ~-1 ~4 ~ bedrock",
+      );
+      await this.executeWithRetry(
+        "execute at @a run fill ~ ~ ~1 ~ ~4 ~1 bedrock",
+      );
+      await this.executeWithRetry(
+        "execute at @a run fill ~ ~ ~-1 ~ ~4 ~-1 bedrock",
+      );
+
+      // 2. Chờ 2 giây (2000ms) sau khi dựng cột bedrock
+      await this.delay(2000);
+
+      // 3. Summon gravity_tnt tại vị trí người chơi đang bị nhốt
+      await this.executeWithRetry(
+        "execute at @a run summon luckytntmod:gravity_tnt ~ ~ ~",
+      );
+
+      // 4. Chờ 1 giây (1000ms) sau khi triệu hồi TNT
+      await this.delay(1000);
+
+      // 5. Xóa 4 cột bedrock (chỉ thay thế bedrock bằng air)
+      await this.executeWithRetry(
+        "execute at @a run fill ~-1 ~ ~-1 ~1 ~4 ~1 air replace bedrock",
+      );
+
+      if (i < count - 1) {
+        await this.delay(500);
+      }
+    }
+  }
+
+  async handleGiveItemEffect(
+    gift: GiftEvent,
+    giftName: string,
+    items: string | string[],
+  ) {
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} ${giftName}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(
+        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? giftName}!`,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const itemList = Array.isArray(items) ? items : [items];
+    const count = Math.max(1, gift.count ?? 1);
+
+    for (const item of itemList) {
+      const command = `execute at @a run give @a ${item} ${count}`;
+      await this.executeWithRetry(command);
+    }
   }
 
   // Finger Heart -> táo
   async fingerHeartGift(gift: GiftEvent) {
-    try {
-      await this.context.sendMessage(
-        `${gift.username} đã gửi x${gift.count} Finger Heart!`,
-      );
-    } catch (error) {
-      console.warn("Failed to send gift notification:", error);
-    }
-
-    try {
-      await this.context.showLiveParticipant(
-        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
-      );
-    } catch (error) {
-      console.warn("Failed to show live participant:", error);
-    }
-
-    const item = "golden_apple";
-
-    await this.context.execute(`execute at @a run give @a ${item}`);
+    await this.handleGiveItemEffect(gift, "Finger Heart", "golden_apple");
   }
 
   // Journey Pass -> Give người chơi full giáp da
   async journeyPassGift(gift: GiftEvent) {
-    try {
-      await this.context.sendMessage(
-        `${gift.username} đã gửi x${gift.count} Journey Pass!`,
-      );
-    } catch (error) {
-      console.warn("Failed to send gift notification:", error);
-    }
-
-    try {
-      await this.context.showLiveParticipant(
-        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
-      );
-    } catch (error) {
-      console.warn("Failed to show live participant:", error);
-    }
-
     const armorItems = [
       "leather_helmet",
       "leather_chestplate",
       "leather_leggings",
       "leather_boots",
     ];
-
-    for (let i = 0; i < gift.count; i++) {
-      for (const item of armorItems) {
-        await this.context.execute(`execute at @a run give @a ${item}`);
-      }
-    }
+    await this.handleGiveItemEffect(gift, "Journey Pass", armorItems);
   }
 
-  // GG -> Pháo hoa ăn mừng
+  // GG -> Bánh mì
   async ggGift(gift: GiftEvent) {
-    try {
-      await this.context.sendMessage(
-        `${gift.username} đã gửi x${gift.count} GG!`,
-      );
-    } catch (error) {
-      console.warn("Failed to send gift notification:", error);
-    }
-
-    try {
-      await this.context.showLiveParticipant(
-        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
-      );
-    } catch (error) {
-      console.warn("Failed to show live participant:", error);
-    }
-
-    const item = "bread";
-
-    await this.context.execute(`execute at @a run give @a ${item}`);
+    await this.handleGiveItemEffect(gift, "GG", "bread");
   }
 
   // cap warden

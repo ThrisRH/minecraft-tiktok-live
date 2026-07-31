@@ -43,9 +43,13 @@ export class TikTokService {
       const giftType =
         data?.giftType ?? data?.gift_type ?? data?.gift?.type ?? 0;
       const isStreak = giftType === 1;
-      const isStreakEnd = Boolean(
-        data?.repeatEnd ?? data?.repeat_end ?? data?.gift?.repeat_end,
-      );
+      const rawRepeatEnd =
+        data?.repeatEnd ?? data?.repeat_end ?? data?.gift?.repeat_end;
+      const isStreakEnd =
+        rawRepeatEnd === true ||
+        rawRepeatEnd === 1 ||
+        rawRepeatEnd === "true" ||
+        rawRepeatEnd === "1";
 
       // Bỏ qua các sự kiện trung gian trong chuỗi tặng quà (gift streak)
       if (isStreak && !isStreakEnd) {
