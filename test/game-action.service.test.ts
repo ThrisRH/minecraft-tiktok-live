@@ -242,3 +242,30 @@ test("spawns exactly 50 zombies when receiving a bulk Rose x50 gift event", asyn
   );
   assert.equal(zombieSpawns.length, 50);
 });
+
+test("testAllGifts dispatches all registered gifts sequentially", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  const testedGifts: string[] = [];
+  await dispatcher.testAllGifts({
+    count: 1,
+    delayMs: 0,
+    username: "TestRunner",
+    onGiftStart: (giftName) => testedGifts.push(giftName),
+  });
+
+  const registeredGifts = dispatcher.getRegisteredGiftNames();
+  assert.equal(testedGifts.length, registeredGifts.length);
+  assert.deepEqual(testedGifts, registeredGifts);
+  assert.ok(commands.length > 0, "Commands should have been executed during testAllGifts");
+});
+

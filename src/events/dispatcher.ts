@@ -9,6 +9,51 @@ export class Dispatcher {
     this.giftActions = createGiftActionRegistry(this.game);
   }
 
+  getRegisteredGiftNames(): string[] {
+    return Array.from(this.giftActions.keys()).filter(
+      (name) => name !== "Default",
+    );
+  }
+
+  async testAllGifts(options?: {
+    count?: number;
+    delayMs?: number;
+    username?: string;
+    onGiftStart?: (giftName: string, index: number, total: number) => void;
+  }): Promise<void> {
+    const giftNames = this.getRegisteredGiftNames();
+    const count = options?.count ?? 1;
+    const delayMs = options?.delayMs ?? 1000;
+    const username = options?.username ?? "test-user";
+
+    console.log(
+      `🚀 Bắt đầu test lần lượt ${giftNames.length} quà có trong hệ thống...`,
+    );
+
+    for (let i = 0; i < giftNames.length; i++) {
+      const giftName = giftNames[i];
+      console.log(
+        `[${i + 1}/${giftNames.length}] 🎁 Testing gift: ${giftName} (x${count})`,
+      );
+      if (options?.onGiftStart) {
+        options.onGiftStart(giftName, i, giftNames.length);
+      }
+
+      await this.dispatch({
+        type: "gift",
+        giftName,
+        count,
+        username,
+      });
+
+      if (i < giftNames.length - 1 && delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+
+    console.log("✅ Đã test xong toàn bộ danh sách quà trong hệ thống!");
+  }
+
   async dispatch(event: GameEvent) {
     switch (event.type) {
       case "gift": {
@@ -32,3 +77,4 @@ export class Dispatcher {
     }
   }
 }
+

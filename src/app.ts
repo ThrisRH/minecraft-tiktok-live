@@ -63,6 +63,13 @@ async function bootstrap() {
       return;
     }
 
+    if (mode === "sim-all" || mode === "test-all") {
+      console.log("⚡ Mô phỏng lần lượt tất cả các gift có trong hệ thống...");
+      const delayMs = Number(process.argv[4] ?? 1000);
+      await dispatcher.testAllGifts({ count, delayMs, username });
+      return;
+    }
+
     if (mode === "sim-bulk") {
       console.log("⚡ Mô phỏng User1 tặng Rose x50 và User2 tặng TikTok x20 cùng lúc...");
       const p1 = dispatcher.dispatch({

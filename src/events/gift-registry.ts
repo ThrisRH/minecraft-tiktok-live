@@ -12,11 +12,18 @@ function loadSupportedGiftNames(): string[] {
 
   try {
     const content = readFileSync(giftListPath, "utf8");
-    return content
+    const giftListSection =
+      content.split(/##\s*Gift List/i)[1]?.split(/##/)[0] ?? content;
+
+    return giftListSection
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter((line) => line.startsWith("- "))
-      .map((line) => line.slice(2).trim())
+      .map((line) => {
+        const raw = line.slice(2).trim();
+        // Lấy phần tên quà trước dấu gạch ngang đầu tiên nếu có ghi chú
+        return raw.split(/\s+-\s+/)[0].trim();
+      })
       .filter(Boolean);
   } catch {
     return [];
