@@ -39,6 +39,10 @@ export function createGiftActionRegistry(
     "Heart",
     "Heart Me",
     "Shamrock",
+    "Ice Cream",
+    "IceCream",
+    "Money Gun",
+    "MoneyGun",
     "Rose",
     "Rosa",
     "Perfume",
@@ -46,6 +50,7 @@ export function createGiftActionRegistry(
     "Corgi",
     "Cap",
     "Doughnut",
+    "Confetti",
     "Finger Heart",
     "Journey Pass",
     "GG",
@@ -59,6 +64,12 @@ export function createGiftActionRegistry(
   );
   actions.set("Shamrock", (gift) =>
     service.shamrockGift({ ...gift, giftName: "Shamrock" }),
+  );
+  actions.set("Ice Cream", (gift) =>
+    service.iceCreamGift({ ...gift, giftName: "Ice Cream" }),
+  );
+  actions.set("IceCream", (gift) =>
+    service.iceCreamGift({ ...gift, giftName: "IceCream" }),
   );
   actions.set("Rose", (gift) =>
     service.roseGift({ ...gift, giftName: "Rose" }),
@@ -76,6 +87,12 @@ export function createGiftActionRegistry(
     service.corgiGift({ ...gift, giftName: "Corgi" }),
   );
   actions.set("Cap", (gift) => service.capGift({ ...gift, giftName: "Cap" }));
+  actions.set("Money Gun", (gift) =>
+    service.moneyGunGift({ ...gift, giftName: "Money Gun" }),
+  );
+  actions.set("MoneyGun", (gift) =>
+    service.moneyGunGift({ ...gift, giftName: "MoneyGun" }),
+  );
   actions.set("Doughnut", (gift) =>
     service.doughnutGift({ ...gift, giftName: "Doughnut" }),
   );

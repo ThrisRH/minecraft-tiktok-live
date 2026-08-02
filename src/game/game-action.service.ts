@@ -5,6 +5,7 @@ import { SandService } from "./sand.service.js";
 import {
   defaultGachaOptions,
   rosaGachaOptions,
+  shamrockGachaOptions,
   GachaOption,
   getRandomGachaOption,
 } from "../config/gacha-config.js";
@@ -21,6 +22,9 @@ export class GameActionService {
   private gachaQueue: Array<() => Promise<void>> = [];
   private isProcessingGachaQueue = false;
 
+  private moneyGunRemainingSeconds = 0;
+  private moneyGunTimerId?: NodeJS.Timeout;
+
   constructor(
     private readonly minecraft: MinecraftService,
     private readonly sandService?: SandService,
@@ -28,10 +32,15 @@ export class GameActionService {
     this.giftActions = new GiftActionService({
       execute: (command: string) => this.minecraft.execute(command),
       sendMessage: (text: string) => this.sendMessage(text),
-      showLiveParticipant: (username: string) =>
-        this.showLiveParticipant(username),
+      showLiveParticipant: (
+        username: string,
+        giftName?: string,
+        count?: number,
+      ) => this.showLiveParticipant(username, giftName, count),
       gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
       rosaGachaGift: (gift: GiftEvent) => this.rosaGachaGift(gift),
+      shamrockGachaGift: (gift: GiftEvent) => this.shamrockGachaGift(gift),
+      moneyGunGift: (gift: GiftEvent) => this.moneyGunGift(gift),
     });
   }
 
@@ -56,6 +65,9 @@ export class GameActionService {
 
   async rosaGift(gift: GiftEvent) {
     return this.giftActions.rosaGift(gift);
+  }
+  async iceCreamGift(gift: GiftEvent) {
+    return this.giftActions.iceCreamGift(gift);
   }
   async perfumeGift(gift: GiftEvent) {
     return this.giftActions.perfumeGift(gift);
@@ -152,19 +164,21 @@ export class GameActionService {
     const previousMilestone = Math.floor(this.lastProcessedMilestone / 50);
     const currentMilestone = Math.floor(this.totalLikes / 50);
 
-    await this.sendMessage("👍 Có người vừa Like!");
+    if (currentMilestone > previousMilestone) {
+      await this.sendMessage("👍 Có người vừa Like!");
 
-    for (
-      let milestone = previousMilestone + 1;
-      milestone <= currentMilestone;
-      milestone++
-    ) {
-      await this.summonZombie();
-      this.lastProcessedMilestone = milestone * 50;
-    }
+      for (
+        let milestone = previousMilestone + 1;
+        milestone <= currentMilestone;
+        milestone++
+      ) {
+        await this.summonZombie();
+        this.lastProcessedMilestone = milestone * 50;
+      }
 
-    if (username) {
-      await this.showLiveParticipant(username);
+      if (username) {
+        await this.showLiveParticipant(username);
+      }
     }
   }
 
@@ -188,7 +202,11 @@ export class GameActionService {
     );
   }
 
-  private async showLiveParticipant(username: string) {
+  private async showLiveParticipant(
+    username: string,
+    giftName?: string,
+    count?: number,
+  ) {
     if (this.isGachaSpinning) {
       return;
     }
@@ -196,6 +214,14 @@ export class GameActionService {
     await this.minecraft.execute(
       `title @a title {"text":"${safeName}","color":"aqua","bold":true}`,
     );
+
+    if (giftName) {
+      const safeGift = giftName.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      const giftText = count && count > 1 ? `x${count} ${safeGift}` : safeGift;
+      await this.minecraft.execute(
+        `title @a subtitle [{"text":"đã gửi ","color":"white"},{"text":"${giftText}","color":"yellow","bold":true}]`,
+      );
+    }
   }
 
   async gachaGift(
@@ -248,6 +274,142 @@ export class GameActionService {
       });
       void this.processGachaQueue();
     });
+  }
+
+  async shamrockGachaGift(
+    gift: GiftEvent,
+    customOptions?: GachaOption[],
+    animationSpeed = 1,
+  ) {
+    const options = customOptions ?? shamrockGachaOptions;
+
+    return new Promise<void>((resolve, reject) => {
+      this.gachaQueue.push(async () => {
+        try {
+          await this.executeGachaRolls(
+            gift,
+            options,
+            animationSpeed,
+            "☘️",
+            "Vòng Quay Shamrock Gacha",
+          );
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+      void this.processGachaQueue();
+    });
+  }
+
+  async moneyGunGift(gift: GiftEvent, durationSeconds = 600) {
+    try {
+      await this.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Money Gun!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.showLiveParticipant(gift.username, "Money Gun", gift.count);
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const safeUser = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    await this.minecraft.execute(
+      `title @a title {"text":"☠️ WITHER STORM ĐÃ XUẤT HIỆN! ☠️","color":"dark_red","bold":true}`,
+    );
+    await this.minecraft.execute(
+      `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 10:00","color":"gold"}`,
+    );
+    await this.minecraft.execute(
+      "playsound entity.wither.spawn master @a ~ ~ ~ 1 1 1",
+    );
+
+    const count = Math.max(1, gift.count ?? 1);
+    for (let i = 0; i < count; i++) {
+      await this.minecraft.execute(
+        "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:7,ConsumedEntities:2125001}",
+      );
+    }
+
+    this.startMoneyGunCountdown(durationSeconds);
+  }
+
+  private startMoneyGunCountdown(durationSeconds = 600) {
+    this.moneyGunRemainingSeconds = durationSeconds;
+
+    if (this.moneyGunTimerId) {
+      return;
+    }
+
+    const tick = async () => {
+      this.moneyGunRemainingSeconds -= 1;
+
+      if (this.moneyGunRemainingSeconds <= 0) {
+        if (this.moneyGunTimerId) {
+          clearInterval(this.moneyGunTimerId);
+          this.moneyGunTimerId = undefined;
+        }
+
+        try {
+          await this.minecraft.execute(
+            "execute at @a run kill @e[type=witherstormmod:wither_storm]",
+          );
+          await this.minecraft.execute(
+            `title @a title {"text":"✨ WITHER STORM ĐÃ TAN BIẾN! ✨","color":"green","bold":true}`,
+          );
+          await this.minecraft.execute(
+            "playsound entity.wither.death master @a ~ ~ ~ 1 1 1",
+          );
+          await this.minecraft.execute(
+            `title @a actionbar {"text":"✨ WITHER STORM ĐÃ KẾT THÚC ✨","color":"green","bold":true}`,
+          );
+        } catch (error) {
+          console.warn("Failed to finalize Money Gun countdown:", error);
+        }
+        return;
+      }
+
+      const remaining = this.moneyGunRemainingSeconds;
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      const mm = String(minutes).padStart(2, "0");
+      const ss = String(seconds).padStart(2, "0");
+
+      const totalBars = 10;
+      const filledBars = Math.max(
+        0,
+        Math.ceil((remaining / durationSeconds) * totalBars),
+      );
+      const barStr =
+        "▰".repeat(filledBars) + "▱".repeat(totalBars - filledBars);
+
+      let color = "#A855F7";
+      if (remaining <= 120) {
+        color = "red";
+      } else if (remaining <= 300) {
+        color = "yellow";
+      }
+
+      try {
+        await this.minecraft.execute(
+          `title @a actionbar {"text":"☠️ WITHER STORM ☠️  [${barStr}]  ⏱️ ${mm}:${ss}","color":"${color}","bold":true}`,
+        );
+      } catch (error) {
+        console.warn("Failed to send Money Gun actionbar HUD:", error);
+      }
+    };
+
+    const timer = setInterval(() => {
+      void tick();
+    }, 1000);
+    if (typeof timer.unref === "function") {
+      timer.unref();
+    }
+    this.moneyGunTimerId = timer;
   }
 
   private async processGachaQueue() {
@@ -338,8 +500,15 @@ export class GameActionService {
         }
 
         const spawnCount = winningOption.count ?? 1;
+        const subCommands = command
+          .split(";")
+          .map((cmd) => cmd.trim())
+          .filter(Boolean);
+
         for (let c = 0; c < spawnCount; c++) {
-          await this.minecraft.execute(command);
+          for (const subCmd of subCommands) {
+            await this.minecraft.execute(subCmd);
+          }
           if (spawnCount > 1 && c < spawnCount - 1 && animationSpeed > 0) {
             await this.delay(300);
           }

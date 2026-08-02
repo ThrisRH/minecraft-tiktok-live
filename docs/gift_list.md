@@ -13,8 +13,10 @@ This file contains the master list of supported TikTok gifts.
 - Rosa - 10 done (Rosa Gacha)
 - Perfume - 20 u done (5 Pillager)
 - Cap - 99 u done
-- Doughnut - 30 u done
-- Shamrock / Heart Me - gacha 10 done+
+- Doughnut - 30 u done (Black hole)
+- Shamrock - Vòng quay Shamrock Gacha mới
+- Ice Cream / Heart / Heart Me - gacha 10 done+
+- Money Gun - Wither Storm 10 phút + Actionbar HUD
 - Corgi - 299 done
 - Confetti - 100 Grande_finale done
 - Finger Heart - 5 done (Gacha)

@@ -3,9 +3,15 @@ import { GiftEvent } from "../events/event.types.js";
 interface GiftActionContext {
   execute(command: string): Promise<unknown>;
   sendMessage(text: string): Promise<void>;
-  showLiveParticipant(username: string): Promise<void>;
+  showLiveParticipant(
+    username: string,
+    giftName?: string,
+    count?: number,
+  ): Promise<void>;
   gachaGift?(gift: GiftEvent): Promise<void>;
   rosaGachaGift?(gift: GiftEvent): Promise<void>;
+  shamrockGachaGift?(gift: GiftEvent): Promise<void>;
+  moneyGunGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
@@ -16,7 +22,9 @@ export class GiftActionService {
       `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
     );
     await this.context.showLiveParticipant(
-      `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+      gift.username,
+      gift.giftName ?? "gift",
+      gift.count,
     );
   }
 
@@ -26,6 +34,7 @@ export class GiftActionService {
     command: string,
     amount = 1,
     option?: string,
+    skipPayload = false,
   ) {
     try {
       await this.context.sendMessage(
@@ -37,7 +46,9 @@ export class GiftActionService {
 
     try {
       await this.context.showLiveParticipant(
-        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "gift"}!`,
+        gift.username,
+        gift.giftName ?? giftName,
+        gift.count,
       );
     } catch (error) {
       console.warn("Failed to show live participant:", error);
@@ -49,7 +60,14 @@ export class GiftActionService {
       new Promise((resolve) => setTimeout(resolve, ms));
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-    const taggedCommand = this.buildTaggedCommand(command, safeName, option);
+    const taggedCommand = this.buildTaggedCommand(
+      command,
+      safeName,
+      option,
+      skipPayload,
+    );
+
+    console.log(taggedCommand);
 
     // Delay cố định 500ms giữa mỗi con mob theo yêu cầu
     const delayMs = 500;
@@ -95,14 +113,24 @@ export class GiftActionService {
     command: string,
     username: string,
     option?: string,
+    skipPayload = false,
   ) {
+    const hasCoordinates = command.includes("~");
+    const baseCommand = hasCoordinates ? command : `${command} ~ ~ ~`;
+
+    if (skipPayload) {
+      return `execute at @a run ${baseCommand}`;
+    }
+
     const safeName = username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     const customNameTag = `CustomName:'{"text":"${safeName}"}'`;
     const payload = option
-      ? `{${customNameTag},${option.slice(1, -1)}}`
+      ? option.startsWith("{")
+        ? `{${customNameTag},${option.slice(1, -1)}}`
+        : `{${customNameTag},${option}}`
       : `{${customNameTag}}`;
 
-    return `execute at @a run ${command} ~ ~ ~ ${payload}`;
+    return `execute at @a run ${baseCommand} ${payload}`;
   }
 
   async heartGift(gift: GiftEvent) {
@@ -146,7 +174,9 @@ export class GiftActionService {
 
     try {
       await this.context.showLiveParticipant(
-        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? "Perfume"}!`,
+        gift.username,
+        gift.giftName ?? "Perfume",
+        gift.count,
       );
     } catch (error) {
       console.warn("Failed to show live participant:", error);
@@ -206,7 +236,9 @@ export class GiftActionService {
 
     try {
       await this.context.showLiveParticipant(
-        `${gift.username} đã gửi x${gift.count} ${gift.giftName ?? giftName}!`,
+        gift.username,
+        gift.giftName ?? giftName,
+        gift.count,
       );
     } catch (error) {
       console.warn("Failed to show live participant:", error);
@@ -250,30 +282,44 @@ export class GiftActionService {
   }
 
   async shamrockGift(gift: GiftEvent) {
-    if (this.context.gachaGift) {
-      return this.context.gachaGift({ ...gift, giftName: "Shamrock" });
+    if (this.context.shamrockGachaGift) {
+      return this.context.shamrockGachaGift({ ...gift, giftName: "Shamrock" });
     }
     return this.defaultGift(gift);
   }
 
-  // Doughnut phobos
-  async doughnutGift(gift: GiftEvent) {
-    const command = "summon luckytntmod:meteor_dynamite" as const;
+  async iceCreamGift(gift: GiftEvent) {
+    if (this.context.gachaGift) {
+      return this.context.gachaGift({ ...gift, giftName: "Ice Cream" });
+    }
+    return this.defaultGift(gift);
+  }
 
-    await this.handleGiftEffect(gift, "Doughnut", command);
+  async moneyGunGift(gift: GiftEvent) {
+    if (this.context.moneyGunGift) {
+      return this.context.moneyGunGift({ ...gift, giftName: "Money Gun" });
+    }
+    return this.defaultGift(gift);
+  }
+
+  // Doughnut black hole
+  async doughnutGift(gift: GiftEvent) {
+    const command = "summon terramity:black_hole ~ ~ ~" as const;
+
+    await this.handleGiftEffect(gift, "Doughnut", command, 1, undefined, true);
   }
 
   // corgi phobos
   async corgiGift(gift: GiftEvent) {
     const command = "summon luckytntmod:phobos" as const;
 
-    await this.handleGiftEffect(gift, "Corgi", command);
+    await this.handleGiftEffect(gift, "Corgi", command, 1, undefined, true);
   }
 
   // Confetti grande_finale
   async confettiGift(gift: GiftEvent) {
     const command = "summon ender_dragon" as const;
 
-    await this.handleGiftEffect(gift, "Confetti", command);
+    await this.handleGiftEffect(gift, "Confetti", command, 1, undefined, true);
   }
 }

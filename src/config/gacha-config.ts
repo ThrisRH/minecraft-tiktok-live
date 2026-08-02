@@ -149,6 +149,61 @@ export const rosaGachaOptions: GachaOption[] = [
   },
 ];
 
+export const shamrockGachaOptions: GachaOption[] = [
+  // Common
+  // {
+  //   id: "leather_set_stone_sword",
+  //   name: "Full Set Đồ Da + Kiếm Đá",
+  //   command:
+  //     "execute at @a run give @a leather_helmet 1; execute at @a run give @a leather_chestplate 1; execute at @a run give @a leather_leggings 1; execute at @a run give @a leather_boots 1; execute at @a run give @a stone_sword 1",
+  //   weight: 10,
+  //   color: "gray",
+  // },
+  // // Uncommon
+  // {
+  //   id: "iron_set_stone_sword",
+  //   name: "Full Set Đồ Sắt + Kiếm Đá Thường",
+  //   command:
+  //     "execute at @a run give @a iron_helmet 1; execute at @a run give @a iron_chestplate 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots 1; execute at @a run give @a stone_sword 1",
+  //   weight: 8,
+  //   color: "green",
+  // },
+  // // Rare
+  // {
+  //   id: "golden_apple_5",
+  //   name: "5 Táo Vàng Thường",
+  //   command: "execute at @a run give @a golden_apple 5",
+  //   weight: 5,
+  //   color: "blue",
+  // },
+  // Epic
+  {
+    id: "speed_iron_blast_prot",
+    name: "Combo Thuốc Tốc Độ II + Áo Sắt Chống Nổ IV",
+    command:
+      'execute at @a run effect give @a speed 90 1; execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:blast_protection",lvl:4s}]} 1',
+    weight: 3,
+    color: "#A855F7",
+  },
+  // Legendary 1
+  {
+    id: "diamond_set_blast_prot_iron_sword",
+    name: "Full Set Đồ Kim Cương Chống Nổ III + Kiếm Sắt",
+    command:
+      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a iron_sword 1',
+    weight: 10,
+    color: "gold",
+  },
+  // Legendary 2
+  {
+    id: "enchanted_golden_apple_2",
+    name: "2 Táo Vàng Phù Phép",
+    command: "execute at @a run give @a enchanted_golden_apple 2",
+    weight: 1,
+    color: "gold",
+  },
+];
+
 /**
  * Lựa chọn một option ngẫu nhiên theo trọng số (weight).
  */

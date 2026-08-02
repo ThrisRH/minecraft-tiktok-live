@@ -87,13 +87,13 @@ export class TikTokService {
       }
     });
 
-    this.connection.on(WebcastEvent.CHAT, (data: any) => {
+    this.connection.on(WebcastEvent.LIKE, (data: any) => {
       const username =
         data?.user?.uniqueId ??
         data?.user?.nickname ??
         data?.nickname ??
         "unknown";
-      const count = Number(data?.likeCount ?? 1);
+      const count = Number(data?.likeCount ?? data?.totalLikeCount ?? 1);
 
       if (count > 0) {
         void this.dispatcher.dispatch({ type: "like", count, username });
