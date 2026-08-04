@@ -1,0 +1,109 @@
+// Prisma Schema for Minecraft TikTok Live Backend
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model LiveSession {
+  id             String      @id @default(uuid())
+  tiktokUsername String
+  roomId         String?
+  title          String?
+  status         String      @default("ACTIVE") // ACTIVE, ENDED
+  totalDiamonds  Int         @default(0)
+  totalLikes     Int         @default(0)
+  totalGifts     Int         @default(0)
+  startedAt      DateTime    @default(now())
+  endedAt        DateTime?
+
+  giftEvents     GiftEvent[]
+  gachaLogs      GachaLog[]
+  quests         Quest[]
+}
+
+model Viewer {
+  id                 String      @id @default(uuid())
+  tiktokUsername     String      @unique
+  displayName        String?
+  avatarUrl          String?
+  totalDiamondsSpent Int         @default(0)
+  totalGiftsSent     Int         @default(0)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  giftEvents         GiftEvent[]
+}
+
+model GiftEvent {
+  id             String      @id @default(uuid())
+  sessionId      String
+  session        LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  viewerUsername String
+  viewer         Viewer      @relation(fields: [viewerUsername], references: [tiktokUsername], onDelete: Cascade)
+  giftName       String
+  giftId         String?
+  count          Int         @default(1)
+  diamondValue   Int         @default(0)
+  actionType     String?     // GACHA, SPAWN_MOB, COMMAND, GIVE_ITEM, WITHER_STORM
+  createdAt      DateTime    @default(now())
+
+  gachaLogs      GachaLog[]
+}
+
+model GachaPool {
+  id          String      @id // e.g. 'default_gacha', 'rosa_gacha', 'shamrock_gacha'
+  name        String
+  description String?
+  isActive    Boolean     @default(true)
+
+  items       GachaItem[]
+}
+
+model GachaItem {
+  id        String    @id // e.g. 'bread', 'zombie', 'zombie_tsunami'
+  poolId    String
+  pool      GachaPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  name      String    // Display name on screen (e.g. "Bánh mì thịt x8")
+  command   String    // Minecraft custom command
+  count     Int       @default(1)
+  weight    Int       @default(10)
+  color     String    @default("gold")
+  rarity    String    @default("COMMON") // COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
+  isActive  Boolean   @default(true)
+
+  gachaLogs GachaLog[]
+}
+
+model GachaLog {
+  id              String      @id @default(uuid())
+  giftEventId     String
+  giftEvent       GiftEvent   @relation(fields: [giftEventId], references: [id], onDelete: Cascade)
+  sessionId       String
+  session         LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  viewerUsername  String
+  poolId          String
+  gachaItemId     String?
+  gachaItem       GachaItem?  @relation(fields: [gachaItemId], references: [id], onDelete: SetNull)
+  resultName      String
+  commandExecuted String
+  createdAt       DateTime    @default(now())
+}
+
+model Quest {
+  id          String      @id @default(uuid())
+  sessionId   String
+  session     LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  title       String
+  targetType  String      // LIKE_COUNT, GIFT_COUNT, DIAMOND_COUNT
+  targetValue Int
+  currentValue Int        @default(0)
+  rewardType  String      // ADD_TIME, SUBTRACT_TIME, RESET_SAND, SPAWN_BOSS
+  rewardValue Int         @default(0)
+  status      String      @default("PENDING") // PENDING, COMPLETED, FAILED
+  createdAt   DateTime    @default(now())
+}

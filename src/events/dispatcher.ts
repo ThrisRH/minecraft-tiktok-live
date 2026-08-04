@@ -1,6 +1,7 @@
 import { GameActionService } from "../game/game-action.service.js";
 import { GameEvent, Gift } from "./event.types.js";
 import { createGiftActionRegistry } from "./gift-registry.js";
+import { sessionService } from "../db/session.service.js";
 
 export class Dispatcher {
   private readonly giftActions: Map<string, (gift: Gift) => Promise<void>>;
@@ -57,6 +58,12 @@ export class Dispatcher {
   async dispatch(event: GameEvent) {
     switch (event.type) {
       case "gift": {
+        await sessionService.recordGiftEvent({
+          username: event.username,
+          giftName: event.giftName,
+          count: event.count,
+        });
+
         const action =
           this.giftActions.get(event.giftName) ??
           this.giftActions.get("Default");
@@ -72,6 +79,7 @@ export class Dispatcher {
       }
 
       case "like":
+        await sessionService.recordLikes(event.count, event.username);
         await this.game.like(event.count, event.username);
         break;
     }

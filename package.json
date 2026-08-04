@@ -6,14 +6,22 @@
   "scripts": {
     "test": "node --import tsx --test ./test/gacha.test.ts ./test/game-action.service.test.ts ./test/tiktok.service.test.ts",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.4.0",
     "dotenv": "^17.4.2",
+    "prisma": "^6.4.0",
     "rcon-client": "^4.2.5",
     "tiktok-live-connector": "^2.4.3"
   },

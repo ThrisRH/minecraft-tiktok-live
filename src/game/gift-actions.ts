@@ -304,7 +304,7 @@ export class GiftActionService {
 
   // Doughnut black hole
   async doughnutGift(gift: GiftEvent) {
-    const command = "summon terramity:black_hole ~ ~ ~" as const;
+    const command = "summon terramity:black_hole ~ 5 ~" as const;
 
     await this.handleGiftEffect(gift, "Doughnut", command, 1, undefined, true);
   }

@@ -9,6 +9,7 @@ import {
   GachaOption,
   getRandomGachaOption,
 } from "../config/gacha-config.js";
+import { sessionService } from "../db/session.service.js";
 
 export class GameActionService {
   private totalLikes = 0;
@@ -504,6 +505,18 @@ export class GameActionService {
           .split(";")
           .map((cmd) => cmd.trim())
           .filter(Boolean);
+
+        await sessionService.recordGachaLog({
+          username: gift.username,
+          poolId: gachaName.includes("Rosa")
+            ? "rosa_gacha"
+            : gachaName.includes("Shamrock")
+            ? "shamrock_gacha"
+            : "default_gacha",
+          gachaItemId: winningOption.id,
+          resultName: winningOption.name,
+          commandExecuted: command,
+        });
 
         for (let c = 0; c < spawnCount; c++) {
           for (const subCmd of subCommands) {
