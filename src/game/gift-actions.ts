@@ -316,11 +316,15 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  async iceCreamGift(gift: GiftEvent) {
+  async overreactGift(gift: GiftEvent) {
     if (this.context.gachaGift) {
-      return this.context.gachaGift({ ...gift, giftName: "Ice Cream" });
+      return this.context.gachaGift({ ...gift, giftName: gift.giftName ?? "Overreact" });
     }
     return this.defaultGift(gift);
+  }
+
+  async iceCreamGift(gift: GiftEvent) {
+    return this.overreactGift({ ...gift, giftName: gift.giftName ?? "Ice Cream" });
   }
 
   // Continuous event: Money Gun (Wither Storm 10-minute sequence)

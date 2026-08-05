@@ -64,6 +64,9 @@ export class GameActionService {
   async rosaGift(gift: GiftEvent) {
     return this.giftActions.rosaGift(gift);
   }
+  async overreactGift(gift: GiftEvent) {
+    return this.giftActions.overreactGift(gift);
+  }
   async iceCreamGift(gift: GiftEvent) {
     return this.giftActions.iceCreamGift(gift);
   }

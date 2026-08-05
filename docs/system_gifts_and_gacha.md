@@ -5,7 +5,7 @@
 | Tên Quà | Phân Loại | Lệnh / Hiệu ứng Minecraft |
 |---|---|---|
 | **Heart / Heart Me** | Gacha Thường | Kích hoạt Vòng quay Gacha Thường |
-| **Ice Cream / IceCream** | Gacha Thường | Kích hoạt Vòng quay Gacha Thường |
+| **Overreact** | Gacha Thường | Kích hoạt Vòng quay Gacha Thường |
 | **Rosa** | Rosa Gacha | Kích hoạt Vòng quay Rosa Gacha |
 | **Shamrock** | Shamrock Gacha | Kích hoạt Vòng quay Shamrock Gacha |
 | **Rose** | Summon Entity | `summon zombie ~ ~ ~` (x1 mỗi count) |

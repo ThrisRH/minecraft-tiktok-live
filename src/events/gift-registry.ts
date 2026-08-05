@@ -50,6 +50,7 @@ export function createGiftActionRegistry(
     "Heart",
     "Heart Me",
     "Shamrock",
+    "Overreact",
     "Ice Cream",
     "Ice cream",
     "IceCream",
@@ -83,14 +84,17 @@ export function createGiftActionRegistry(
   actions.set("Shamrock", (gift) =>
     service.shamrockGift({ ...gift, giftName: "Shamrock" }),
   );
+  actions.set("Overreact", (gift) =>
+    service.overreactGift({ ...gift, giftName: "Overreact" }),
+  );
   actions.set("Ice Cream", (gift) =>
-    service.iceCreamGift({ ...gift, giftName: "Ice Cream" }),
+    service.overreactGift({ ...gift, giftName: "Ice Cream" }),
   );
   actions.set("Ice cream", (gift) =>
-    service.iceCreamGift({ ...gift, giftName: "Ice cream" }),
+    service.overreactGift({ ...gift, giftName: "Ice cream" }),
   );
   actions.set("IceCream", (gift) =>
-    service.iceCreamGift({ ...gift, giftName: "IceCream" }),
+    service.overreactGift({ ...gift, giftName: "IceCream" }),
   );
   actions.set("Rose", (gift) =>
     service.roseGift({ ...gift, giftName: "Rose" }),

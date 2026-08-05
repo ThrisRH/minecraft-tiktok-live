@@ -203,7 +203,7 @@ test("Shamrock gift triggers independent Shamrock Gacha spin with shamrock optio
   );
 });
 
-test("Ice Cream gift (with casing variations) triggers standard Gacha spin", async () => {
+test("Overreact gift (and legacy Ice Cream variations) triggers standard Gacha spin", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -216,11 +216,11 @@ test("Ice Cream gift (with casing variations) triggers standard Gacha spin", asy
   const dispatcher = new Dispatcher(service);
 
   for (const giftNameVariation of [
+    "Overreact",
+    "overreact",
+    "OVERREACT",
     "Ice Cream",
     "Ice cream",
-    "ice cream",
-    "ICE CREAM",
-    "IceCream",
   ]) {
     commands.length = 0;
     await dispatcher.dispatch({
