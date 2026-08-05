@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Live — Desktop Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header Navbar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">🎮</div>
+        <div>
+          <h1>Minecraft Live</h1>
+          <span class="subtitle">Desktop Gift Test Control Panel</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-badge online">
+          <span class="pulse-dot"></span>
+          RCON Connected
+        </div>
+        <button id="btn-test-all" class="btn btn-warning">
+          🚀 Test Tất Cả Quà (Auto)
+        </button>
+      </div>
+    </header>
+
+    <!-- Control Bar (Tester Username & Combo Count) -->
+    <section class="control-bar">
+      <div class="input-group">
+        <label for="input-username">👤 Người Gửi (Tester Name):</label>
+        <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên tester...">
+      </div>
+
+      <div class="input-group">
+        <label>⚡ Số Lượng Combo (Count):</label>
+        <div class="count-selector">
+          <button class="count-chip active" data-count="1">x1</button>
+          <button class="count-chip" data-count="5">x5</button>
+          <button class="count-chip" data-count="10">x10</button>
+          <button class="count-chip" data-count="20">x20</button>
+          <button class="count-chip" data-count="50">x50</button>
+          <input type="number" id="input-count" value="1" min="1" max="500">
+        </div>
+      </div>
+
+      <div class="quick-action-group">
+        <button id="btn-send-like" class="btn btn-secondary">
+          ❤️ Gửi 500 Tim (Milestone)
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Workspace -->
+    <main class="main-layout">
+      <!-- Left Panel: Gifts Catalog -->
+      <section class="catalog-section">
+        <!-- Search & Category Filters -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Tìm kiếm quà (Corgi, Wither, Rosa, Overreact...)...">
+          </div>
+
+          <div class="category-tabs">
+            <button class="tab-chip active" data-category="all">Tất Cả (<span id="count-all">0</span>)</button>
+            <button class="tab-chip" data-category="gacha">🎲 Gacha</button>
+            <button class="tab-chip" data-category="event">🐉 Sự Kiện Nối Tiếp</button>
+            <button class="tab-chip" data-category="mob">🧟 Mobs & Bosses</button>
+            <button class="tab-chip" data-category="item">🍎 Vật Phẩm & Buff</button>
+            <button class="tab-chip" data-category="trap">💣 Bẫy Khống Chế</button>
+          </div>
+        </div>
+
+        <!-- Gifts Grid (1-Click Trigger Cards) -->
+        <div id="gifts-grid" class="gifts-grid">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- Right Panel: Live Execution Terminal Log -->
+      <aside class="console-section">
+        <div class="console-header">
+          <h3>💻 Live Console Log</h3>
+          <button id="btn-clear-log" class="btn-icon" title="Xóa log">🗑️ Clear</button>
+        </div>
+        <div id="console-logs" class="console-logs">
+          <!-- Log entries populated dynamically -->
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

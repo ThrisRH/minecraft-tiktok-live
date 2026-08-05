@@ -1,8 +1,6 @@
 import { GiftEvent } from "../events/event.types.js";
-import { CorgiEvent } from "./events/corgi-event.js";
-import { WitherStormEvent } from "./events/wither-storm-event.js";
 
-export interface GiftActionContext {
+interface GiftActionContext {
   execute(command: string): Promise<unknown>;
   sendMessage(text: string): Promise<void>;
   showLiveParticipant(
@@ -13,16 +11,12 @@ export interface GiftActionContext {
   gachaGift?(gift: GiftEvent): Promise<void>;
   rosaGachaGift?(gift: GiftEvent): Promise<void>;
   shamrockGachaGift?(gift: GiftEvent): Promise<void>;
+  moneyGunGift?(gift: GiftEvent): Promise<void>;
+  corgiGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
-  private readonly corgiEvent: CorgiEvent;
-  private readonly witherStormEvent: WitherStormEvent;
-
-  constructor(private readonly context: GiftActionContext) {
-    this.corgiEvent = new CorgiEvent(this.context);
-    this.witherStormEvent = new WitherStormEvent(this.context);
-  }
+  constructor(private readonly context: GiftActionContext) {}
 
   async defaultGift(gift: GiftEvent) {
     await this.context.sendMessage(
@@ -62,7 +56,9 @@ export class GiftActionService {
     }
 
     const total = gift.count * amount;
-    const delayMs = 500;
+
+    const sleep = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     const taggedCommand = this.buildTaggedCommand(
@@ -72,10 +68,15 @@ export class GiftActionService {
       skipPayload,
     );
 
+    console.log(taggedCommand);
+
+    // Delay cố định 500ms giữa mỗi con mob theo yêu cầu
+    const delayMs = 500;
+
     for (let i = 0; i < total; i++) {
       await this.executeWithRetry(taggedCommand);
       if (i < total - 1) {
-        await this.delay(delayMs);
+        await sleep(delayMs);
       }
     }
   }
@@ -149,6 +150,7 @@ export class GiftActionService {
   // tiktok creeper
   async tiktokGift(gift: GiftEvent) {
     const command = "summon creeper" as const;
+
     await this.handleGiftEffect(gift, "TikTok", command);
   }
 
@@ -157,6 +159,7 @@ export class GiftActionService {
     if (this.context.rosaGachaGift) {
       return this.context.rosaGachaGift({ ...gift, giftName: "Rosa" });
     }
+
     return this.defaultGift(gift);
   }
 
@@ -183,6 +186,7 @@ export class GiftActionService {
     const count = Math.max(1, gift.count ?? 1);
 
     for (let i = 0; i < count; i++) {
+      // 1. Tạo 4 cột bedrock cao 5 block vây quanh vị trí người chơi
       await this.executeWithRetry(
         "execute at @a run fill ~1 ~ ~ ~1 ~4 ~ bedrock",
       );
@@ -196,14 +200,18 @@ export class GiftActionService {
         "execute at @a run fill ~ ~ ~-1 ~ ~4 ~-1 bedrock",
       );
 
+      // 2. Chờ 2 giây (2000ms) sau khi dựng cột bedrock
       await this.delay(2000);
 
+      // 3. Summon gravity_tnt tại vị trí người chơi đang bị nhốt
       await this.executeWithRetry(
         "execute at @a run summon luckytntmod:gravity_tnt ~ ~ ~",
       );
 
+      // 4. Chờ 1 giây (1000ms) sau khi triệu hồi TNT
       await this.delay(1000);
 
+      // 5. Xóa 4 cột bedrock (chỉ thay thế bedrock bằng air)
       await this.executeWithRetry(
         "execute at @a run fill ~-1 ~ ~-1 ~1 ~4 ~1 air replace bedrock",
       );
@@ -295,7 +303,7 @@ export class GiftActionService {
     }
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
-    const command = `execute at @a run summon guardvillagers:guard ~ ~ ~ {CustomName:'{"text":"${safeName}"}',HandItems:[{id:"minecraft:iron_sword",Count:1b},{id:"minecraft:shield",Count:1b}],ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}]}`;
+    const command = `execute at @a run summon minecraft:iron_golem`;
     const count = Math.max(1, gift.count ?? 1);
 
     for (let i = 0; i < count; i++) {
@@ -306,6 +314,7 @@ export class GiftActionService {
   // cap warden
   async capGift(gift: GiftEvent) {
     const command = "summon warden" as const;
+
     await this.handleGiftEffect(gift, "Cap", command);
   }
 
@@ -316,36 +325,272 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  async overreactGift(gift: GiftEvent) {
+  async iceCreamGift(gift: GiftEvent) {
     if (this.context.gachaGift) {
-      return this.context.gachaGift({ ...gift, giftName: gift.giftName ?? "Overreact" });
+      return this.context.gachaGift({ ...gift, giftName: "Ice Cream" });
     }
     return this.defaultGift(gift);
   }
 
-  async iceCreamGift(gift: GiftEvent) {
-    return this.overreactGift({ ...gift, giftName: gift.giftName ?? "Ice Cream" });
-  }
-
-  // Continuous event: Money Gun (Wither Storm 10-minute sequence)
   async moneyGunGift(gift: GiftEvent) {
-    return this.witherStormEvent.trigger(gift);
-  }
-
-  // Continuous event: Corgi (Corgi Dragon 5-minute sequence)
-  async corgiGift(gift: GiftEvent) {
-    return this.corgiEvent.trigger(gift);
+    if (this.context.moneyGunGift) {
+      return this.context.moneyGunGift({ ...gift, giftName: "Money Gun" });
+    }
+    return this.defaultGift(gift);
   }
 
   // Doughnut black hole
   async doughnutGift(gift: GiftEvent) {
     const command = "summon terramity:black_hole ~ ~ ~" as const;
+
     await this.handleGiftEffect(gift, "Doughnut", command, 1, undefined, true);
+  }
+
+  // corgi 5-minute event sequence
+  private corgiRemainingSeconds = 0;
+  private corgiTimerId?: NodeJS.Timeout;
+  private corgiSpawnedBabyCount = 0;
+  private corgiEnderDragonSummoned = false;
+
+  async corgiGift(gift: GiftEvent, durationSeconds = 300) {
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Corgi! Kích hoạt Thảm Họa Corgi Dragon!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(
+        gift.username,
+        gift.giftName ?? "Corgi",
+        gift.count,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const safeUser = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
+    const totalCount = Math.max(1, gift.count ?? 1);
+
+    if (!this.corgiTimerId) {
+      // Event gốc chưa chạy: Quà 1 là sự kiện gốc Corgi Dragon
+      await this.context.execute(
+        `title @a title {"text":"🐉 ĐẠI DỊCH CORGI DRAGON! 🐉","color":"dark_purple","bold":true}`,
+      );
+      await this.context.execute(
+        `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 05:00","color":"gold"}`,
+      );
+      await this.context.execute(
+        "playsound entity.ender_dragon.growl master @a ~ ~ ~ 1 1 1",
+      );
+
+      // Apply Slowness 1 to player for 5 minutes (300 seconds)
+      await this.context.execute(
+        "execute at @a run effect give @a slowness 300 0 true",
+      );
+
+      // Initial spawn: 3 baby ender dragons (~ 2 ~)
+      const initialBabyCount = 3;
+      for (let i = 0; i < initialBabyCount; i++) {
+        await this.context.execute(
+          "execute at @a run summon endertrigon:baby_ender_dragon ^ ^5 ^2",
+        );
+      }
+
+      this.corgiSpawnedBabyCount = initialBabyCount;
+      this.corgiEnderDragonSummoned = false;
+
+      this.startCorgiCountdown(durationSeconds);
+
+      // Từ quà 2 trở đi trong combo: cộng thêm 5 phút & triệu hồi thêm 1 Ender Dragon
+      const extraCount = totalCount - 1;
+      if (extraCount > 0) {
+        this.corgiRemainingSeconds += extraCount * durationSeconds;
+        for (let i = 0; i < extraCount; i++) {
+          await this.context.execute(
+            "execute at @a run summon ender_dragon ^ ^5 ^2",
+          );
+        }
+      }
+    } else {
+      // Event đã đang chạy: Tất cả các quà trong combo đều cộng thêm 5 phút & triệu hồi thêm Ender Dragon
+      this.corgiRemainingSeconds += totalCount * durationSeconds;
+      for (let i = 0; i < totalCount; i++) {
+        await this.context.execute(
+          "execute at @a run summon ender_dragon ^ ^5 ^2",
+        );
+      }
+    }
+  }
+
+  private startCorgiCountdown(durationSeconds = 300) {
+    if (this.corgiTimerId) {
+      return;
+    }
+
+    this.corgiRemainingSeconds = durationSeconds;
+
+    const tick = async () => {
+      this.corgiRemainingSeconds -= 1;
+
+      if (this.corgiRemainingSeconds <= 0) {
+        if (this.corgiTimerId) {
+          clearInterval(this.corgiTimerId);
+          this.corgiTimerId = undefined;
+        }
+
+        try {
+          await this.context.execute(
+            "execute at @a run kill @e[type=endertrigon:baby_ender_dragon]",
+          );
+          await this.context.execute(
+            "execute at @a run kill @e[type=ender_dragon]",
+          );
+          await this.context.execute(
+            "execute at @a run kill @e[type=end_crystal]",
+          );
+          await this.context.execute(
+            "execute at @a run effect clear @a slowness",
+          );
+          await this.context.execute(
+            `title @a title {"text":"✨ SỰ KIỆN CORGI ĐÃ KẾT THÚC! ✨","color":"green","bold":true}`,
+          );
+          await this.context.execute(
+            "playsound entity.ender_dragon.death master @a ~ ~ ~ 1 1 1",
+          );
+          await this.context.execute(
+            `title @a actionbar {"text":"✨ SỰ KIỆN CORGI ĐÃ KẾT THÚC ✨","color":"green","bold":true}`,
+          );
+        } catch (error) {
+          console.warn("Failed to finalize Corgi countdown:", error);
+        }
+        return;
+      }
+
+      const remaining = this.corgiRemainingSeconds;
+      const elapsedSeconds = durationSeconds - remaining;
+
+      // 1. Cứ mỗi 10 giây: spawn cấp số nhân số baby ender dragon trước đó (tối đa 25 con)
+      if (
+        elapsedSeconds > 0 &&
+        elapsedSeconds % 10 === 0 &&
+        this.corgiSpawnedBabyCount < 25
+      ) {
+        const toSpawn = Math.min(
+          this.corgiSpawnedBabyCount,
+          25 - this.corgiSpawnedBabyCount,
+        );
+        if (toSpawn > 0) {
+          for (let i = 0; i < toSpawn; i++) {
+            try {
+              await this.context.execute(
+                "execute at @a run summon endertrigon:baby_ender_dragon ^ ^5 ^2",
+              );
+            } catch (err) {
+              console.warn("Failed to summon baby_ender_dragon:", err);
+            }
+          }
+          this.corgiSpawnedBabyCount += toSpawn;
+        }
+      }
+
+      // 2. Khi còn khoảng 3 phút: summon Ender Dragon & End Crystals rải rác
+      if (remaining <= 180 && !this.corgiEnderDragonSummoned) {
+        this.corgiEnderDragonSummoned = true;
+        try {
+          await this.context.execute(
+            `title @a title {"text":"🐲 ENDER DRAGON ĐÃ TỈNH GIẤC! 🐲","color":"dark_red","bold":true}`,
+          );
+          await this.context.execute(
+            `title @a subtitle {"text":"Rồng và Tinh Thể Ma Thuật đã xuất hiện!","color":"yellow"}`,
+          );
+          await this.context.execute(
+            "playsound entity.ender_dragon.growl master @a ~ ~ ~ 1 0.8 1",
+          );
+          await this.context.execute(
+            "execute at @a run summon ender_dragon ^ ^5 ^2",
+          );
+
+          // End crystals rải rác chuẩn bán kính 20-28 blocks
+          const crystalOffsets = [
+            { x: 28, z: 0 },
+            { x: -28, z: 0 },
+            { x: 0, z: 28 },
+            { x: 0, z: -28 },
+            { x: 20, z: 20 },
+            { x: -20, z: 20 },
+            { x: 20, z: -20 },
+            { x: -20, z: -20 },
+          ];
+          for (const pos of crystalOffsets) {
+            await this.context.execute(
+              `execute at @a run summon end_crystal ~${pos.x} ~5 ~${pos.z}`,
+            );
+          }
+        } catch (err) {
+          console.warn("Failed to summon Ender Dragon or crystals:", err);
+        }
+      }
+
+      // Re-apply Slowness 1 periodically
+      if (remaining % 30 === 0) {
+        try {
+          await this.context.execute(
+            "execute at @a run effect give @a slowness 300 0 true",
+          );
+        } catch (err) {
+          console.warn("Failed to reapply slowness:", err);
+        }
+      }
+
+      // 3. Update Actionbar HUD
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      const mm = String(minutes).padStart(2, "0");
+      const ss = String(seconds).padStart(2, "0");
+
+      const totalBars = 10;
+      const filledBars = Math.max(
+        0,
+        Math.min(
+          totalBars,
+          Math.ceil((remaining / durationSeconds) * totalBars),
+        ),
+      );
+      const barStr =
+        "▰".repeat(filledBars) + "▱".repeat(totalBars - filledBars);
+
+      let color = "#A855F7";
+      if (remaining <= 60) {
+        color = "red";
+      } else if (remaining <= 180) {
+        color = "yellow";
+      }
+
+      try {
+        await this.context.execute(
+          `title @a actionbar {"text":"🐉 CORGI DRAGON 🐉  [${barStr}]  ⏱️ ${mm}:${ss}","color":"${color}","bold":true}`,
+        );
+      } catch (error) {
+        console.warn("Failed to send Corgi actionbar HUD:", error);
+      }
+    };
+
+    const timer = setInterval(() => {
+      void tick();
+    }, 1000);
+    if (typeof timer.unref === "function") {
+      timer.unref();
+    }
+    this.corgiTimerId = timer;
   }
 
   // Confetti grande_finale
   async confettiGift(gift: GiftEvent) {
     const command = "summon ender_dragon" as const;
+
     await this.handleGiftEffect(gift, "Confetti", command, 1, undefined, true);
   }
 }
