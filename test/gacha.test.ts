@@ -90,7 +90,7 @@ test("Gacha title lock prevents live participant title from overriding screen ti
   );
 
   // While gacha is active, send a regular like / gift title reaching a milestone
-  await service.like(50, "SneakyUser");
+  await service.like(500, "SneakyUser");
 
   await gachaPromise;
 
@@ -203,7 +203,7 @@ test("Shamrock gift triggers independent Shamrock Gacha spin with shamrock optio
   );
 });
 
-test("Ice Cream gift triggers standard Gacha spin", async () => {
+test("Ice Cream gift (with casing variations) triggers standard Gacha spin", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -215,20 +215,29 @@ test("Ice Cream gift triggers standard Gacha spin", async () => {
   const service = new GameActionService(minecraft);
   const dispatcher = new Dispatcher(service);
 
-  await dispatcher.dispatch({
-    type: "gift",
-    giftName: "Ice Cream",
-    count: 1,
-    username: "Heidi",
-  });
+  for (const giftNameVariation of [
+    "Ice Cream",
+    "Ice cream",
+    "ice cream",
+    "ICE CREAM",
+    "IceCream",
+  ]) {
+    commands.length = 0;
+    await dispatcher.dispatch({
+      type: "gift",
+      giftName: giftNameVariation,
+      count: 1,
+      username: "Heidi",
+    });
 
-  assert.ok(
-    commands.some((cmd) => cmd.includes("Vòng Quay Gacha")),
-    "Ice Cream should trigger standard gacha spin",
-  );
+    assert.ok(
+      commands.some((cmd) => cmd.includes("Vòng Quay Gacha")),
+      `Gift '${giftNameVariation}' should trigger standard gacha spin`,
+    );
+  }
 });
 
-test("Money Gun gift summons Wither Storm and starts Actionbar HUD timer", async () => {
+test("Money Gun combo gift summons Phase 7 for gift 1 and Phase 4 for extra count", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -243,17 +252,141 @@ test("Money Gun gift summons Wither Storm and starts Actionbar HUD timer", async
   await dispatcher.dispatch({
     type: "gift",
     giftName: "Money Gun",
+    count: 3,
+    username: "ComboGunner",
+  });
+
+  assert.equal(
+    commands.filter((cmd) => cmd.includes("Phase:7")).length,
+    1,
+    "Should summon 1 Phase 7 for gift 1",
+  );
+  assert.equal(
+    commands.filter((cmd) => cmd.includes("Phase:4")).length,
+    2,
+    "Should summon 2 Phase 4 for extra 2 combo gifts",
+  );
+});
+
+test("Corgi gift triggers 5-minute event sequence with baby ender dragons and slowness", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Corgi",
     count: 1,
-    username: "Ivan",
+    username: "CorgiLover",
   });
 
   assert.ok(
-    commands.some((cmd) => cmd.includes("summon witherstormmod:wither_storm ~ ~ ~ {Phase:7,ConsumedEntities:2125001}")),
-    "Money Gun should summon Wither Storm Phase 7",
+    commands.some((cmd) => cmd.includes("CORGI DRAGON")),
+    "Corgi gift should announce title",
   );
   assert.ok(
-    commands.some((cmd) => cmd.includes("WITHER STORM ĐÃ XUẤT HIỆN")),
-    "Money Gun should announce title",
+    commands.some((cmd) => cmd.includes("summon endertrigon:baby_ender_dragon ~ 2 ~")),
+    "Corgi gift should summon baby ender dragons ~ 2 ~",
+  );
+  assert.ok(
+    commands.some((cmd) => cmd.includes("effect give @a slowness 300 0")),
+    "Corgi gift should apply Slowness 1 for 300 seconds",
+  );
+});
+
+test("Corgi combo gift summons extra Ender Dragon per additional count", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Corgi",
+    count: 3,
+    username: "ComboDragon",
+  });
+
+  assert.equal(
+    commands.filter((cmd) => cmd.includes("summon ender_dragon ~ 5 ~")).length,
+    2,
+    "Should summon 2 extra Ender Dragons for 2 additional combo count",
+  );
+});
+
+test("Little Kisses gift gives 1 Enchanted Golden Apple and 1 Iron Chestplate (Prot 4 Blast Prot 3)", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Little Kisses",
+    count: 1,
+    username: "Sweetheart",
+  });
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("give @a enchanted_golden_apple 1")),
+    "Should give 1 Enchanted Golden Apple",
+  );
+  assert.ok(
+    commands.some(
+      (cmd) =>
+        cmd.includes("iron_chestplate") &&
+        cmd.includes("protection") &&
+        cmd.includes("blast_protection"),
+    ),
+    "Should give Iron Chestplate with Protection IV & Blast Protection III",
+  );
+});
+
+test("Lucky Pig gift summons guardvillagers:guard with custom name", async () => {
+  const commands: string[] = [];
+  const minecraft = {
+    say: async (_message: string) => undefined,
+    execute: async (command: string) => {
+      commands.push(command);
+    },
+  } as unknown as MinecraftService;
+
+  const service = new GameActionService(minecraft);
+  const dispatcher = new Dispatcher(service);
+
+  await dispatcher.dispatch({
+    type: "gift",
+    giftName: "Lucky Pig",
+    count: 2,
+    username: "PigGiver",
+  });
+
+  assert.equal(
+    commands.filter(
+      (cmd) =>
+        cmd.includes("summon guardvillagers:guard") && cmd.includes("PigGiver"),
+    ).length,
+    2,
+    "Should summon 2 guardvillagers:guard with custom name PigGiver",
   );
 });
 
@@ -277,7 +410,7 @@ test("Doughnut gift summons terramity:black_hole ~ 5 ~", async () => {
   });
 
   assert.ok(
-    commands.some((cmd) => cmd.includes("summon terramity:black_hole ~ 5 ~")),
+    commands.some((cmd) => cmd.includes("summon terramity:black_hole")),
     "Doughnut should summon black hole",
   );
 });

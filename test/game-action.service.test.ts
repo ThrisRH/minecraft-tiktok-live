@@ -4,7 +4,7 @@ import { GameActionService } from "../src/game/game-action.service.js";
 import { Dispatcher } from "../src/events/dispatcher.js";
 import { MinecraftService } from "../src/minecraft/minecraft.service.js";
 
-test("spawns zombies and shows title/chat only per 50-like milestone", async () => {
+test("summons guardvillagers:guard and shows title/chat per 500-like per-user milestone", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -15,40 +15,40 @@ test("spawns zombies and shows title/chat only per 50-like milestone", async () 
 
   const service = new GameActionService(minecraft);
 
-  await service.like(49, "User1");
+  await service.like(499, "User1");
   assert.equal(
-    commands.filter((command) => command.includes("summon zombie")).length,
+    commands.filter((command) => command.includes("summon guardvillagers:guard")).length,
     0,
   );
   assert.equal(
     commands.length,
     0,
-    "No chat or title commands should be executed before hitting milestone",
+    "No chat or title commands should be executed before hitting 500-like milestone",
   );
 
-  await service.like(1, "User2");
+  await service.like(1, "User1");
   assert.equal(
-    commands.filter((command) => command.includes("summon zombie")).length,
+    commands.filter((command) => command.includes("summon guardvillagers:guard")).length,
     1,
   );
   assert.ok(
     commands.some((command) => command.includes("tellraw")),
-    "Chat message should be sent on hitting milestone",
+    "Chat message should be sent on hitting 500 milestone",
   );
   assert.ok(
-    commands.some((command) => command.includes("User2")),
-    "Participant name should be displayed on hitting milestone",
+    commands.some((command) => command.includes("User1")),
+    "Participant name should be displayed on hitting 500 milestone",
   );
 
   commands.length = 0;
-  await service.like(50, "User3");
+  await service.like(500, "User2");
   assert.equal(
-    commands.filter((command) => command.includes("summon zombie")).length,
+    commands.filter((command) => command.includes("summon guardvillagers:guard")).length,
     1,
   );
   assert.ok(
-    commands.some((command) => command.includes("User3")),
-    "Participant name should be displayed on hitting next milestone",
+    commands.some((command) => command.includes("User2")),
+    "User2 should independently trigger 500-like milestone guard",
   );
 });
 

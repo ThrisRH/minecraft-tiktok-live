@@ -4,6 +4,10 @@ import { fileURLToPath } from "url";
 import type { GameActionService } from "../game/game-action.service.js";
 import type { GiftEvent } from "./event.types.js";
 
+export function normalizeGiftName(name: string): string {
+  return name.toLowerCase().replace(/[\s_-]+/g, "");
+}
+
 function loadSupportedGiftNames(): string[] {
   const giftListPath = resolve(
     dirname(fileURLToPath(import.meta.url)),
@@ -15,7 +19,7 @@ function loadSupportedGiftNames(): string[] {
     const giftListSection =
       content.split(/##\s*Gift List/i)[1]?.split(/##/)[0] ?? content;
 
-    return giftListSection
+    const rawNames = giftListSection
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter((line) => line.startsWith("- "))
@@ -25,6 +29,13 @@ function loadSupportedGiftNames(): string[] {
         return raw.split(/\s+-\s+/)[0].trim();
       })
       .filter(Boolean);
+
+    const result: string[] = [];
+    for (const name of rawNames) {
+      const parts = name.split("/").map((p) => p.trim()).filter(Boolean);
+      result.push(...parts);
+    }
+    return result;
   } catch {
     return [];
   }
@@ -40,6 +51,7 @@ export function createGiftActionRegistry(
     "Heart Me",
     "Shamrock",
     "Ice Cream",
+    "Ice cream",
     "IceCream",
     "Money Gun",
     "MoneyGun",
@@ -54,6 +66,12 @@ export function createGiftActionRegistry(
     "Finger Heart",
     "Journey Pass",
     "GG",
+    "Little Kisses",
+    "Little kisses",
+    "LittleKisses",
+    "Lucky Pig",
+    "Lucky pig",
+    "LuckyPig",
   ]);
 
   actions.set("Heart", (gift) =>
@@ -67,6 +85,9 @@ export function createGiftActionRegistry(
   );
   actions.set("Ice Cream", (gift) =>
     service.iceCreamGift({ ...gift, giftName: "Ice Cream" }),
+  );
+  actions.set("Ice cream", (gift) =>
+    service.iceCreamGift({ ...gift, giftName: "Ice cream" }),
   );
   actions.set("IceCream", (gift) =>
     service.iceCreamGift({ ...gift, giftName: "IceCream" }),
@@ -106,6 +127,24 @@ export function createGiftActionRegistry(
     service.journeyPassGift({ ...gift, giftName: "Journey Pass" }),
   );
   actions.set("GG", (gift) => service.ggGift({ ...gift, giftName: "GG" }));
+  actions.set("Little Kisses", (gift) =>
+    service.littleKissesGift({ ...gift, giftName: "Little Kisses" }),
+  );
+  actions.set("Little kisses", (gift) =>
+    service.littleKissesGift({ ...gift, giftName: "Little kisses" }),
+  );
+  actions.set("LittleKisses", (gift) =>
+    service.littleKissesGift({ ...gift, giftName: "LittleKisses" }),
+  );
+  actions.set("Lucky Pig", (gift) =>
+    service.luckyPigGift({ ...gift, giftName: "Lucky Pig" }),
+  );
+  actions.set("Lucky pig", (gift) =>
+    service.luckyPigGift({ ...gift, giftName: "Lucky pig" }),
+  );
+  actions.set("LuckyPig", (gift) =>
+    service.luckyPigGift({ ...gift, giftName: "LuckyPig" }),
+  );
 
   for (const giftName of supportedGiftNames) {
     if (explicitGiftNames.has(giftName)) {

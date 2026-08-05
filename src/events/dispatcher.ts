@@ -1,6 +1,9 @@
 import { GameActionService } from "../game/game-action.service.js";
 import { GameEvent, Gift } from "./event.types.js";
-import { createGiftActionRegistry } from "./gift-registry.js";
+import {
+  createGiftActionRegistry,
+  normalizeGiftName,
+} from "./gift-registry.js";
 
 export class Dispatcher {
   private readonly giftActions: Map<string, (gift: Gift) => Promise<void>>;
@@ -57,9 +60,21 @@ export class Dispatcher {
   async dispatch(event: GameEvent) {
     switch (event.type) {
       case "gift": {
-        const action =
-          this.giftActions.get(event.giftName) ??
-          this.giftActions.get("Default");
+        let action = this.giftActions.get(event.giftName);
+
+        if (!action) {
+          const normalizedInput = normalizeGiftName(event.giftName);
+          const matchedKey = Array.from(this.giftActions.keys()).find(
+            (key) => normalizeGiftName(key) === normalizedInput,
+          );
+          if (matchedKey) {
+            action = this.giftActions.get(matchedKey);
+          }
+        }
+
+        if (!action) {
+          action = this.giftActions.get("Default");
+        }
 
         if (action) {
           await action({

@@ -13,6 +13,8 @@ import {
 export class GameActionService {
   private totalLikes = 0;
   private lastProcessedMilestone = 0;
+  private userLikes = new Map<string, number>();
+  private userLastMilestone = new Map<string, number>();
   private remainingSand = 0;
   private isRoundFinished = false;
   private roundPosition: { x: number; y: number; z: number } | null = null;
@@ -93,6 +95,12 @@ export class GameActionService {
   async ggGift(gift: GiftEvent) {
     return this.giftActions.ggGift(gift);
   }
+  async littleKissesGift(gift: GiftEvent) {
+    return this.giftActions.littleKissesGift(gift);
+  }
+  async luckyPigGift(gift: GiftEvent) {
+    return this.giftActions.luckyPigGift(gift);
+  }
 
   async startRound(x: number, y: number, z: number) {
     this.roundPosition = { x, y, z };
@@ -100,6 +108,8 @@ export class GameActionService {
     this.isRoundFinished = false;
     this.totalLikes = 0;
     this.lastProcessedMilestone = 0;
+    this.userLikes.clear();
+    this.userLastMilestone.clear();
   }
 
   async startBackgroundCountdown(x: number, y: number, z: number) {
@@ -156,29 +166,33 @@ export class GameActionService {
     this.remainingSand = 0;
     this.totalLikes = 0;
     this.lastProcessedMilestone = 0;
+    this.userLikes.clear();
+    this.userLastMilestone.clear();
   }
 
-  async like(count = 1, username?: string) {
-    this.totalLikes += count;
+  async like(count = 1, username = "Anonymous") {
+    const safeUser = username.replace(/\\/g, "\\\\").replace(/"/g, '"');
+    const userCurrentLikes = (this.userLikes.get(username) ?? 0) + count;
+    this.userLikes.set(username, userCurrentLikes);
 
-    const previousMilestone = Math.floor(this.lastProcessedMilestone / 50);
-    const currentMilestone = Math.floor(this.totalLikes / 50);
+    const userLastLikes = this.userLastMilestone.get(username) ?? 0;
+    const previousMilestone = Math.floor(userLastLikes / 500);
+    const currentMilestone = Math.floor(userCurrentLikes / 500);
 
     if (currentMilestone > previousMilestone) {
-      await this.sendMessage("👍 Có người vừa Like!");
+      await this.sendMessage(`${safeUser} đã gửi tiếp viện!`);
 
       for (
         let milestone = previousMilestone + 1;
         milestone <= currentMilestone;
         milestone++
       ) {
-        await this.summonZombie();
-        this.lastProcessedMilestone = milestone * 50;
+        const command = `execute at @a run summon guardvillagers:guard ~ ~ ~ {CustomName:'{"text":"${safeUser}"}',HandItems:[{id:"minecraft:iron_sword",Count:1b},{id:"minecraft:shield",Count:1b}],ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}]}`;
+        await this.minecraft.execute(command);
+        this.userLastMilestone.set(username, milestone * 500);
       }
 
-      if (username) {
-        await this.showLiveParticipant(username);
-      }
+      await this.showLiveParticipant(username, "500 Tim", currentMilestone * 500);
     }
   }
 
@@ -318,32 +332,54 @@ export class GameActionService {
     }
 
     const safeUser = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-    await this.minecraft.execute(
-      `title @a title {"text":"☠️ WITHER STORM ĐÃ XUẤT HIỆN! ☠️","color":"dark_red","bold":true}`,
-    );
-    await this.minecraft.execute(
-      `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 10:00","color":"gold"}`,
-    );
-    await this.minecraft.execute(
-      "playsound entity.wither.spawn master @a ~ ~ ~ 1 1 1",
-    );
+    const totalCount = Math.max(1, gift.count ?? 1);
 
-    const count = Math.max(1, gift.count ?? 1);
-    for (let i = 0; i < count; i++) {
+    if (!this.moneyGunTimerId) {
+      // Event gốc chưa chạy: Quà 1 là sự kiện gốc Wither Storm Phase 7
+      await this.minecraft.execute(
+        `title @a title {"text":"☠️ WITHER STORM ĐÃ XUẤT HIỆN! ☠️","color":"dark_red","bold":true}`,
+      );
+      await this.minecraft.execute(
+        `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 10:00","color":"gold"}`,
+      );
+      await this.minecraft.execute(
+        "playsound entity.wither.spawn master @a ~ ~ ~ 1 1 1",
+      );
+
+      // Triệu hồi 1 con Wither Storm Phase 7 cho quà 1
       await this.minecraft.execute(
         "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:7,ConsumedEntities:2125001}",
       );
-    }
 
-    this.startMoneyGunCountdown(durationSeconds);
+      this.startMoneyGunCountdown(durationSeconds);
+
+      // Từ quà 2 trở đi trong combo: cộng thêm 10 phút & triệu hồi Wither Storm Phase 4
+      const extraCount = totalCount - 1;
+      if (extraCount > 0) {
+        this.moneyGunRemainingSeconds += extraCount * durationSeconds;
+        for (let i = 0; i < extraCount; i++) {
+          await this.minecraft.execute(
+            "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:4}",
+          );
+        }
+      }
+    } else {
+      // Event đã đang chạy: Tất cả các quà trong combo đều cộng thêm 10 phút & triệu hồi Wither Storm Phase 4
+      this.moneyGunRemainingSeconds += totalCount * durationSeconds;
+      for (let i = 0; i < totalCount; i++) {
+        await this.minecraft.execute(
+          "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:4}",
+        );
+      }
+    }
   }
 
   private startMoneyGunCountdown(durationSeconds = 600) {
-    this.moneyGunRemainingSeconds = durationSeconds;
-
     if (this.moneyGunTimerId) {
       return;
     }
+
+    this.moneyGunRemainingSeconds = durationSeconds;
 
     const tick = async () => {
       this.moneyGunRemainingSeconds -= 1;
@@ -382,7 +418,7 @@ export class GameActionService {
       const totalBars = 10;
       const filledBars = Math.max(
         0,
-        Math.ceil((remaining / durationSeconds) * totalBars),
+        Math.min(totalBars, Math.ceil((remaining / durationSeconds) * totalBars)),
       );
       const barStr =
         "▰".repeat(filledBars) + "▱".repeat(totalBars - filledBars);
@@ -410,6 +446,10 @@ export class GameActionService {
       timer.unref();
     }
     this.moneyGunTimerId = timer;
+  }
+
+  async corgiGift(gift: GiftEvent) {
+    return this.giftActions.corgiGift(gift);
   }
 
   private async processGachaQueue() {

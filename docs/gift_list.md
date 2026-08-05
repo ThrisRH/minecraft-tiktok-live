@@ -22,6 +22,8 @@ This file contains the master list of supported TikTok gifts.
 - Finger Heart - 5 done (Gacha)
 - Journey Pass - 10 done (Full Leather Armor)
 - GG - 1 done (Fireworks)
+- Little Kisses - Enchanted Golden Apple + Iron Chestplate Prot 4 Blast Prot 3
+- Lucky Pig - Summon guardvillagers:guard với tên username
 - compress tnt
 
 ## Agent Requirements
