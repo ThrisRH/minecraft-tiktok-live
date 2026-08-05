@@ -150,85 +150,80 @@ export const rosaGachaOptions: GachaOption[] = [
 ];
 
 export const shamrockGachaOptions: GachaOption[] = [
-  // Common (Trọng số 20 - 25: Hỗ trợ cơ bản & thực phẩm sinh tồn)
+  // Common: Thức ăn (Chỉ 3 options: 16 Bánh mì, 2 Táo vàng, 1 Táo vàng phù phép)
   {
-    id: "survival_food_pack",
-    name: "Bữa Ăn Sinh Tồn",
-    command:
-      "execute at @a run give @a cooked_beef 16; execute at @a run give @a golden_apple 2",
+    id: "bread_x16",
+    name: "16 Bánh Mì",
+    command: "execute at @a run give @a bread 16",
     weight: 20,
     color: "gray",
   },
-
-  // Uncommon (Trọng số 15: Set đồ sắt & Potion sinh tồn)
   {
-    id: "enchanted_iron_set",
-    name: "Set Đồ Sắt Phù Phép",
+    id: "golden_apple_x2",
+    name: "2 Táo Vàng",
+    command: "execute at @a run give @a golden_apple 2",
+    weight: 18,
+    color: "gray",
+  },
+  {
+    id: "enchanted_golden_apple_x1",
+    name: "1 Táo Vàng Phù Phép",
+    command: "execute at @a run give @a enchanted_golden_apple 1",
+    weight: 12,
+    color: "green",
+  },
+
+  // Uncommon: Set giáp sắt thường (không phù phép), Vũ khí không phù phép (tối đa kiếm sắt & khiên thường)
+  {
+    id: "iron_armor_set",
+    name: "Set Giáp Sắt",
     command:
-      'execute at @a run give @a iron_helmet{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1; execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1; execute at @a run give @a iron_leggings{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1; execute at @a run give @a iron_boots{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1; execute at @a run give @a iron_sword{Enchantments:[{id:"minecraft:sharpness",lvl:3s}]} 1',
+      "execute at @a run give @a iron_helmet 1; execute at @a run give @a iron_chestplate 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots 1",
     weight: 15,
     color: "green",
+  },
+  {
+    id: "iron_sword_and_shield",
+    name: "Kiếm Sắt & Khiên",
+    command:
+      "execute at @a run give @a iron_sword 1; execute at @a run give @a shield 1",
+    weight: 15,
+    color: "green",
+  },
+
+  // Rare: Phù phép duy nhất chỉ áo sắt (không full set)
+  {
+    id: "enchanted_iron_chestplate",
+    name: "Áo Sắt Phù Phép Protection III",
+    command:
+      'execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1',
+    weight: 10,
+    color: "blue",
   },
   {
     id: "survival_potion_combo",
     name: "Combo Sinh Tồn",
     command:
-      "execute at @a run effect give @a regeneration 90 1; execute at @a run effect give @a resistance 90 0; execute at @a run effect give @a fire_resistance 90 0",
-    weight: 15,
-    color: "green",
-  },
-
-  // Rare (Trọng số 8 - 9: Kiếm Kim Cương + Khiên + Totem & Buff Chiến Đấu)
-  {
-    id: "shield_diamond_sword_pack",
-    name: "Set An Toàn (Hoặc Không)",
-    command:
-      'execute at @a run give @a diamond_sword{Enchantments:[{id:"minecraft:sharpness",lvl:4s},{id:"minecraft:unbreaking",lvl:3s},{id:"minecraft:fire_aspect",lvl:1s}]} 1; execute at @a run give @a shield{Enchantments:[{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a totem_of_undying 1',
-    weight: 9,
-    color: "blue",
-  },
-  {
-    id: "battle_buff_pack",
-    name: "Sức Mạnh 7 Chọ",
-    command:
-      "execute at @a run effect give @a strength 60 1; execute at @a run effect give @a speed 60 1; execute at @a run effect give @a absorption 120 3; execute at @a run give @a golden_apple 3",
-    weight: 8,
+      "execute at @a run effect give @a regeneration 60 0; execute at @a run effect give @a resistance 60 0",
+    weight: 10,
     color: "blue",
   },
 
-  // Epic (Trọng số 4: Set Kim Cương Siêu Phụ & Cung Thần)
+  // Legendary (Full giáp kim cương phù phép (không Netherite), Kiếm kim cương Smite 3 & Sharpness 4)
   {
-    id: "epic_diamond_armor_set",
-    name: "Set Tanker Suýt Tuyệt Đối",
+    id: "legendary_diamond_armor_set",
+    name: "Set Giáp Kim Cương Phù Phép",
     command:
-      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:blast_protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:feather_falling",lvl:4s},{id:"minecraft:protection",lvl:4s}]} 1',
-    weight: 4,
-    color: "#A855F7",
-  },
-  {
-    id: "god_bow_pack",
-    name: "Cung Thần & 5 Táo Vàng",
-    command:
-      'execute at @a run give @a bow{Enchantments:[{id:"minecraft:power",lvl:5s},{id:"minecraft:flame",lvl:1s},{id:"minecraft:infinity",lvl:1s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a arrow 1; execute at @a run give @a golden_apple 5',
-    weight: 4,
-    color: "#A855F7",
-  },
-
-  // Legendary (Trọng số 1: Báu Vật Hồi Sinh & Set Netherite Thượng Cổ - Tỉ lệ hiếm ~2%)
-  {
-    id: "legendary_survival_god_pack",
-    name: "Báu Vật Thượng Cổ",
-    command:
-      "execute at @a run give @a enchanted_golden_apple 2; execute at @a run give @a totem_of_undying 2; execute at @a run effect give @a regeneration 60 2; execute at @a run effect give @a resistance 120 1",
-    weight: 1,
+      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1',
+    weight: 2,
     color: "gold",
   },
   {
-    id: "legendary_netherite_set",
-    name: "Set Đồ Netherite Thượng Cổ",
+    id: "legendary_diamond_sword",
+    name: "Kiếm Kim Cương Thượng Cổ",
     command:
-      'execute at @a run give @a netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:feather_falling",lvl:4s}]} 1; execute at @a run give @a netherite_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5s},{id:"minecraft:fire_aspect",lvl:2s},{id:"minecraft:unbreaking",lvl:3s}]} 1',
-    weight: 1,
+      'execute at @a run give @a diamond_sword{Enchantments:[{id:"minecraft:sharpness",lvl:4s},{id:"minecraft:smite",lvl:3s}]} 1',
+    weight: 2,
     color: "gold",
   },
 ];

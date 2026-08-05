@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node --import tsx --test ./test/gacha.test.ts ./test/game-action.service.test.ts ./test/tiktok.service.test.ts",
+    "test": "node --import tsx --test ./test/continuous-event.test.ts ./test/gacha.test.ts ./test/game-action.service.test.ts ./test/tiktok.service.test.ts",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
     "build": "tsc"
   },

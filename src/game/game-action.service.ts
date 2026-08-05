@@ -24,9 +24,6 @@ export class GameActionService {
   private gachaQueue: Array<() => Promise<void>> = [];
   private isProcessingGachaQueue = false;
 
-  private moneyGunRemainingSeconds = 0;
-  private moneyGunTimerId?: NodeJS.Timeout;
-
   constructor(
     private readonly minecraft: MinecraftService,
     private readonly sandService?: SandService,
@@ -42,7 +39,6 @@ export class GameActionService {
       gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
       rosaGachaGift: (gift: GiftEvent) => this.rosaGachaGift(gift),
       shamrockGachaGift: (gift: GiftEvent) => this.shamrockGachaGift(gift),
-      moneyGunGift: (gift: GiftEvent) => this.moneyGunGift(gift),
     });
   }
 
@@ -100,6 +96,9 @@ export class GameActionService {
   }
   async luckyPigGift(gift: GiftEvent) {
     return this.giftActions.luckyPigGift(gift);
+  }
+  async moneyGunGift(gift: GiftEvent) {
+    return this.giftActions.moneyGunGift(gift);
   }
 
   async startRound(x: number, y: number, z: number) {
@@ -316,142 +315,6 @@ export class GameActionService {
     });
   }
 
-  async moneyGunGift(gift: GiftEvent, durationSeconds = 600) {
-    try {
-      await this.sendMessage(
-        `${gift.username} đã gửi x${gift.count} Money Gun!`,
-      );
-    } catch (error) {
-      console.warn("Failed to send gift notification:", error);
-    }
-
-    try {
-      await this.showLiveParticipant(gift.username, "Money Gun", gift.count);
-    } catch (error) {
-      console.warn("Failed to show live participant:", error);
-    }
-
-    const safeUser = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-    const totalCount = Math.max(1, gift.count ?? 1);
-
-    if (!this.moneyGunTimerId) {
-      // Event gốc chưa chạy: Quà 1 là sự kiện gốc Wither Storm Phase 7
-      await this.minecraft.execute(
-        `title @a title {"text":"☠️ WITHER STORM ĐÃ XUẤT HIỆN! ☠️","color":"dark_red","bold":true}`,
-      );
-      await this.minecraft.execute(
-        `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 10:00","color":"gold"}`,
-      );
-      await this.minecraft.execute(
-        "playsound entity.wither.spawn master @a ~ ~ ~ 1 1 1",
-      );
-
-      // Triệu hồi 1 con Wither Storm Phase 7 cho quà 1
-      await this.minecraft.execute(
-        "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:7,ConsumedEntities:2125001}",
-      );
-
-      this.startMoneyGunCountdown(durationSeconds);
-
-      // Từ quà 2 trở đi trong combo: cộng thêm 10 phút & triệu hồi Wither Storm Phase 4
-      const extraCount = totalCount - 1;
-      if (extraCount > 0) {
-        this.moneyGunRemainingSeconds += extraCount * durationSeconds;
-        for (let i = 0; i < extraCount; i++) {
-          await this.minecraft.execute(
-            "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:4}",
-          );
-        }
-      }
-    } else {
-      // Event đã đang chạy: Tất cả các quà trong combo đều cộng thêm 10 phút & triệu hồi Wither Storm Phase 4
-      this.moneyGunRemainingSeconds += totalCount * durationSeconds;
-      for (let i = 0; i < totalCount; i++) {
-        await this.minecraft.execute(
-          "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:4}",
-        );
-      }
-    }
-  }
-
-  private startMoneyGunCountdown(durationSeconds = 600) {
-    if (this.moneyGunTimerId) {
-      return;
-    }
-
-    this.moneyGunRemainingSeconds = durationSeconds;
-
-    const tick = async () => {
-      this.moneyGunRemainingSeconds -= 1;
-
-      if (this.moneyGunRemainingSeconds <= 0) {
-        if (this.moneyGunTimerId) {
-          clearInterval(this.moneyGunTimerId);
-          this.moneyGunTimerId = undefined;
-        }
-
-        try {
-          await this.minecraft.execute(
-            "execute at @a run kill @e[type=witherstormmod:wither_storm]",
-          );
-          await this.minecraft.execute(
-            `title @a title {"text":"✨ WITHER STORM ĐÃ TAN BIẾN! ✨","color":"green","bold":true}`,
-          );
-          await this.minecraft.execute(
-            "playsound entity.wither.death master @a ~ ~ ~ 1 1 1",
-          );
-          await this.minecraft.execute(
-            `title @a actionbar {"text":"✨ WITHER STORM ĐÃ KẾT THÚC ✨","color":"green","bold":true}`,
-          );
-        } catch (error) {
-          console.warn("Failed to finalize Money Gun countdown:", error);
-        }
-        return;
-      }
-
-      const remaining = this.moneyGunRemainingSeconds;
-      const minutes = Math.floor(remaining / 60);
-      const seconds = remaining % 60;
-      const mm = String(minutes).padStart(2, "0");
-      const ss = String(seconds).padStart(2, "0");
-
-      const totalBars = 10;
-      const filledBars = Math.max(
-        0,
-        Math.min(totalBars, Math.ceil((remaining / durationSeconds) * totalBars)),
-      );
-      const barStr =
-        "▰".repeat(filledBars) + "▱".repeat(totalBars - filledBars);
-
-      let color = "#A855F7";
-      if (remaining <= 120) {
-        color = "red";
-      } else if (remaining <= 300) {
-        color = "yellow";
-      }
-
-      try {
-        await this.minecraft.execute(
-          `title @a actionbar {"text":"☠️ WITHER STORM ☠️  [${barStr}]  ⏱️ ${mm}:${ss}","color":"${color}","bold":true}`,
-        );
-      } catch (error) {
-        console.warn("Failed to send Money Gun actionbar HUD:", error);
-      }
-    };
-
-    const timer = setInterval(() => {
-      void tick();
-    }, 1000);
-    if (typeof timer.unref === "function") {
-      timer.unref();
-    }
-    this.moneyGunTimerId = timer;
-  }
-
-  async corgiGift(gift: GiftEvent) {
-    return this.giftActions.corgiGift(gift);
-  }
-
   private async processGachaQueue() {
     if (this.isProcessingGachaQueue) return;
     this.isProcessingGachaQueue = true;
@@ -557,15 +420,6 @@ export class GameActionService {
     } finally {
       this.isGachaSpinning = false;
     }
-  }
-
-  private async summonZombie() {
-    if (typeof this.minecraft.summonZombie === "function") {
-      await this.minecraft.summonZombie();
-      return;
-    }
-
-    await this.minecraft.execute("execute at @a run summon zombie ~ ~ ~");
   }
 
   private delay(ms: number) {
