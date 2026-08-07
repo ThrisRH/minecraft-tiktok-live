@@ -24,7 +24,11 @@
       <div class="header-actions">
         <div class="status-badge online">
           <span class="pulse-dot"></span>
-          RCON Connected
+          MC RCON Connected
+        </div>
+        <div id="tiktok-status-badge" class="status-badge offline">
+          <span class="pulse-dot"></span>
+          <span id="tiktok-status-text">TikTok Disconnected</span>
         </div>
         <button id="btn-test-all" class="btn btn-warning">
           🚀 Test Tất Cả Quà (Auto)
@@ -32,8 +36,18 @@
       </div>
     </header>
 
-    <!-- Control Bar (Tester Username & Combo Count) -->
+    <!-- Control Bar (Tester Username & Combo Count & TikTok Connection) -->
     <section class="control-bar">
+      <div class="input-group tiktok-group">
+        <label for="input-tiktok-id">📱 TikTok ID (Live):</label>
+        <div class="input-with-button">
+          <input type="text" id="input-tiktok-id" placeholder="Nhập TikTok ID...">
+          <button id="btn-connect-tiktok" class="btn btn-primary">
+            🔗 Kết Nối Live
+          </button>
+        </div>
+      </div>
+
       <div class="input-group">
         <label for="input-username">👤 Người Gửi (Tester Name):</label>
         <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên tester...">

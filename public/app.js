@@ -11,9 +11,34 @@ async function initApp() {
   setupEventListeners();
   await loadGiftsCatalog();
   startLogPolling();
+  await initTikTokConnection();
 }
 
 function setupEventListeners() {
+  // TikTok ID input
+  const tiktokIdInput = document.getElementById("input-tiktok-id");
+  if (localStorage.getItem("tiktok_id")) {
+    tiktokIdInput.value = localStorage.getItem("tiktok_id");
+  }
+  tiktokIdInput.addEventListener("input", (e) => {
+    localStorage.setItem("tiktok_id", e.target.value.trim());
+  });
+
+  const btnConnectTikTok = document.getElementById("btn-connect-tiktok");
+  btnConnectTikTok.addEventListener("click", async () => {
+    const isConnected = btnConnectTikTok.dataset.connected === "true";
+    if (isConnected) {
+      await disconnectTikTok();
+    } else {
+      const username = tiktokIdInput.value.trim();
+      if (!username) {
+        alert("Vui lòng nhập TikTok ID (Livestream Unique ID)");
+        return;
+      }
+      await connectTikTok(username);
+    }
+  });
+
   // Username input
   const usernameInput = document.getElementById("input-username");
   usernameInput.addEventListener("input", (e) => {
@@ -207,4 +232,97 @@ function escapeHtml(str) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+async function initTikTokConnection() {
+  const status = await checkTikTokStatus();
+  const savedTikTokId = localStorage.getItem("tiktok_id");
+
+  if (!status.connected && savedTikTokId) {
+    // Tự động kết nối luôn nếu đã lưu TikTok ID từ trước
+    void connectTikTok(savedTikTokId);
+  }
+}
+
+async function checkTikTokStatus() {
+  const badge = document.getElementById("tiktok-status-badge");
+  const badgeText = document.getElementById("tiktok-status-text");
+  const btnConnect = document.getElementById("btn-connect-tiktok");
+  const inputTikTokId = document.getElementById("input-tiktok-id");
+
+  try {
+    const res = await fetch("/api/tiktok-status");
+    const data = await res.json();
+
+    if (data.connected && data.username) {
+      badge.className = "status-badge online";
+      badgeText.textContent = `TikTok Live (@${data.username})`;
+      btnConnect.textContent = "🔌 Ngắt Kết Nối";
+      btnConnect.dataset.connected = "true";
+      if (!inputTikTokId.value) {
+        inputTikTokId.value = data.username;
+      }
+      return data;
+    } else {
+      badge.className = "status-badge offline";
+      badgeText.textContent = "TikTok Disconnected";
+      btnConnect.textContent = "🔗 Kết Nối Live";
+      btnConnect.dataset.connected = "false";
+      return { connected: false, username: null };
+    }
+  } catch {
+    badge.className = "status-badge offline";
+    badgeText.textContent = "TikTok Disconnected";
+    btnConnect.textContent = "🔗 Kết Nối Live";
+    btnConnect.dataset.connected = "false";
+    return { connected: false, username: null };
+  }
+}
+
+async function connectTikTok(username) {
+  const badge = document.getElementById("tiktok-status-badge");
+  const badgeText = document.getElementById("tiktok-status-text");
+  const btnConnect = document.getElementById("btn-connect-tiktok");
+
+  badge.className = "status-badge connecting";
+  badgeText.textContent = `⏳ Đang kết nối @${username}...`;
+  btnConnect.textContent = "⏳ Đang kết nối...";
+
+  try {
+    const res = await fetch("/api/connect-tiktok", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username }),
+    });
+
+    const data = await res.json();
+    if (res.ok && data.status === "success") {
+      badge.className = "status-badge online";
+      badgeText.textContent = `TikTok Live (@${data.username})`;
+      btnConnect.textContent = "🔌 Ngắt Kết Nối";
+      btnConnect.dataset.connected = "true";
+      localStorage.setItem("tiktok_id", data.username);
+    } else {
+      badge.className = "status-badge offline";
+      badgeText.textContent = "Lỗi kết nối";
+      btnConnect.textContent = "🔗 Kết Nối Live";
+      btnConnect.dataset.connected = "false";
+      alert(`Kết nối TikTok Live thất bại: ${data.message || "Lỗi không xác định"}`);
+    }
+  } catch (err) {
+    badge.className = "status-badge offline";
+    badgeText.textContent = "Lỗi kết nối";
+    btnConnect.textContent = "🔗 Kết Nối Live";
+    btnConnect.dataset.connected = "false";
+    alert(`Không thể kết nối tới server: ${err.message}`);
+  }
+}
+
+async function disconnectTikTok() {
+  try {
+    await fetch("/api/disconnect-tiktok", { method: "POST" });
+  } catch {
+    // ignore
+  }
+  await checkTikTokStatus();
 }

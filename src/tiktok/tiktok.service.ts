@@ -11,11 +11,36 @@ export interface TikTokServiceOptions {
 }
 
 export class TikTokService {
-  private connection!: TikTokConnection;
+  private connection?: TikTokConnection;
+  private currentUsername: string | null = null;
+  private isConnected = false;
 
   constructor(private readonly dispatcher: Dispatcher) {}
 
+  public getStatus() {
+    return {
+      connected: this.isConnected,
+      username: this.currentUsername,
+    };
+  }
+
+  public disconnect() {
+    if (this.connection) {
+      try {
+        this.connection.disconnect();
+      } catch (err) {
+        console.warn("Failed to disconnect TikTok connection:", err);
+      }
+    }
+    this.isConnected = false;
+    this.currentUsername = null;
+  }
+
   async connect(username: string, options?: TikTokServiceOptions) {
+    if (this.connection && this.isConnected) {
+      this.disconnect();
+    }
+
     const signApiKey =
       options?.signApiKey ??
       process.env.EULER_SIGN_API_KEY ??
@@ -100,12 +125,22 @@ export class TikTokService {
       }
     });
 
-    await this.connection.connect();
-
-    console.log("TikTok connected");
+    try {
+      await this.connection.connect();
+      this.isConnected = true;
+      this.currentUsername = username;
+      console.log(`TikTok connected to @${username}`);
+    } catch (err) {
+      this.isConnected = false;
+      this.currentUsername = null;
+      throw err;
+    }
   }
 
   async fetchAvailableGifts() {
+    if (!this.connection) {
+      throw new Error("TikTok connection not initialized");
+    }
     return this.connection.fetchAvailableGifts();
   }
 }

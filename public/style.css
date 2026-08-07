@@ -109,6 +109,35 @@ body {
   color: #34D399;
 }
 
+.status-badge.offline {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #F87171;
+}
+
+.status-badge.offline .pulse-dot {
+  background: #F87171;
+  box-shadow: 0 0 10px #F87171;
+  animation: none;
+}
+
+.status-badge.connecting {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #FBBF24;
+}
+
+.status-badge.connecting .pulse-dot {
+  background: #FBBF24;
+  box-shadow: 0 0 10px #FBBF24;
+}
+
+.input-with-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .pulse-dot {
   width: 8px;
   height: 8px;
