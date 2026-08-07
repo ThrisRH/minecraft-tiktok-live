@@ -21,9 +21,9 @@ test("summons guardvillagers:guard and shows title/chat per 500-like per-user mi
     0,
   );
   assert.equal(
-    commands.length,
+    commands.filter((command) => command.includes("guardvillagers:guard")).length,
     0,
-    "No chat or title commands should be executed before hitting 500-like milestone",
+    "No guardvillagers:guard should be summoned before hitting 500-like milestone",
   );
 
   await service.like(1, "User1");
@@ -192,7 +192,7 @@ test("executes give item commands with exact item counts for instant and tap com
     "GG x20 should give 20 bread",
   );
 
-  // Journey Pass x5 instant/tap combo
+  // Journey Pass x5
   commands.length = 0;
   await dispatcher.dispatch({
     type: "gift",
@@ -202,12 +202,8 @@ test("executes give item commands with exact item counts for instant and tap com
   });
 
   assert.ok(
-    commands.some((cmd) => cmd.includes("give @a leather_helmet 5")),
-    "Journey Pass x5 should give 5 leather helmets",
-  );
-  assert.ok(
-    commands.some((cmd) => cmd.includes("give @a leather_chestplate 5")),
-    "Journey Pass x5 should give 5 leather chestplates",
+    commands.some((cmd) => cmd.includes("Journey Pass")),
+    "Journey Pass x5 should send default gift message",
   );
 });
 

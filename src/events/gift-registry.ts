@@ -4,10 +4,6 @@ import { fileURLToPath } from "url";
 import type { GameActionService } from "../game/game-action.service.js";
 import type { GiftEvent } from "./event.types.js";
 
-export function normalizeGiftName(name: string): string {
-  return name.toLowerCase().replace(/[\s_-]+/g, "");
-}
-
 function loadSupportedGiftNames(): string[] {
   const giftListPath = resolve(
     dirname(fileURLToPath(import.meta.url)),
@@ -19,23 +15,15 @@ function loadSupportedGiftNames(): string[] {
     const giftListSection =
       content.split(/##\s*Gift List/i)[1]?.split(/##/)[0] ?? content;
 
-    const rawNames = giftListSection
+    return giftListSection
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter((line) => line.startsWith("- "))
       .map((line) => {
         const raw = line.slice(2).trim();
-        // Lấy phần tên quà trước dấu gạch ngang đầu tiên nếu có ghi chú
         return raw.split(/\s+-\s+/)[0].trim();
       })
       .filter(Boolean);
-
-    const result: string[] = [];
-    for (const name of rawNames) {
-      const parts = name.split("/").map((p) => p.trim()).filter(Boolean);
-      result.push(...parts);
-    }
-    return result;
   } catch {
     return [];
   }
@@ -51,9 +39,6 @@ export function createGiftActionRegistry(
     "Heart Me",
     "Shamrock",
     "Overreact",
-    "Ice Cream",
-    "Ice cream",
-    "IceCream",
     "Money Gun",
     "MoneyGun",
     "Rose",
@@ -86,15 +71,6 @@ export function createGiftActionRegistry(
   );
   actions.set("Overreact", (gift) =>
     service.overreactGift({ ...gift, giftName: "Overreact" }),
-  );
-  actions.set("Ice Cream", (gift) =>
-    service.overreactGift({ ...gift, giftName: "Ice Cream" }),
-  );
-  actions.set("Ice cream", (gift) =>
-    service.overreactGift({ ...gift, giftName: "Ice cream" }),
-  );
-  actions.set("IceCream", (gift) =>
-    service.overreactGift({ ...gift, giftName: "IceCream" }),
   );
   actions.set("Rose", (gift) =>
     service.roseGift({ ...gift, giftName: "Rose" }),
@@ -161,4 +137,8 @@ export function createGiftActionRegistry(
   actions.set("Default", (gift) => service.defaultGift(gift));
 
   return actions;
+}
+
+export function normalizeGiftName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
 }

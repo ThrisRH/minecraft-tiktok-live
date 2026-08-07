@@ -9,24 +9,23 @@ import {
   GachaOption,
   getRandomGachaOption,
 } from "../config/gacha-config.js";
-import { WitherStormEvent } from "./events/wither-storm-event.js";
 import { CorgiEvent } from "./events/corgi-event.js";
+import { WitherStormEvent } from "./events/wither-storm-event.js";
 
 export class GameActionService {
   private totalLikes = 0;
   private lastProcessedMilestone = 0;
-  private userLikes = new Map<string, number>();
-  private userLastMilestone = new Map<string, number>();
   private remainingSand = 0;
   private isRoundFinished = false;
   private roundPosition: { x: number; y: number; z: number } | null = null;
   private readonly giftActions: GiftActionService;
-  private readonly witherStormEvent: WitherStormEvent;
-  private readonly corgiEvent: CorgiEvent;
 
   private isGachaSpinning = false;
   private gachaQueue: Array<() => Promise<void>> = [];
   private isProcessingGachaQueue = false;
+
+  private readonly witherStormEvent: WitherStormEvent;
+  private readonly corgiEvent: CorgiEvent;
 
   constructor(
     private readonly minecraft: MinecraftService,
@@ -50,8 +49,8 @@ export class GameActionService {
       gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
       rosaGachaGift: (gift: GiftEvent) => this.rosaGachaGift(gift),
       shamrockGachaGift: (gift: GiftEvent) => this.shamrockGachaGift(gift),
-      moneyGunGift: (gift: GiftEvent) => this.witherStormEvent.trigger(gift),
-      corgiGift: (gift: GiftEvent) => this.corgiEvent.trigger(gift),
+      moneyGunGift: (gift: GiftEvent) => this.moneyGunGift(gift),
+      corgiGift: (gift: GiftEvent) => this.corgiGift(gift),
     });
   }
 
@@ -77,17 +76,8 @@ export class GameActionService {
   async rosaGift(gift: GiftEvent) {
     return this.giftActions.rosaGift(gift);
   }
-  async overreactGift(gift: GiftEvent) {
-    return this.giftActions.overreactGift(gift);
-  }
-  async iceCreamGift(gift: GiftEvent) {
-    return this.giftActions.iceCreamGift(gift);
-  }
   async perfumeGift(gift: GiftEvent) {
     return this.giftActions.perfumeGift(gift);
-  }
-  async corgiGift(gift: GiftEvent) {
-    return this.giftActions.corgiGift(gift);
   }
   async capGift(gift: GiftEvent) {
     return this.giftActions.capGift(gift);
@@ -107,14 +97,14 @@ export class GameActionService {
   async ggGift(gift: GiftEvent) {
     return this.giftActions.ggGift(gift);
   }
+  async overreactGift(gift: GiftEvent) {
+    return this.giftActions.overreactGift(gift);
+  }
   async littleKissesGift(gift: GiftEvent) {
     return this.giftActions.littleKissesGift(gift);
   }
   async luckyPigGift(gift: GiftEvent) {
     return this.giftActions.luckyPigGift(gift);
-  }
-  async moneyGunGift(gift: GiftEvent) {
-    return this.giftActions.moneyGunGift(gift);
   }
 
   async startRound(x: number, y: number, z: number) {
@@ -123,8 +113,6 @@ export class GameActionService {
     this.isRoundFinished = false;
     this.totalLikes = 0;
     this.lastProcessedMilestone = 0;
-    this.userLikes.clear();
-    this.userLastMilestone.clear();
   }
 
   async startBackgroundCountdown(x: number, y: number, z: number) {
@@ -181,33 +169,29 @@ export class GameActionService {
     this.remainingSand = 0;
     this.totalLikes = 0;
     this.lastProcessedMilestone = 0;
-    this.userLikes.clear();
-    this.userLastMilestone.clear();
   }
 
-  async like(count = 1, username = "Anonymous") {
-    const safeUser = username.replace(/\\/g, "\\\\").replace(/"/g, '"');
-    const userCurrentLikes = (this.userLikes.get(username) ?? 0) + count;
-    this.userLikes.set(username, userCurrentLikes);
+  async like(count = 1, username?: string) {
+    this.totalLikes += count;
 
-    const userLastLikes = this.userLastMilestone.get(username) ?? 0;
-    const previousMilestone = Math.floor(userLastLikes / 500);
-    const currentMilestone = Math.floor(userCurrentLikes / 500);
+    const previousMilestone = Math.floor(this.lastProcessedMilestone / 50);
+    const currentMilestone = Math.floor(this.totalLikes / 50);
 
     if (currentMilestone > previousMilestone) {
-      await this.sendMessage(`${safeUser} đã gửi tiếp viện!`);
+      await this.sendMessage("👍 Có người vừa Like!");
 
       for (
         let milestone = previousMilestone + 1;
         milestone <= currentMilestone;
         milestone++
       ) {
-        const command = `execute at @a run summon guardvillagers:guard ~ ~ ~ {CustomName:'{"text":"${safeUser}"}',HandItems:[{id:"minecraft:iron_sword",Count:1b},{id:"minecraft:shield",Count:1b}],ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}]}`;
-        await this.minecraft.execute(command);
-        this.userLastMilestone.set(username, milestone * 500);
+        await this.summonZombie();
+        this.lastProcessedMilestone = milestone * 50;
       }
 
-      await this.showLiveParticipant(username, "500 Tim", currentMilestone * 500);
+      if (username) {
+        await this.showLiveParticipant(username);
+      }
     }
   }
 
@@ -331,6 +315,14 @@ export class GameActionService {
     });
   }
 
+  async moneyGunGift(gift: GiftEvent) {
+    await this.witherStormEvent.trigger(gift);
+  }
+
+  async corgiGift(gift: GiftEvent) {
+    await this.corgiEvent.trigger(gift);
+  }
+
   private async processGachaQueue() {
     if (this.isProcessingGachaQueue) return;
     this.isProcessingGachaQueue = true;
@@ -421,7 +413,7 @@ export class GameActionService {
         const spawnCount = winningOption.count ?? 1;
         const subCommands = command
           .split(";")
-          .map((cmd) => cmd.trim())
+          .map((cmd: string) => cmd.trim())
           .filter(Boolean);
 
         for (let c = 0; c < spawnCount; c++) {
@@ -436,6 +428,15 @@ export class GameActionService {
     } finally {
       this.isGachaSpinning = false;
     }
+  }
+
+  private async summonZombie() {
+    if (typeof this.minecraft.summonZombie === "function") {
+      await this.minecraft.summonZombie();
+      return;
+    }
+
+    await this.minecraft.execute("execute at @a run summon zombie ~ ~ ~");
   }
 
   private delay(ms: number) {

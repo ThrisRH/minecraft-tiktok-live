@@ -8,9 +8,6 @@ test("CorgiEvent triggers 5-min event sequence, handles combo extension, and cle
   const context = {
     execute: async (command: string) => {
       commands.push(command);
-      if (command === "data get entity @p Pos") {
-        return "Steve has the following entity data: [100.0d, 64.0d, -200.0d]";
-      }
       return undefined;
     },
     sendMessage: async (_text: string) => {},
@@ -25,41 +22,35 @@ test("CorgiEvent triggers 5-min event sequence, handles combo extension, and cle
   assert.equal(corgi.isRunning(), true, "Corgi event should be running");
   assert.equal(corgi.getRemainingSeconds(), 300, "Initial remaining seconds should be 300");
 
-  const babyIndex = commands.findIndex((cmd) => cmd.includes("endertrigon:baby_ender_dragon"));
-  const setWorldSpawnIndex = commands.findIndex((cmd) => cmd.includes("setworldspawn ~ ~ ~"));
-  const spawnpointIndex = commands.findIndex((cmd) => cmd.includes("spawnpoint @a ~ ~ ~"));
-
-  assert.ok(setWorldSpawnIndex !== -1, "Should set worldspawn to current location");
-  assert.ok(spawnpointIndex !== -1, "Should set player spawnpoint to current location");
-  assert.ok(
-    setWorldSpawnIndex < babyIndex && spawnpointIndex < babyIndex,
-    "Spawnpoint should be set before spawning mobs",
+  const dragons = commands.filter(
+    (cmd) => cmd.includes("summon ender_dragon") && cmd.includes("corgi_dragon"),
   );
-
-  const babySummons = commands.filter((cmd) => cmd.includes("endertrigon:baby_ender_dragon"));
-  assert.equal(babySummons.length, 3, "Initial Corgi start should summon 3 baby dragons");
-
-  const slownessEffects = commands.filter((cmd) => cmd.includes("effect give @a slowness 300"));
-  assert.equal(slownessEffects.length, 1, "Initial Corgi start should apply slowness");
+  assert.equal(dragons.length, 2, "Initial Corgi start should summon 2 Ender Dragons");
 
   // Trigger combo Corgi gift x2 while running
   commands.length = 0;
   await corgi.trigger({ username: "DragonRider", count: 2 });
 
-  assert.equal(corgi.getRemainingSeconds(), 900, "Remaining seconds should increase by 2 * 300 = 600 (total 900)");
-  const adultSummons = commands.filter((cmd) => cmd.includes("summon ender_dragon ~ 5 ~"));
-  assert.equal(adultSummons.length, 2, "Combo Corgi gift x2 should summon 2 adult Ender Dragons");
+  assert.equal(
+    corgi.getRemainingSeconds(),
+    900,
+    "Remaining seconds should increase by 2 * 300 = 600 (total 900)",
+  );
+  const comboDragons = commands.filter(
+    (cmd) => cmd.includes("summon ender_dragon") && cmd.includes("corgi_dragon"),
+  );
+  assert.equal(
+    comboDragons.length,
+    2,
+    "Combo Corgi gift x2 should summon 2 additional Ender Dragons",
+  );
 
   commands.length = 0;
-  corgi.stop();
+  await corgi.stop();
   assert.equal(corgi.isRunning(), false, "Corgi event should be stopped");
   assert.ok(
-    commands.some((cmd) => cmd.includes("spawnpoint @a 100 64 -200")),
-    "Should restore player spawnpoint to original coords on stop",
-  );
-  assert.ok(
-    commands.some((cmd) => cmd.includes("setworldspawn 100 64 -200")),
-    "Should restore worldspawn to original coords on stop",
+    commands.some((cmd) => cmd.includes("kill @e[type=ender_dragon,tag=corgi_dragon]")),
+    "Should kill corgi Ender Dragons on stop",
   );
 });
 
