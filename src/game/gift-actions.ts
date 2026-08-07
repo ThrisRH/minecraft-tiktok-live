@@ -272,7 +272,7 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // Lucky Pig -> Summon ngẫu nhiên recruits:villager_noble hoặc recruits:bowman (3 con mỗi count, không giáp, RecruitCost:0)
+  // Lucky Pig -> Summon ngẫu nhiên recruits:villager_noble hoặc recruits:bowman (3 con mỗi count, trang bị giáp sắt, vũ khí, tốc độ 0.5, RecruitCost:0)
   async luckyPigGift(gift: GiftEvent) {
     try {
       await this.context.sendMessage(`${gift.username} đã gửi tiếp viện!`);
@@ -292,8 +292,8 @@ export class GiftActionService {
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
     const options = [
-      `execute at @a run summon recruits:villager_noble ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0}`,
-      `execute at @a run summon recruits:bowman ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0}`,
+      `execute at @a run summon recruits:villager_noble ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}],Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.5}]}`,
+      `execute at @a run summon recruits:bowman ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:bow",Count:1b},{}],Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.5}]}`,
     ];
 
     const giftCount = Math.max(1, gift.count ?? 1);
