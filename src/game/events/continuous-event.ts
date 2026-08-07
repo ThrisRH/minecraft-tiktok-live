@@ -10,6 +10,56 @@ export interface ContinuousEventContext {
   ): Promise<void>;
 }
 
+export interface SpawnLocation {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export async function getPlayerSpawnOrPos(
+  executeFn: (command: string) => Promise<unknown>,
+): Promise<SpawnLocation | null> {
+  try {
+    const sx = await executeFn("data get entity @p SpawnX");
+    const sy = await executeFn("data get entity @p SpawnY");
+    const sz = await executeFn("data get entity @p SpawnZ");
+
+    if (
+      typeof sx === "string" &&
+      typeof sy === "string" &&
+      typeof sz === "string"
+    ) {
+      const mx = sx.match(/(-?\d+)/);
+      const my = sy.match(/(-?\d+)/);
+      const mz = sz.match(/(-?\d+)/);
+      if (mx && my && mz) {
+        return {
+          x: parseInt(mx[1], 10),
+          y: parseInt(my[1], 10),
+          z: parseInt(mz[1], 10),
+        };
+      }
+    }
+
+    const posRes = await executeFn("data get entity @p Pos");
+    if (typeof posRes === "string") {
+      const posMatch = posRes.match(
+        /\[\s*(-?\d+(?:\.\d+)?)[dD]?\s*,\s*(-?\d+(?:\.\d+)?)[dD]?\s*,\s*(-?\d+(?:\.\d+)?)[dD]?\s*\]/,
+      );
+      if (posMatch) {
+        return {
+          x: Math.floor(parseFloat(posMatch[1])),
+          y: Math.floor(parseFloat(posMatch[2])),
+          z: Math.floor(parseFloat(posMatch[3])),
+        };
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to get player spawn or position:", err);
+  }
+  return null;
+}
+
 export interface ContinuousEventOptions {
   name: string;
   defaultDurationSeconds: number;

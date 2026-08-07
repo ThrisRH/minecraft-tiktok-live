@@ -288,6 +288,14 @@ test("Corgi gift triggers 5-minute event sequence with baby ender dragons and sl
   });
 
   assert.ok(
+    commands.some((cmd) => cmd.includes("setworldspawn ~ ~ ~")),
+    "Corgi gift should set worldspawn at current player position",
+  );
+  assert.ok(
+    commands.some((cmd) => cmd.includes("spawnpoint @a ~ ~ ~")),
+    "Corgi gift should set player spawnpoint at current player position",
+  );
+  assert.ok(
     commands.some((cmd) => cmd.includes("CORGI DRAGON")),
     "Corgi gift should announce title",
   );

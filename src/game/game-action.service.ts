@@ -9,6 +9,8 @@ import {
   GachaOption,
   getRandomGachaOption,
 } from "../config/gacha-config.js";
+import { WitherStormEvent } from "./events/wither-storm-event.js";
+import { CorgiEvent } from "./events/corgi-event.js";
 
 export class GameActionService {
   private totalLikes = 0;
@@ -19,6 +21,8 @@ export class GameActionService {
   private isRoundFinished = false;
   private roundPosition: { x: number; y: number; z: number } | null = null;
   private readonly giftActions: GiftActionService;
+  private readonly witherStormEvent: WitherStormEvent;
+  private readonly corgiEvent: CorgiEvent;
 
   private isGachaSpinning = false;
   private gachaQueue: Array<() => Promise<void>> = [];
@@ -28,7 +32,7 @@ export class GameActionService {
     private readonly minecraft: MinecraftService,
     private readonly sandService?: SandService,
   ) {
-    this.giftActions = new GiftActionService({
+    const eventContext = {
       execute: (command: string) => this.minecraft.execute(command),
       sendMessage: (text: string) => this.sendMessage(text),
       showLiveParticipant: (
@@ -36,9 +40,18 @@ export class GameActionService {
         giftName?: string,
         count?: number,
       ) => this.showLiveParticipant(username, giftName, count),
+    };
+
+    this.witherStormEvent = new WitherStormEvent(eventContext);
+    this.corgiEvent = new CorgiEvent(eventContext);
+
+    this.giftActions = new GiftActionService({
+      ...eventContext,
       gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
       rosaGachaGift: (gift: GiftEvent) => this.rosaGachaGift(gift),
       shamrockGachaGift: (gift: GiftEvent) => this.shamrockGachaGift(gift),
+      moneyGunGift: (gift: GiftEvent) => this.witherStormEvent.trigger(gift),
+      corgiGift: (gift: GiftEvent) => this.corgiEvent.trigger(gift),
     });
   }
 

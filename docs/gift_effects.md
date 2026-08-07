@@ -19,7 +19,7 @@ Tài liệu này ghi lại quà nào sẽ triệu hồi vật gì trong Minecraf
 | GG           | Fireworks          | Bắn pháo hoa ăn mừng                   | 1   |
 | Cap          | Wither             | Triệu hồi wither                       | 99  |
 | Doughnut     | Black hole         | Triệu hồi terramity:black_hole ~ 5 ~   | 30  |
-| Corgi        | TNT rain           | Triệu hồi entity TNT rain              | 299 |
+| Corgi        | Corgi Dragon       | Sự kiện 5 phút triệu hồi 2 Ender Dragon| 299 |
 
 ## Nơi xử lý
 

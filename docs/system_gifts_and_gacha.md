@@ -13,13 +13,13 @@
 | **Cap** | Summon Entity | `summon warden ~ ~ ~` (x1 mỗi count) |
 | **Doughnut** | Summon Entity | `summon terramity:black_hole ~ ~ ~` (x1 mỗi count) |
 | **Confetti** | Summon Entity | `summon ender_dragon ~ ~ ~` (x1 mỗi count) |
-| **Lucky Pig** | Summon Entity | `summon guardvillagers:guard` (full giáp sắt, kiếm & khiên, gắn tên người donate) |
+| **Lucky Pig** | Summon Entity | Triệu hồi ngẫu nhiên 3 lính Recruits (`villager_noble` hoặc `bowman`) không giáp, phí thuê 0 (gắn tên người donate) |
 | **Finger Heart** | Cho Vật Phẩm | `give @a golden_apple` (x1 mỗi count) |
 | **Journey Pass** | Cho Vật Phẩm | `give @a` Full set giáp da (Mũ, Áo, Quần, Giày) |
 | **GG** | Cho Vật Phẩm | `give @a bread` (x1 mỗi count) |
 | **Little Kisses** | Cho Vật Phẩm | `give @a enchanted_golden_apple 1` + `iron_chestplate` (Protection IV, Blast Protection III) |
 | **Perfume** | Bẫy / Khống chế | Dựng 4 cột Bedrock nhốt 2s -> Summon `luckytntmod:gravity_tnt` -> Xóa Bedrock sau 1s |
-| **Corgi** | Sự kiện 5 phút | **Corgi Dragon**: Áp Slowness 1 (300s), summon 3 baby ender dragon, x2 baby dragon mỗi 10s (max 25), mốc 3m triệu hồi Ender Dragon + 8 End Crystals. Combo: +5m & +1 Ender Dragon |
+| **Corgi** | Sự kiện 5 phút | **Corgi Dragon**: Summon 2 Ender Dragon, đếm ngược HUD Actionbar 5 phút. Combo: +5m & +1 Ender Dragon |
 | **Money Gun** | Sự kiện 10 phút | **Wither Storm**: Summon Wither Storm Phase 7. Combo: +10m & +1 Wither Storm Phase 4 |
 | **Mặc định / Quà khác** | Thông báo | Gửi tin nhắn Chat & hiển thị Tiêu đề trên màn hình |
 
