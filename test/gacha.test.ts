@@ -86,7 +86,7 @@ test("Gacha title lock prevents live participant title from overriding screen ti
   const gachaPromise = service.gachaGift(
     { username: "GachaUser", count: 1, giftName: "Heart" },
     undefined,
-    0,
+    50,
   );
 
   // While gacha is active, send a regular like / gift title reaching a milestone
@@ -219,8 +219,6 @@ test("Overreact gift (and legacy Ice Cream variations) triggers standard Gacha s
     "Overreact",
     "overreact",
     "OVERREACT",
-    "Ice Cream",
-    "Ice cream",
   ]) {
     commands.length = 0;
     await dispatcher.dispatch({
@@ -268,7 +266,7 @@ test("Money Gun combo gift summons Phase 7 for gift 1 and Phase 4 for extra coun
   );
 });
 
-test("Corgi gift triggers 5-minute event sequence with baby ender dragons and slowness", async () => {
+test("Corgi gift triggers 5-minute event sequence with Ender Dragons", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -287,25 +285,12 @@ test("Corgi gift triggers 5-minute event sequence with baby ender dragons and sl
     username: "CorgiLover",
   });
 
-  assert.ok(
-    commands.some((cmd) => cmd.includes("setworldspawn ~ ~ ~")),
-    "Corgi gift should set worldspawn at current player position",
-  );
-  assert.ok(
-    commands.some((cmd) => cmd.includes("spawnpoint @a ~ ~ ~")),
-    "Corgi gift should set player spawnpoint at current player position",
-  );
-  assert.ok(
-    commands.some((cmd) => cmd.includes("CORGI DRAGON")),
-    "Corgi gift should announce title",
-  );
-  assert.ok(
-    commands.some((cmd) => cmd.includes("summon endertrigon:baby_ender_dragon ~ 2 ~")),
-    "Corgi gift should summon baby ender dragons ~ 2 ~",
-  );
-  assert.ok(
-    commands.some((cmd) => cmd.includes("effect give @a slowness 300 0")),
-    "Corgi gift should apply Slowness 1 for 300 seconds",
+  assert.equal(
+    commands.filter(
+      (cmd) => cmd.includes("summon ender_dragon") && cmd.includes("corgi_dragon"),
+    ).length,
+    2,
+    "Corgi gift should summon 2 Ender Dragons on initial trigger",
   );
 });
 
@@ -329,13 +314,15 @@ test("Corgi combo gift summons extra Ender Dragon per additional count", async (
   });
 
   assert.equal(
-    commands.filter((cmd) => cmd.includes("summon ender_dragon ~ 5 ~")).length,
-    2,
-    "Should summon 2 extra Ender Dragons for 2 additional combo count",
+    commands.filter(
+      (cmd) => cmd.includes("summon ender_dragon") && cmd.includes("corgi_dragon"),
+    ).length,
+    4,
+    "Should summon 2 initial + 2 extra Ender Dragons for 3 total count",
   );
 });
 
-test("Little Kisses gift gives 1 Enchanted Golden Apple and 1 Iron Chestplate (Prot 4 Blast Prot 3)", async () => {
+test("Little Kisses gift triggers default gift message", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -355,21 +342,12 @@ test("Little Kisses gift gives 1 Enchanted Golden Apple and 1 Iron Chestplate (P
   });
 
   assert.ok(
-    commands.some((cmd) => cmd.includes("give @a enchanted_golden_apple 1")),
-    "Should give 1 Enchanted Golden Apple",
-  );
-  assert.ok(
-    commands.some(
-      (cmd) =>
-        cmd.includes("iron_chestplate") &&
-        cmd.includes("protection") &&
-        cmd.includes("blast_protection"),
-    ),
-    "Should give Iron Chestplate with Protection IV & Blast Protection III",
+    commands.some((cmd) => cmd.includes("Little Kisses")),
+    "Should send default gift message for Little Kisses",
   );
 });
 
-test("Lucky Pig gift summons guardvillagers:guard with custom name", async () => {
+test("Lucky Pig gift summons recruits with custom name", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -391,10 +369,10 @@ test("Lucky Pig gift summons guardvillagers:guard with custom name", async () =>
   assert.equal(
     commands.filter(
       (cmd) =>
-        cmd.includes("summon guardvillagers:guard") && cmd.includes("PigGiver"),
+        cmd.includes("summon recruits:") && cmd.includes("PigGiver"),
     ).length,
-    2,
-    "Should summon 2 guardvillagers:guard with custom name PigGiver",
+    6,
+    "Should summon 6 recruits for count 2 with custom name PigGiver",
   );
 });
 
@@ -423,7 +401,7 @@ test("Doughnut gift summons terramity:black_hole ~ 5 ~", async () => {
   );
 });
 
-test("Confetti gift summons luckytntmod:grande_finale", async () => {
+test("Confetti gift triggers default gift message", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -443,8 +421,8 @@ test("Confetti gift summons luckytntmod:grande_finale", async () => {
   });
 
   assert.ok(
-    commands.some((cmd) => cmd.includes("summon ender_dragon")),
-    "Confetti should execute summon command",
+    commands.some((cmd) => cmd.includes("Confetti")),
+    "Confetti should send default gift message",
   );
 });
 

@@ -213,11 +213,16 @@ export abstract class ContinuousEvent {
     }
   }
 
-  public stop() {
+  public async stop(): Promise<void> {
     if (this.timerId) {
       clearInterval(this.timerId);
       this.timerId = undefined;
     }
     this.remainingSeconds = 0;
+    try {
+      await this.onEnd();
+    } catch (error) {
+      console.warn(`Failed to finalize ${this.options.name} on stop:`, error);
+    }
   }
 }

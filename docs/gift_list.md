@@ -15,7 +15,7 @@ This file contains the master list of supported TikTok gifts.
 - Cap - 99 u done
 - Doughnut - 30 u done (Black hole)
 - Shamrock - Vòng quay Shamrock Gacha mới
-- Ice Cream / Heart / Heart Me - gacha 10 done+
+- Overreact / Heart / Heart Me - gacha 10 done+
 - Corgi - 299 done (Corgi Dragon 5 phút + Actionbar HUD)
 - Confetti - 100 Grande_finale done
 - Finger Heart - 5 done (Gacha)

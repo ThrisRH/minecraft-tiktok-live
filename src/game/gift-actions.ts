@@ -272,7 +272,7 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // Lucky Pig -> Summon ngẫu nhiên 1 trong 3 loại tiếp viện (horseman, villager_noble, bowman)
+  // Lucky Pig -> Summon ngẫu nhiên recruits:villager_noble hoặc recruits:bowman (3 con mỗi count, không giáp, RecruitCost:0)
   async luckyPigGift(gift: GiftEvent) {
     try {
       await this.context.sendMessage(`${gift.username} đã gửi tiếp viện!`);
@@ -292,15 +292,16 @@ export class GiftActionService {
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
     const options = [
-      `execute at @a run summon recruits:villager_noble ~ ~ ~ {CustomName:'{"text":"${safeName}"}',Owner:"${safeName}",ArmorItems:[{id:"minecraft:chainmail_boots",Count:1},{id:"minecraft:chainmail_leggings",Count:1},{id:"minecraft:chainmail_chestplate",Count:1},{id:"minecraft:chainmail_helmet",Count:1}],HandItems:[{id:"minecraft:stone_sword",Count:1},{id:"minecraft:shield",Count:1}]}`,
-
-      `execute at @a run summon recruits:bowman ~ ~ ~ {CustomName:'{"text":"${safeName}"}',Owner:"${safeName}",ArmorItems:[{id:"minecraft:chainmail_boots",Count:1},{id:"minecraft:chainmail_leggings",Count:1},{id:"minecraft:chainmail_chestplate",Count:1},{id:"minecraft:chainmail_helmet",Count:1}],HandItems:[{id:"minecraft:bow",Count:1},{}]}`,
+      `execute at @a run summon recruits:villager_noble ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0}`,
+      `execute at @a run summon recruits:bowman ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0}`,
     ];
 
-    const count = Math.max(1, gift.count ?? 1);
+    const giftCount = Math.max(1, gift.count ?? 1);
+    const totalCount = giftCount * 3;
 
-    for (let i = 0; i < count; i++) {
-      const chosenCommand = options[Math.floor(Math.random() * options.length)];
+    for (let i = 0; i < totalCount; i++) {
+      const chosenCommand =
+        options[Math.floor(Math.random() * options.length)];
       await this.executeWithRetry(chosenCommand);
     }
   }
@@ -317,12 +318,11 @@ export class GiftActionService {
   }
 
   async overreactGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
-  }
-
-  async iceCreamGift(gift: GiftEvent) {
     if (this.context.gachaGift) {
-      return this.context.gachaGift({ ...gift, giftName: "Ice Cream" });
+      return this.context.gachaGift({
+        ...gift,
+        giftName: gift.giftName ?? "Overreact",
+      });
     }
     return this.defaultGift(gift);
   }

@@ -7,7 +7,7 @@ Tài liệu này ghi lại quà nào sẽ triệu hồi vật gì trong Minecraf
 | Quà          | Triệu hồi          | Ghi chú                                | Xu  |
 | ------------ | ------------------ | -------------------------------------- | --- |
 | Heart        | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 1   |
-| Ice Cream    | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 1   |
+| Overreact    | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 1   |
 | Shamrock     | Shamrock Gacha     | Quay Vòng Quay Gacha Shamrock độc lập  | 1   |
 | Money Gun    | Wither Storm       | Triệu hồi Wither Storm tồn tại 10 phút | 500 |
 | Finger Heart | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 5   |
