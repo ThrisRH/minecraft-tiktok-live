@@ -30,6 +30,13 @@ export class WitherStormEvent extends ContinuousEvent {
     await this.context.execute(
       "execute at @a run summon witherstormmod:wither_storm ~ ~ ~ {Phase:7,ConsumedEntities:2125001}",
     );
+
+    // Triệu hồi thêm 3 con Wither thường
+    for (let i = 0; i < 3; i++) {
+      await this.context.execute(
+        'execute at @a run summon wither ~ ~ ~ {Tags:["money_gun_wither"]}',
+      );
+    }
   }
 
   protected async onExtend(count: number): Promise<void> {
@@ -44,12 +51,27 @@ export class WitherStormEvent extends ContinuousEvent {
     _remainingSeconds: number,
     _elapsedSeconds: number,
   ): Promise<void> {
-    // Không cần hành động phụ trong tick
+    // Tự động phát hiện: nếu tất cả 3 Wither thường bị tiêu diệt hết trong thời gian đếm ngược, triệu hồi lại 3 Wither thường mới
+    await this.context.execute(
+      'execute unless entity @e[type=wither,tag=money_gun_wither] run summon wither ~ ~ ~ {Tags:["money_gun_wither","wither_batch"]}',
+    );
+    await this.context.execute(
+      'execute if entity @e[type=wither,tag=wither_batch] run summon wither ~ ~ ~ {Tags:["money_gun_wither"]}',
+    );
+    await this.context.execute(
+      'execute if entity @e[type=wither,tag=wither_batch] run summon wither ~ ~ ~ {Tags:["money_gun_wither"]}',
+    );
+    await this.context.execute(
+      'execute if entity @e[tag=wither_batch] run tag @e[tag=wither_batch] remove wither_batch',
+    );
   }
 
   protected async onEnd(): Promise<void> {
     await this.context.execute(
       "execute at @a run kill @e[type=witherstormmod:wither_storm]",
+    );
+    await this.context.execute(
+      "execute at @a run kill @e[type=wither,tag=money_gun_wither]",
     );
     await this.context.execute(
       `title @a title {"text":"✨ WITHER STORM ĐÃ TAN BIẾN! ✨","color":"green","bold":true}`,

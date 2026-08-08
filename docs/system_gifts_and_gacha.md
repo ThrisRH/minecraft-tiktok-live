@@ -54,12 +54,11 @@
 ### C. Vòng Quay Shamrock Gacha (`shamrockGachaOptions`)
 | Tên Phần Thưởng | Trọng Số (Tỷ lệ) | Lệnh / Vật Phẩm |
 |---|---|---|
-| 16 Bánh Mì | 20 (Thường) | `give @a bread 16` |
-| 2 Táo Vàng | 18 (Thường) | `give @a golden_apple 2` |
-| 1 Táo Vàng Phù Phép | 12 (Thường) | `give @a enchanted_golden_apple 1` |
-| Set Giáp Sắt | 15 (Không phổ biến) | `give @a` Full set giáp sắt không phù phép |
-| Kiếm Sắt & Khiên | 15 (Không phổ biến) | `give @a iron_sword 1; give @a shield 1` |
-| Áo Sắt Phù Phép Protection III | 10 (Hiếm) | `give @a iron_chestplate{Protection:3}` |
-| Combo Sinh Tồn | 10 (Hiếm) | `effect give @a regeneration 60s` + `resistance 60s` |
-| Set Giáp Kim Cương Phù Phép | 2 (Huyền thoại) | `give @a` Full set giáp kim cương (Protection IV, Unbreaking III) |
-| Kiếm Kim Cương Thượng Cổ | 2 (Huyền thoại) | `give @a diamond_sword` (Sharpness IV, Smite III) |
+| Full Giáp Da + Kiếm Gỗ + 12 Bánh Mì | 30 (Thường - Common) | `give @a` Full set giáp da, `wooden_sword 1`, `bread 12` |
+| Táo Vàng Phù Phép + 2 Táo Vàng | 20 (Hiếm - Rare) | `give @a enchanted_golden_apple 1`, `golden_apple 2` |
+| Full Giáp Sắt + Kiếm Sắt + Khiên | 20 (Hiếm - Rare) | `give @a` Full set giáp sắt, `iron_sword 1`, `shield 1` |
+| Combo Thợ Đục | 15 (Không phổ biến - Uncommon) | `give @a iron_pickaxe 1`, `leather_chestplate` (Blast Protection V) |
+| Full Giáp Sắt (Áo Kim Cương Chống Nổ 5 & Giày Rơi Nhẹ Max) + Kiếm Sắt | 12 (Sử thi - Epic) | `give @a` Helmet/Leggings sắt, `diamond_chestplate` (Blast Protection V), `iron_boots` (Feather Falling IV), `iron_sword 1` |
+| Combo Dân Chủ (Áo Sắt Protection 3 + Súng Glock 17 + 60 Băng Đạn 9mm) | 12 (Sử thi - Epic) | `give @a iron_chestplate` (Protection III), `tacz:glock_17` (17 ammo, semi), `tacz:ammo 9mm` (x60) |
+| Full Set Kim Cương (Protection 4 & Chống Nổ 4) + Kiếm Kim Cương + Khiên | 6 (Huyền thoại - Legend) | `give @a` Full set giáp kim cương (Protection IV, Blast Protection IV), `diamond_sword` (Sharpness V, Smite V), `shield 1` |
+| Combo Hoa Rơi Cửa Phật | 2 (Thần thoại - Mythic) | `give @a tacz:minigun` (20 ammo, auto), `tacz:ammo 308mm` (x200) |

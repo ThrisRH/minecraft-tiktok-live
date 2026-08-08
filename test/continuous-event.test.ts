@@ -26,6 +26,10 @@ test("CorgiEvent triggers 5-min event sequence, handles combo extension, and cle
     (cmd) => cmd.includes("summon ender_dragon") && cmd.includes("corgi_dragon"),
   );
   assert.equal(dragons.length, 2, "Initial Corgi start should summon 2 Ender Dragons");
+  assert.ok(
+    commands.some((cmd) => cmd.includes("ĐẠI TIỆC NHÀ RỒNG")),
+    "Should display Đại tiệc nhà rồng title",
+  );
 
   // Trigger combo Corgi gift x2 while running
   commands.length = 0;
@@ -54,7 +58,50 @@ test("CorgiEvent triggers 5-min event sequence, handles combo extension, and cle
   );
 });
 
-test("WitherStormEvent triggers 10-min sequence, handles combo Phase 4, and cleans up on stop", async () => {
+test("CorgiEvent kills dragons on player death and respawns 2 dragons when player respawns", async () => {
+  const commands: string[] = [];
+  let playerHealth = "20.0f";
+
+  const context = {
+    execute: async (command: string) => {
+      commands.push(command);
+      if (command.includes("data get entity @p Health")) {
+        return playerHealth;
+      }
+      return undefined;
+    },
+    sendMessage: async (_text: string) => {},
+    showLiveParticipant: async (_username: string, _giftName?: string, _count?: number) => {},
+  };
+
+  const corgi = new CorgiEvent(context, 300);
+  await corgi.trigger({ username: "DeadRider", count: 1 });
+
+  // Simulate player death
+  playerHealth = "0.0f";
+  commands.length = 0;
+  // Trigger protected onTick logic directly
+  await (corgi as any).onTick(290, 10);
+
+  assert.ok(
+    commands.some((cmd) => cmd.includes("tp @e[type=ender_dragon,tag=corgi_dragon] 0 -999 0")),
+    "Should tp dragons to void on player death",
+  );
+
+  // Simulate player respawning
+  playerHealth = "20.0f";
+  commands.length = 0;
+  await (corgi as any).onTick(280, 20);
+
+  const respawnDragons = commands.filter(
+    (cmd) => cmd.includes("summon ender_dragon") && cmd.includes("execute at @p"),
+  );
+  assert.equal(respawnDragons.length, 2, "Should spawn 2 new dragons near player on respawn");
+
+  await corgi.stop();
+});
+
+test("WitherStormEvent triggers 10-min sequence with 3 Withers, handles combo Phase 4, and cleans up on stop", async () => {
   const commands: string[] = [];
   const context = {
     execute: async (command: string) => {
@@ -75,6 +122,9 @@ test("WitherStormEvent triggers 10-min sequence, handles combo Phase 4, and clea
   const phase7Summons = commands.filter((cmd) => cmd.includes("{Phase:7,ConsumedEntities:2125001}"));
   assert.equal(phase7Summons.length, 1, "Initial Money Gun should summon Phase 7 Wither Storm");
 
+  const witherSummons = commands.filter((cmd) => cmd.includes("summon wither") && cmd.includes("money_gun_wither"));
+  assert.equal(witherSummons.length, 3, "Initial Money Gun should summon 3 regular Withers");
+
   // Trigger combo Money Gun x1 while running
   commands.length = 0;
   await witherStorm.trigger({ username: "StormCaller", count: 1 });
@@ -83,6 +133,11 @@ test("WitherStormEvent triggers 10-min sequence, handles combo Phase 4, and clea
   const phase4Summons = commands.filter((cmd) => cmd.includes("{Phase:4}"));
   assert.equal(phase4Summons.length, 1, "Combo Money Gun should summon Phase 4 Wither Storm");
 
-  witherStorm.stop();
+  commands.length = 0;
+  await witherStorm.stop();
   assert.equal(witherStorm.isRunning(), false, "Wither Storm event should be stopped");
+  assert.ok(
+    commands.some((cmd) => cmd.includes("kill @e[type=wither,tag=money_gun_wither]")),
+    "Should kill regular Withers on stop",
+  );
 });
