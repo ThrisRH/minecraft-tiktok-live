@@ -117,7 +117,8 @@ test("continues spawning after a transient execute failure", async () => {
 
   await service.roseGift({ username: "Ada", count: 2 });
 
-  assert.equal(commands.length, 3);
+  const summonCmds = commands.filter((c) => c.includes("summon zombie"));
+  assert.equal(summonCmds.length, 2, "Should spawn 2 zombies after retrying transient failure");
 });
 
 test("routes perfume gift to its dedicated handler and executes trapped sequence", async () => {

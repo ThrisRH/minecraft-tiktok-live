@@ -1,16 +1,70 @@
 export interface DefenseGachaOption {
   id: string;
   name: string; // Tên hiển thị nhảy trên màn hình khi quay gacha defense
-  command: string; // Lệnh Minecraft thực thi khi trúng
+  type?: "summon" | "command"; // "summon" cho mob entity, "command" cho câu lệnh nhóm
+  command: string; // Lệnh Minecraft hoặc entity ID
   count?: number; // Số lượng (ví dụ: 5 con mob / 2 trụ bảo vệ)
   weight: number; // Trọng số tỉ lệ trúng
   color?: string; // Màu sắc hiển thị title
 }
 
 /**
+ * Cấu hình danh sách các lựa chọn trong vòng quay Rosa Gacha Defense.
+ */
+export const defenseRosaGachaOptions: DefenseGachaOption[] = [
+  {
+    id: "mutant_zombie",
+    name: "Mutant Zombie",
+    type: "summon",
+    command: "mutantmonsters:mutant_zombie",
+    weight: 10,
+    color: "#8B5CF6",
+  },
+  {
+    id: "mutant_frozen_zombie",
+    name: "Mutant Frozen Zombie",
+    type: "summon",
+    command: "mutantmore:mutant_frozen_zombie",
+    weight: 10,
+    color: "#3B82F6",
+  },
+  {
+    id: "mutant_husk",
+    name: "Mutant Husk",
+    type: "summon",
+    command: "mutantmore:mutant_husk",
+    weight: 10,
+    color: "#F59E0B",
+  },
+  {
+    id: "mutant_jungle_zombie",
+    name: "Mutant Jungle Zombie",
+    type: "summon",
+    command: "mutantmore:mutant_jungle_zombie",
+    weight: 10,
+    color: "#10B981",
+  },
+  {
+    id: "summongroup_undead",
+    name: "Băng Bầy Undead",
+    type: "command",
+    command: "summongroup undead",
+    weight: 10,
+    color: "#EF4444",
+  },
+  {
+    id: "summongroup_zombie_miners",
+    name: "Băng Zombie Miners",
+    type: "command",
+    command: "summongroup zombie_miners",
+    weight: 10,
+    color: "#EC4899",
+  },
+];
+
+/**
  * Cấu hình danh sách các lựa chọn trong vòng quay Gacha Defense.
  * Các giá trị mẫu cho chế độ Phòng thủ (Defense Mode).
- * Cụ thể logic thực thi chi tiết có thể được bổ sung sau.
  */
 export const defenseGachaOptions: DefenseGachaOption[] = [
   // Common (Thường)

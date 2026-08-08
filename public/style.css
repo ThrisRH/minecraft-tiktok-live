@@ -96,6 +96,34 @@ body {
   gap: 1rem;
 }
 
+.mode-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.mode-select {
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid var(--primary);
+  color: #FFF;
+  padding: 0.45rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--primary-glow);
+  transition: all 0.2s;
+}
+
+.mode-select:hover, .mode-select:focus {
+  border-color: #C4B5FD;
+  box-shadow: 0 0 16px var(--primary-glow);
+}
+
 .status-badge {
   display: flex;
   align-items: center;

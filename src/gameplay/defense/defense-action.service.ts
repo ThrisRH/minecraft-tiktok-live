@@ -32,6 +32,9 @@ export class DefenseActionService {
         giftName?: string,
         count?: number,
       ) => this.showLiveParticipant(username, giftName, count),
+      setGachaSpinning: (spinning: boolean) => {
+        this.isGachaSpinning = spinning;
+      },
       gachaGift: (gift: GiftEvent) => this.gachaGift(gift),
     });
   }
@@ -102,7 +105,10 @@ export class DefenseActionService {
   // ==========================================
 
   private async sendMessage(message: string) {
-    await this.minecraft.say(`[Defense Mode] ${message}`);
+    const safeText = message.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    await this.minecraft.execute(
+      `tellraw @a {"text":"[DEFENSE] ","color":"red","bold":true,"extra":[{"text":"${safeText}","color":"white"}]}`,
+    );
   }
 
   private async showLiveParticipant(
@@ -110,6 +116,20 @@ export class DefenseActionService {
     giftName?: string,
     count?: number,
   ) {
-    // TODO: Bổ sung hiển thị title lên màn hình Minecraft sau
+    if (this.isGachaSpinning) {
+      return;
+    }
+    const safeName = username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    await this.minecraft.execute(
+      `title @a title {"text":"${safeName}","color":"aqua","bold":true}`,
+    );
+
+    if (giftName) {
+      const safeGift = giftName.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      const giftText = count && count > 1 ? `x${count} ${safeGift}` : safeGift;
+      await this.minecraft.execute(
+        `title @a subtitle [{"text":"đã gửi ","color":"white"},{"text":"${giftText}","color":"yellow","bold":true}]`,
+      );
+    }
   }
 }

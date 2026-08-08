@@ -3,8 +3,9 @@ dotenv.config();
 
 import { exec } from "child_process";
 import { MinecraftService } from "./minecraft/minecraft.service.js";
-import { Dispatcher } from "./events/dispatcher.js";
+import { Dispatcher, GameplayMode } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
+import { DefenseActionService } from "./gameplay/defense/index.js";
 import { TikTokService } from "./tiktok/tiktok.service.js";
 import { ControlPanelServer } from "./server.js";
 
@@ -16,7 +17,13 @@ async function bootstrap() {
     console.log("Connected to MC");
 
     const game = new GameActionService(mc);
-    const dispatcher = new Dispatcher(game);
+    const defense = new DefenseActionService(mc);
+    const initialMode: GameplayMode =
+      (process.env.GAMEPLAY_MODE as GameplayMode) === "defense"
+        ? "defense"
+        : "survival";
+
+    const dispatcher = new Dispatcher(game, defense, initialMode);
     const tikTok = new TikTokService(dispatcher);
 
     const mode = process.argv[2];

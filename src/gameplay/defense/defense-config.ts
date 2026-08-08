@@ -101,6 +101,8 @@ export const defenseGiftMap: Record<string, string> = {
   Rose: "roseGift",
   Zombie: "zombieGift",
   Creeper: "creeperGift",
+  TikTok: "tiktokGift",
+  Rosa: "rosaGift",
   "Iron Golem": "ironGolemGift",
   "Sand Block": "sandBlockGift",
   TNT: "tntGift",

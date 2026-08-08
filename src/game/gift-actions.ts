@@ -141,10 +141,29 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // rose zombie thuong
+  // rose zombie thuong (tay rong, mu da, toc do x1.5, CanPickUpLoot:0b)
   async roseGift(gift: GiftEvent) {
     const command = "summon zombie" as const;
-    await this.handleGiftEffect(gift, "Rose", command, 1);
+    const nbtOption = 'Tags:["rose_zombie"],HandItems:[{},{}],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}],Attributes:[{Name:"generic.movement_speed",Base:0.345f}],CanPickUpLoot:0b';
+    await this.handleGiftEffect(gift, "Rose", command, 1, nbtOption);
+
+    try {
+      await this.context.execute(
+        `execute at @a run item replace entity @e[type=zombie,tag=rose_zombie,limit=1,sort=nearest] weapon.mainhand with air`,
+      );
+      await this.context.execute(
+        `execute at @a run item replace entity @e[type=zombie,tag=rose_zombie,limit=1,sort=nearest] weapon.offhand with air`,
+      );
+    } catch {
+      try {
+        await this.context.execute(
+          `execute at @a run replaceitem entity @e[type=zombie,tag=rose_zombie,limit=1,sort=nearest] weapon.mainhand air`,
+        );
+        await this.context.execute(
+          `execute at @a run replaceitem entity @e[type=zombie,tag=rose_zombie,limit=1,sort=nearest] weapon.offhand air`,
+        );
+      } catch {}
+    }
   }
 
   // tiktok creeper

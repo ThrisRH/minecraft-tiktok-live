@@ -9,11 +9,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initApp() {
   setupEventListeners();
+  await loadCurrentMode();
   await loadGiftsCatalog();
   startLogPolling();
 }
 
+async function loadCurrentMode() {
+  try {
+    const res = await fetch("/api/mode");
+    const data = await res.json();
+    if (data.mode) {
+      document.getElementById("select-gameplay-mode").value = data.mode;
+    }
+  } catch (err) {
+    console.error("Failed to load mode:", err);
+  }
+}
+
 function setupEventListeners() {
+  // Gameplay mode selector
+  const modeSelect = document.getElementById("select-gameplay-mode");
+  modeSelect.addEventListener("change", async (e) => {
+    const newMode = e.target.value;
+    try {
+      await fetch("/api/mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: newMode }),
+      });
+      await loadGiftsCatalog();
+    } catch (err) {
+      console.error("Failed to change mode:", err);
+    }
+  });
+
   // Username input
   const usernameInput = document.getElementById("input-username");
   usernameInput.addEventListener("input", (e) => {

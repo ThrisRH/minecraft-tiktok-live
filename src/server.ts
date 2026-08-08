@@ -16,7 +16,7 @@ export interface GiftMetadata {
   icon: string;
 }
 
-const GIFT_CATALOG: GiftMetadata[] = [
+const SURVIVAL_GIFT_CATALOG: GiftMetadata[] = [
   {
     id: "Heart",
     name: "Heart",
@@ -138,6 +138,79 @@ const GIFT_CATALOG: GiftMetadata[] = [
   },
 ];
 
+const DEFENSE_GIFT_CATALOG: GiftMetadata[] = [
+  {
+    id: "Rose",
+    name: "Rose",
+    category: "mob",
+    description: "Spawn Zombie cách Player/Căn cứ ≥ 50 blocks",
+    icon: "🧟",
+  },
+  {
+    id: "TikTok",
+    name: "TikTok",
+    category: "mob",
+    description: "Spawn Creeper cách Player/Căn cứ ≥ 50 blocks",
+    icon: "🧨",
+  },
+  {
+    id: "Rosa",
+    name: "Rosa",
+    category: "gacha",
+    description: "Rosa Defense Gacha (Quái đột biến tấn công pháo đài)",
+    icon: "🌹",
+  },
+  {
+    id: "Shamrock",
+    name: "Shamrock",
+    category: "gacha",
+    description: "Vòng quay Shamrock Defense Gacha",
+    icon: "☘️",
+  },
+  {
+    id: "Cap",
+    name: "Cap",
+    category: "mob",
+    description: "Spawn Boss Warden tấn công pháo đài",
+    icon: "👾",
+  },
+  {
+    id: "Doughnut",
+    name: "Doughnut",
+    category: "mob",
+    description: "Triệu hồi Hố đen (Black Hole) nuốt chửng quái tấn công",
+    icon: "🕳️",
+  },
+  {
+    id: "Confetti",
+    name: "Confetti",
+    category: "mob",
+    description: "Triệu hồi Ender Dragon oanh tạc pháo đài",
+    icon: "🐲",
+  },
+  {
+    id: "Perfume",
+    name: "Perfume",
+    category: "trap",
+    description: "Bẫy Bedrock nhốt quái & thả TNT khống chế",
+    icon: "💣",
+  },
+  {
+    id: "Corgi",
+    name: "Corgi",
+    category: "event",
+    description: "Đếm ngược Corgi Defense Event (5 phút)",
+    icon: "🐉",
+  },
+  {
+    id: "Money Gun",
+    name: "Money Gun",
+    category: "event",
+    description: "Đếm ngược Wither Storm tấn công căn cứ (10 phút)",
+    icon: "☠️",
+  },
+];
+
 interface LogEntry {
   timestamp: string;
   type: "gift" | "like" | "system" | "error";
@@ -188,9 +261,28 @@ export class ControlPanelServer {
             }
 
             // REST API Routes
-            if (pathname === "/api/gifts" && req.method === "GET") {
+            if (pathname === "/api/mode" && req.method === "GET") {
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(GIFT_CATALOG));
+              res.end(JSON.stringify({ mode: this.dispatcher.getMode() }));
+              return;
+            }
+
+            if (pathname === "/api/mode" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const newMode = (body.mode === "defense" ? "defense" : "survival") as "survival" | "defense";
+              this.dispatcher.setMode(newMode);
+              this.addLog("system", `🎮 Đã chuyển sang chế độ Gameplay: ${newMode.toUpperCase()}`);
+
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success", mode: newMode }));
+              return;
+            }
+
+            if (pathname === "/api/gifts" && req.method === "GET") {
+              const requestedMode = parsedUrl.searchParams.get("mode") ?? this.dispatcher.getMode();
+              const catalog = requestedMode === "defense" ? DEFENSE_GIFT_CATALOG : SURVIVAL_GIFT_CATALOG;
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify(catalog));
               return;
             }
 
@@ -205,8 +297,9 @@ export class ControlPanelServer {
               const giftName = String(body.giftName ?? "Heart");
               const count = Math.max(1, Number(body.count ?? 1));
               const username = String(body.username ?? "DesktopTester");
+              const currentMode = this.dispatcher.getMode();
 
-              this.addLog("gift", `🎁 Triggers gift: ${giftName} (x${count}) từ user: ${username}`);
+              this.addLog("gift", `🎁 [${currentMode.toUpperCase()}] Trigger gift: ${giftName} (x${count}) từ user: ${username}`);
 
               void this.dispatcher
                 .dispatch({
@@ -224,7 +317,7 @@ export class ControlPanelServer {
                 });
 
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ status: "success", giftName, count, username }));
+              res.end(JSON.stringify({ status: "success", giftName, count, username, mode: currentMode }));
               return;
             }
 
@@ -232,11 +325,16 @@ export class ControlPanelServer {
               const body = await this.parseJsonBody(req);
               const count = Math.max(1, Number(body.count ?? 1));
               const username = String(body.username ?? "DesktopTester");
+              const currentMode = this.dispatcher.getMode();
 
-              this.addLog("like", `❤️ Gửi ${count} lượt Like từ user: ${username}`);
+              this.addLog("like", `❤️ [${currentMode.toUpperCase()}] Gửi ${count} lượt Like từ user: ${username}`);
 
-              void this.game
-                .like(count, username)
+              void this.dispatcher
+                .dispatch({
+                  type: "like",
+                  count,
+                  username,
+                })
                 .then(() => {
                   this.addLog("system", `✅ Hoàn thành xử lý Like cho: ${username}`);
                 })
@@ -246,7 +344,7 @@ export class ControlPanelServer {
                 });
 
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ status: "success", count, username }));
+              res.end(JSON.stringify({ status: "success", count, username, mode: currentMode }));
               return;
             }
 
