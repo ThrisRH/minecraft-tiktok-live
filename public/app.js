@@ -11,6 +11,7 @@ async function initApp() {
   setupEventListeners();
   await loadCurrentMode();
   await loadGiftsCatalog();
+  await loadDeathsCount();
   startLogPolling();
 }
 
@@ -102,6 +103,31 @@ function setupEventListeners() {
     }
   });
 
+  const playerNameInput = document.getElementById("input-player-name");
+  const savedPlayerName = localStorage.getItem("target_player_name");
+  if (savedPlayerName) {
+    playerNameInput.value = savedPlayerName;
+    void fetch("/api/target-player", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ playerName: savedPlayerName }),
+    });
+  }
+
+  playerNameInput.addEventListener("change", async (e) => {
+    const playerName = e.target.value.trim() || "Thrisx0310";
+    localStorage.setItem("target_player_name", playerName);
+    try {
+      await fetch("/api/target-player", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerName }),
+      });
+    } catch (err) {
+      console.error("Failed to sync target player name:", err);
+    }
+  });
+
   document.getElementById("btn-send-like").addEventListener("click", async () => {
     const username = getUsername();
     await fetch("/api/trigger-like", {
@@ -111,9 +137,63 @@ function setupEventListeners() {
     });
   });
 
+  document.getElementById("btn-reset-deaths").addEventListener("click", async () => {
+    try {
+      const res = await fetch("/api/reset-deaths", { method: "POST" });
+      const data = await res.json();
+      document.getElementById("lbl-death-count").textContent = data.deaths ?? 0;
+    } catch (err) {
+      console.error("Failed to reset deaths:", err);
+    }
+  });
+
+  document.getElementById("btn-trigger-death").addEventListener("click", async () => {
+    const playerName = getPlayerName();
+    try {
+      const res = await fetch("/api/trigger-death", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerName }),
+      });
+      const data = await res.json();
+      document.getElementById("lbl-death-count").textContent = data.deaths ?? 0;
+    } catch (err) {
+      console.error("Failed to trigger death:", err);
+    }
+  });
+
   document.getElementById("btn-clear-log").addEventListener("click", () => {
     document.getElementById("console-logs").innerHTML = "";
   });
+}
+
+async function loadDeathsCount() {
+  try {
+    const res = await fetch("/api/deaths");
+    const data = await res.json();
+    document.getElementById("lbl-death-count").textContent = data.deaths ?? 0;
+    document.getElementById("lbl-max-deaths").textContent = data.maxDeaths ?? 5;
+    if (data.targetPlayer && document.activeElement !== document.getElementById("input-player-name")) {
+      document.getElementById("input-player-name").value = data.targetPlayer;
+    }
+  } catch {
+    // ignore
+  }
+
+  try {
+    const ammoRes = await fetch("/api/ammo-timer");
+    const ammoData = await ammoRes.json();
+    if (typeof ammoData.countdown === "number") {
+      document.getElementById("lbl-ammo-countdown").textContent = ammoData.countdown;
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function getPlayerName() {
+  const input = document.getElementById("input-player-name");
+  return input.value.trim() || "Thrisx0310";
 }
 
 function getUsername() {

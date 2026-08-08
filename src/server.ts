@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
+import { DefenseActionService } from "./gameplay/defense/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -143,29 +144,71 @@ const DEFENSE_GIFT_CATALOG: GiftMetadata[] = [
     id: "Rose",
     name: "Rose",
     category: "mob",
-    description: "Spawn Zombie cách Player/Căn cứ ≥ 50 blocks",
+    description: "Spawn Zombie tay rỗng, mũ da, tốc độ 1.5x (≥ 50m)",
     icon: "🧟",
   },
   {
     id: "TikTok",
     name: "TikTok",
+    category: "item",
+    description: "Tặng 10 hộp đạn 9mm (tacz:9mm)",
+    icon: "📦",
+  },
+  {
+    id: "Overreact",
+    name: "Overreact",
     category: "mob",
-    description: "Spawn Creeper cách Player/Căn cứ ≥ 50 blocks",
+    description: "Spawn Creeper tấn công pháo đài (≥ 50m)",
     icon: "🧨",
   },
   {
-    id: "Rosa",
-    name: "Rosa",
+    id: "Perfume",
+    name: "Perfume",
     category: "gacha",
-    description: "Rosa Defense Gacha (Quái đột biến tấn công pháo đài)",
-    icon: "🌹",
+    description: "Perfume Defense Gacha (Quay Mutant Zombies & Undead)",
+    icon: "🧴",
   },
   {
-    id: "Shamrock",
-    name: "Shamrock",
-    category: "gacha",
-    description: "Vòng quay Shamrock Defense Gacha",
-    icon: "☘️",
+    id: "GG",
+    name: "GG",
+    category: "item",
+    description: "Tặng 2 ổ bánh mì tiếp tế (bread x2)",
+    icon: "🍞",
+  },
+  {
+    id: "Finger Heart",
+    name: "Finger Heart",
+    category: "item",
+    description: "Tặng 1 quả Táo Vàng (Golden Apple)",
+    icon: "🍎",
+  },
+  {
+    id: "Journey Pass",
+    name: "Journey Pass",
+    category: "item",
+    description: "Tặng Full bộ Giáp Lưới (Chainmail Armor)",
+    icon: "🛡️",
+  },
+  {
+    id: "Little Kisses",
+    name: "Little Kisses",
+    category: "item",
+    description: "Tặng Súng AUG + 60 hộp đạn 5.56x45",
+    icon: "🔫",
+  },
+  {
+    id: "Okay",
+    name: "Okay",
+    category: "item",
+    description: "Tặng 10 hộp đạn 5.56x45 (tacz:556x45)",
+    icon: "📦",
+  },
+  {
+    id: "Doughnut",
+    name: "Doughnut",
+    category: "mob",
+    description: "Đại dịch: Summon 20 mutantszombies:crawler (≥ 50m)",
+    icon: "🍩",
   },
   {
     id: "Cap",
@@ -175,13 +218,6 @@ const DEFENSE_GIFT_CATALOG: GiftMetadata[] = [
     icon: "👾",
   },
   {
-    id: "Doughnut",
-    name: "Doughnut",
-    category: "mob",
-    description: "Triệu hồi Hố đen (Black Hole) nuốt chửng quái tấn công",
-    icon: "🕳️",
-  },
-  {
     id: "Confetti",
     name: "Confetti",
     category: "mob",
@@ -189,18 +225,11 @@ const DEFENSE_GIFT_CATALOG: GiftMetadata[] = [
     icon: "🐲",
   },
   {
-    id: "Perfume",
-    name: "Perfume",
-    category: "trap",
-    description: "Bẫy Bedrock nhốt quái & thả TNT khống chế",
-    icon: "💣",
-  },
-  {
     id: "Corgi",
     name: "Corgi",
     category: "event",
     description: "Đếm ngược Corgi Defense Event (5 phút)",
-    icon: "🐉",
+    icon: "🐕",
   },
   {
     id: "Money Gun",
@@ -225,6 +254,7 @@ export class ControlPanelServer {
     private readonly dispatcher: Dispatcher,
     private readonly game: GameActionService,
     private readonly port = 3050,
+    private readonly defense?: DefenseActionService,
   ) {}
 
   public addLog(type: LogEntry["type"], message: string) {
@@ -261,6 +291,72 @@ export class ControlPanelServer {
             }
 
             // REST API Routes
+            if (pathname === "/api/ammo-timer" && req.method === "GET") {
+              const countdown = this.defense ? this.defense.getAmmoCountdown() : 10;
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ countdown }));
+              return;
+            }
+
+            if (pathname === "/api/trigger-ammo" && req.method === "POST") {
+              const player = this.defense ? this.defense.getTargetPlayerName() : "Thrisx0310";
+              if (this.defense) {
+                await this.defense.giveRespawnKit(player);
+              }
+              this.addLog("system", `📦 Đã gửi 1 hộp đạn 9mm cho ${player}`);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success", player }));
+              return;
+            }
+
+            if (pathname === "/api/target-player" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const playerName = String(body.playerName ?? "Thrisx0310");
+              if (this.defense) {
+                this.defense.setTargetPlayerName(playerName);
+              }
+              this.addLog("system", `🎯 Cập nhật player trong game nhận Kit & tính lần chết: ${playerName}`);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success", targetPlayer: playerName }));
+              return;
+            }
+
+            if (pathname === "/api/deaths" && req.method === "GET") {
+              const deaths = this.defense ? this.defense.getPlayerDeaths() : 0;
+              const maxDeaths = this.defense ? this.defense.maxDeaths : 5;
+              const targetPlayer = this.defense ? this.defense.getTargetPlayerName() : "Thrisx0310";
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ deaths, maxDeaths, targetPlayer }));
+              return;
+            }
+
+            if (pathname === "/api/reset-deaths" && req.method === "POST") {
+              if (this.defense) {
+                await this.defense.resetDeaths();
+              }
+              const player = this.defense ? this.defense.getTargetPlayerName() : "Thrisx0310";
+              this.addLog("system", `🔄 Đã reset số lần chết của ${player} về 0`);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success", deaths: 0, targetPlayer: player }));
+              return;
+            }
+
+            if (pathname === "/api/trigger-death" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const playerName = String(
+                body.playerName ?? body.username ?? (this.defense ? this.defense.getTargetPlayerName() : "Thrisx0310"),
+              );
+              if (this.defense) {
+                await this.defense.recordPlayerDeath(playerName);
+              }
+              const currentDeaths = this.defense ? this.defense.getPlayerDeaths() : 0;
+              this.addLog("system", `💀 Ghi nhận 1 lần chết cho Player: ${playerName} (Hiện tại: ${currentDeaths}/5)`);
+
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success", deaths: currentDeaths, targetPlayer: playerName }));
+              return;
+            }
+
             if (pathname === "/api/mode" && req.method === "GET") {
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ mode: this.dispatcher.getMode() }));

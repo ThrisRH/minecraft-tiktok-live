@@ -42,8 +42,13 @@
     <!-- Control Bar (Tester Username & Combo Count) -->
     <section class="control-bar">
       <div class="input-group">
-        <label for="input-username">👤 Người Gửi (Tester Name):</label>
-        <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên tester...">
+        <label for="input-username">🎁 Người Gửi Quà (Viewer):</label>
+        <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên người gửi quà...">
+      </div>
+
+      <div class="input-group">
+        <label for="input-player-name">🎯 Player Trong Game (Chết & Nhận Kit):</label>
+        <input type="text" id="input-player-name" value="Thrisx0310" placeholder="Nhập tên player trong game...">
       </div>
 
       <div class="input-group">
@@ -59,8 +64,20 @@
       </div>
 
       <div class="quick-action-group">
+        <div class="death-status-badge">
+          💀 Lần chết: <span id="lbl-death-count">0</span> / <span id="lbl-max-deaths">5</span>
+        </div>
+        <div class="ammo-status-badge">
+          📦 Đạn 9mm: <span id="lbl-ammo-countdown">10</span>s
+        </div>
+        <button id="btn-reset-deaths" class="btn btn-danger">
+          🔄 Reset Lần Chết
+        </button>
+        <button id="btn-trigger-death" class="btn btn-secondary" title="Mô phỏng 1 lần chết & cấp kit">
+          💀 +1 Lần Chết
+        </button>
         <button id="btn-send-like" class="btn btn-secondary">
-          ❤️ Gửi 500 Tim (Milestone)
+          ❤️ Gửi 500 Tim
         </button>
       </div>
     </section>

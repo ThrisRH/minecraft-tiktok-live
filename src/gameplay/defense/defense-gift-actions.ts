@@ -25,6 +25,13 @@ export interface DefenseGiftActionContext {
 export class DefenseGiftActionService {
   constructor(private readonly context: DefenseGiftActionContext) {}
 
+  private getTargetPlayer(): string {
+    if (this.context.getTargetPlayerName) {
+      return this.context.getTargetPlayerName();
+    }
+    return "Thrisx0310";
+  }
+
   // ==========================================
   // DEFAULT & CORE HANDLERS
   // ==========================================
@@ -118,62 +125,38 @@ export class DefenseGiftActionService {
       }
     }
   }
+  async tiktokGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    const totalAmmo = count * 10;
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} TikTok! Viện trợ x${totalAmmo} đạn 9mm!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "TikTok",
+      count,
+    );
 
-  async heartGift(gift: GiftEvent) {
-    // TODO: Logic xử lý quà Heart cho Defense mode
-  }
-
-  async zombieGift(gift: GiftEvent) {
-    // TODO: Logic xử lý quà Zombie cho Defense mode
-  }
-
-  async creeperGift(gift: GiftEvent) {
-    return this.tiktokGift(gift);
-  }
-
-  async ironGolemGift(gift: GiftEvent) {
-    // TODO: Logic xử lý quà Iron Golem cho Defense mode
-  }
-
-  async lightningGift(gift: GiftEvent) {
-    // TODO: Logic xử lý quà Lightning cho Defense mode
-  }
-
-  async perfumeGift(gift: GiftEvent) {
-    // TODO: Logic xử lý quà Perfume cho Defense mode
+    const player = this.getTargetPlayer();
+    await this.executeWithRetry(`give ${player} tacz:ammo{AmmoId:"tacz:9mm"} ${totalAmmo}`);
   }
 
   /**
-   * Quà TikTok: Spawn Creeper cách player >= 50 block.
+   * 2. Overreact Gift: Spawn Creeper cách player >= 50 block
    */
-  async tiktokGift(gift: GiftEvent) {
-    const giftName = "TikTok";
+  async overreactGift(gift: GiftEvent) {
     const count = gift.count || 1;
-
-    try {
-      await this.context.sendMessage(
-        `[DEFENSE] ${gift.username} đã tặng x${count} ${giftName}! Spawn ${count} Creeper cách 50 block!`,
-      );
-    } catch (error) {
-      console.warn("[DEFENSE] Failed to send gift notification:", error);
-    }
-
-    try {
-      await this.context.showLiveParticipant(
-        gift.username,
-        gift.giftName ?? giftName,
-        count,
-      );
-    } catch (error) {
-      console.warn("[DEFENSE] Failed to show live participant:", error);
-    }
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} Overreact! Spawn ${count} Creeper cách 50m!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "Overreact",
+      count,
+    );
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     const customNameNbt = `{CustomName:'{"text":"${safeName}"}'}`;
-
-    const sleep = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
-    const delayMs = 300;
 
     for (let i = 0; i < count; i++) {
       const command = buildDefenseSummonCommand(
@@ -184,9 +167,180 @@ export class DefenseGiftActionService {
       await this.executeWithRetry(command);
 
       if (i < count - 1) {
-        await sleep(delayMs);
+        await this.delay(300);
       }
     }
+  }
+
+  /**
+   * 3. Perfume Gift: Quay Perfume Defense Gacha triệu hồi Mutants & Undead cách 50m
+   */
+  async perfumeGift(gift: GiftEvent) {
+    await this.executeGachaRolls(
+      gift,
+      defenseRosaGachaOptions,
+      "🧴",
+      "Vòng Quay Perfume Gacha",
+    );
+  }
+
+  async rosaGift(gift: GiftEvent) {
+    await this.perfumeGift(gift);
+  }
+
+  /**
+   * 4. GG Gift: Viện trợ 2 bánh mì cho Player
+   */
+  async ggGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    const breadAmount = count * 2;
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} GG! Viện trợ ${breadAmount} ổ bánh mì!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "GG",
+      count,
+    );
+
+    const player = this.getTargetPlayer();
+    await this.executeWithRetry(`give ${player} bread ${breadAmount}`);
+  }
+
+  /**
+   * 5. Finger Heart Gift / Heart: Viện trợ Táo Vàng
+   */
+  async fingerHeartGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} Finger Heart! Viện trợ ${count} Táo Vàng!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "Finger Heart",
+      count,
+    );
+
+    const player = this.getTargetPlayer();
+    await this.executeWithRetry(`give ${player} golden_apple ${count}`);
+  }
+
+  async heartGift(gift: GiftEvent) {
+    await this.fingerHeartGift(gift);
+  }
+
+  /**
+   * 6. Journey Pass Gift: Viện trợ Full bộ Giáp Lưới (Chainmail Armor)
+   */
+  async journeyPassGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} Journey Pass! Cấp Full bộ Giáp Lưới!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "Journey Pass",
+      count,
+    );
+
+    const player = this.getTargetPlayer();
+    for (let i = 0; i < count; i++) {
+      await this.executeWithRetry(`give ${player} chainmail_helmet 1`);
+      await this.executeWithRetry(`give ${player} chainmail_chestplate 1`);
+      await this.executeWithRetry(`give ${player} chainmail_leggings 1`);
+      await this.executeWithRetry(`give ${player} chainmail_boots 1`);
+    }
+  }
+
+  /**
+   * 7. Little Kisses Gift: Viện trợ Súng AUG & 60 hộp đạn 5.56x45
+   */
+  async littleKissesGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    const ammoAmount = count * 60;
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} Little Kisses! Viện trợ Súng AUG & x${ammoAmount} đạn 5.56x45!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "Little Kisses",
+      count,
+    );
+
+    const player = this.getTargetPlayer();
+    for (let i = 0; i < count; i++) {
+      await this.executeWithRetry(
+        `give ${player} tacz:modern_kinetic_gun{GunId:"tacz:aug",GunCurrentAmmoCount:17,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1`,
+      );
+    }
+    await this.executeWithRetry(`give ${player} tacz:ammo{AmmoId:"tacz:556x45"} ${ammoAmount}`);
+  }
+
+  async kissesGift(gift: GiftEvent) {
+    await this.littleKissesGift(gift);
+  }
+
+  /**
+   * 8. Okay Gift: Viện trợ 10 hộp đạn 5.56x45
+   */
+  async okayGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    const totalAmmo = count * 10;
+    await this.context.sendMessage(
+      `[DEFENSE] ${gift.username} đã tặng x${count} Okay! Viện trợ x${totalAmmo} đạn 5.56x45!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "Okay",
+      count,
+    );
+
+    const player = this.getTargetPlayer();
+    await this.executeWithRetry(`give ${player} tacz:ammo{AmmoId:"tacz:556x45"} ${totalAmmo}`);
+  }
+
+  /**
+   * 9. Doughnut Gift: Đại dịch summon 20 mutantszombies:crawler trong bán kính 50m
+   */
+  async doughnutGift(gift: GiftEvent) {
+    const count = gift.count || 1;
+    const totalCrawlers = count * 20;
+    await this.context.sendMessage(
+      `[DEFENSE] 🍩 ${gift.username} đã tặng x${count} Doughnut! Kích hoạt Đại dịch: Summon ${totalCrawlers} Mutants Crawler cách 50m!`,
+    );
+    await this.context.showLiveParticipant(
+      gift.username,
+      gift.giftName ?? "Doughnut",
+      count,
+    );
+
+    const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    const customNameNbt = `{CustomName:'{"text":"${safeName}"}'}`;
+
+    for (let i = 0; i < totalCrawlers; i++) {
+      const command = buildDefenseSummonCommand(
+        "mutantszombies:crawler",
+        DEFAULT_MIN_SPAWN_DISTANCE,
+        customNameNbt,
+      );
+      await this.executeWithRetry(command);
+
+      if (i % 5 === 0) {
+        await this.delay(100);
+      }
+    }
+  }
+
+  async creeperGift(gift: GiftEvent) {
+    return this.overreactGift(gift);
+  }
+
+  async ironGolemGift(gift: GiftEvent) {
+    // TODO: Logic xử lý quà Iron Golem cho Defense mode
+  }
+
+  async lightningGift(gift: GiftEvent) {
+    // TODO: Logic xử lý quà Lightning cho Defense mode
   }
 
   async capGift(gift: GiftEvent) {
@@ -225,17 +379,8 @@ export class DefenseGiftActionService {
     // TODO: Logic xử lý quà Rifle cho Defense mode
   }
 
-  /**
-   * Quà Rosa: Quay Gacha triệu hồi Mutants & Undead cách player >= 50 block với hiệu ứng nhảy tên trên màn hình y hệt Survival mode.
-   * Options: mutant_zombie, mutant_frozen_zombie, mutant_husk, mutant_jungle_zombie, summongroup undead, summongroup zombie_miners
-   */
-  async rosaGift(gift: GiftEvent) {
-    await this.executeGachaRolls(
-      gift,
-      defenseRosaGachaOptions,
-      "🌹",
-      "Vòng Quay Rosa Gacha",
-    );
+  async zombieGift(gift: GiftEvent) {
+    // TODO: Logic xử lý quà Zombie cho Defense mode
   }
 
   private async executeGachaRolls(

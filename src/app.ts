@@ -26,6 +26,11 @@ async function bootstrap() {
     const dispatcher = new Dispatcher(game, defense, initialMode);
     const tikTok = new TikTokService(dispatcher);
 
+    // Khởi tạo Scoreboard, Bossbar và bắt đầu vòng lặp đếm lùi đạn & theo dõi player chết
+    void defense.initScoreboard();
+    defense.startDeathMonitor(1500);
+    defense.startAmmoTimer();
+
     const mode = process.argv[2];
     const giftName = process.argv[3];
     const count = Number(process.argv[4] ?? 1);
@@ -34,7 +39,7 @@ async function bootstrap() {
     // Desktop GUI / Web Control Panel Mode
     if (mode === "gui" || mode === "server" || !mode) {
       const port = Number(process.env.PORT ?? 3050);
-      const server = new ControlPanelServer(dispatcher, game, port);
+      const server = new ControlPanelServer(dispatcher, game, port, defense);
       const url = await server.start();
 
       console.log(`\n==================================================`);
