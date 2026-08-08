@@ -150,81 +150,84 @@ export const rosaGachaOptions: GachaOption[] = [
 ];
 
 export const shamrockGachaOptions: GachaOption[] = [
-  // Common: Thức ăn (Chỉ 3 options: 16 Bánh mì, 2 Táo vàng, 1 Táo vàng phù phép)
+  // Common: Full giáp da + kiếm gỗ + bánh mì x 12
   {
-    id: "bread_x16",
-    name: "16 Bánh Mì",
-    command: "execute at @a run give @a bread 16",
+    id: "leather_armor_wood_sword_bread",
+    name: "Combo lá rách đùm lá rách hơn",
+    command:
+      "execute at @a run give @a leather_helmet 1; execute at @a run give @a leather_chestplate 1; execute at @a run give @a leather_leggings 1; execute at @a run give @a leather_boots 1; execute at @a run give @a wooden_sword 1; execute at @a run give @a bread 12",
+    weight: 30,
+    color: "gray",
+  },
+
+  // Rare: Táo vàng phù phép + táo vàng x 2
+  {
+    id: "enchanted_gapple_and_gapples",
+    name: "Ăn lấy tí lộc tí lá",
+    command:
+      "execute at @a run give @a enchanted_golden_apple 1; execute at @a run give @a golden_apple 2",
     weight: 20,
-    color: "gray",
+    color: "blue",
   },
+
+  // Rare: Full giáp sắt + kiếm sắt + khiên
   {
-    id: "golden_apple_x2",
-    name: "2 Táo Vàng",
-    command: "execute at @a run give @a golden_apple 2",
-    weight: 18,
-    color: "gray",
+    id: "iron_armor_sword_shield",
+    name: "Combo đời bạc",
+    command:
+      "execute at @a run give @a iron_helmet 1; execute at @a run give @a iron_chestplate 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots 1; execute at @a run give @a iron_sword 1; execute at @a run give @a shield 1",
+    weight: 20,
+    color: "blue",
   },
+
+  // Uncommon: Combo thợ đục (Cúp sắt + Áo da chống nổ tối đa)
   {
-    id: "enchanted_golden_apple_x1",
-    name: "1 Táo Vàng Phù Phép",
-    command: "execute at @a run give @a enchanted_golden_apple 1",
+    id: "miner_combo",
+    name: "Combo thợ đục",
+    command:
+      'execute at @a run give @a iron_pickaxe 1; execute at @a run give @a leather_chestplate{Enchantments:[{id:"minecraft:blast_protection",lvl:5s}]} 1',
+    weight: 15,
+    color: "green",
+  },
+
+  // Epic: Combo vua lì đòn
+  {
+    id: "iron_armor_epic_set",
+    name: "Combo vua lì đòn",
+    command:
+      'execute at @a run give @a iron_helmet 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:blast_protection",lvl:5s}]} 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots{Enchantments:[{id:"minecraft:feather_falling",lvl:4s}]} 1; execute at @a run give @a iron_sword 1',
     weight: 12,
-    color: "green",
+    color: "#A855F7",
   },
 
-  // Uncommon: Set giáp sắt thường (không phù phép), Vũ khí không phù phép (tối đa kiếm sắt & khiên thường)
+  // Epic: Combo dân chủ (Áo sắt protection 3 + súng Glock 17 + 60 băng đạn 9mm)
   {
-    id: "iron_armor_set",
-    name: "Set Giáp Sắt",
+    id: "democracy_combo_epic",
+    name: "Combo Dân Chủ",
     command:
-      "execute at @a run give @a iron_helmet 1; execute at @a run give @a iron_chestplate 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots 1",
-    weight: 15,
-    color: "green",
-  },
-  {
-    id: "iron_sword_and_shield",
-    name: "Kiếm Sắt & Khiên",
-    command:
-      "execute at @a run give @a iron_sword 1; execute at @a run give @a shield 1",
-    weight: 15,
-    color: "green",
+      'execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:glock_17",GunCurrentAmmoCount:17,HasBulletInBarrel:1b,GunFireMode:"SEMI",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:9mm"} 60',
+    weight: 12,
+    color: "#A855F7",
   },
 
-  // Rare: Phù phép duy nhất chỉ áo sắt (không full set)
+  // Legend: Full set kim cương (full protection & chống nổ) + kiếm kim cương (sharpness & smite) + khiên
   {
-    id: "enchanted_iron_chestplate",
-    name: "Áo Sắt Phù Phép Protection III",
+    id: "legend_diamond_set_and_shield",
+    name: "Combo siu cấp dô địch",
     command:
-      'execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1',
-    weight: 10,
-    color: "blue",
-  },
-  {
-    id: "survival_potion_combo",
-    name: "Combo Sinh Tồn",
-    command:
-      "execute at @a run effect give @a regeneration 60 0; execute at @a run effect give @a resistance 60 0",
-    weight: 10,
-    color: "blue",
-  },
-
-  // Legendary (Full giáp kim cương phù phép (không Netherite), Kiếm kim cương Smite 3 & Sharpness 4)
-  {
-    id: "legendary_diamond_armor_set",
-    name: "Set Giáp Kim Cương Phù Phép",
-    command:
-      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:unbreaking",lvl:3s}]} 1',
-    weight: 2,
+      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5s},{id:"minecraft:smite",lvl:5s}]} 1; execute at @a run give @a shield 1',
+    weight: 6,
     color: "gold",
   },
+
+  // Mythic: Combo hoa rơi cửa phật (Minigun + 200 băng đạn 308mm)
   {
-    id: "legendary_diamond_sword",
-    name: "Kiếm Kim Cương Thượng Cổ",
+    id: "mythic_minigun_combo",
+    name: "Combo hoa rơi cửa phật",
     command:
-      'execute at @a run give @a diamond_sword{Enchantments:[{id:"minecraft:sharpness",lvl:4s},{id:"minecraft:smite",lvl:3s}]} 1',
+      'execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308mm"} 200',
     weight: 2,
-    color: "gold",
+    color: "red",
   },
 ];
 

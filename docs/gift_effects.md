@@ -9,7 +9,7 @@ Tài liệu này ghi lại quà nào sẽ triệu hồi vật gì trong Minecraf
 | Heart        | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 1   |
 | Overreact    | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 1   |
 | Shamrock     | Shamrock Gacha     | Quay Vòng Quay Gacha Shamrock độc lập  | 1   |
-| Money Gun    | Wither Storm       | Triệu hồi Wither Storm tồn tại 10 phút | 500 |
+| Money Gun    | Wither Storm & 3 Wither | Triệu hồi Wither Storm + 3 Wither thường 10 phút (tự hồi sinh 3 Wither nếu bị diệt) | 500 |
 | Finger Heart | Quay Gacha 1       | Quay Gacha custom option ngẫu nhiên    | 5   |
 | Rose         | Zombie giáp        | Mỗi lần quà sẽ triệu hồi 1 zombie giáp | 1   |
 | Rosa         | Rosa Gacha         | Quay Vòng Quay Gacha Rosa độc lập      | 10  |
@@ -19,7 +19,7 @@ Tài liệu này ghi lại quà nào sẽ triệu hồi vật gì trong Minecraf
 | GG           | Fireworks          | Bắn pháo hoa ăn mừng                   | 1   |
 | Cap          | Wither             | Triệu hồi wither                       | 99  |
 | Doughnut     | Black hole         | Triệu hồi terramity:black_hole ~ 5 ~   | 30  |
-| Corgi        | Corgi Dragon       | Sự kiện 5 phút triệu hồi 2 Ender Dragon| 299 |
+| Corgi        | Đại tiệc nhà rồng  | Sự kiện 5 phút triệu hồi 2 Ender Dragon (tự hồi sinh 2 rồng nếu bị diệt)| 299 |
 
 ## Nơi xử lý
 
