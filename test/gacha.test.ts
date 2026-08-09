@@ -347,7 +347,7 @@ test("Little Kisses gift triggers default gift message", async () => {
   );
 });
 
-test("Lucky Pig gift summons recruits with custom name", async () => {
+test("Lucky Pig gift summons bodyguards with custom name", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -369,10 +369,10 @@ test("Lucky Pig gift summons recruits with custom name", async () => {
   assert.equal(
     commands.filter(
       (cmd) =>
-        cmd.includes("summon recruits:") && cmd.includes("PigGiver"),
+        cmd.includes("summon bodyguard:bodyguard_gk") && cmd.includes("PigGiver"),
     ).length,
     6,
-    "Should summon 6 recruits for count 2 with custom name PigGiver",
+    "Should summon 6 bodyguards for count 2 with custom name PigGiver",
   );
 });
 
