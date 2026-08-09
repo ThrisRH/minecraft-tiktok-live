@@ -12,6 +12,8 @@ export interface WarStatus {
   alliedCount: number;
   enemyCount: number;
   position: WarPosition | null;
+  teamBlue: string[];
+  teamRed: string[];
 }
 
 export class WorldWarService {
@@ -21,6 +23,9 @@ export class WorldWarService {
   private hudInterval?: NodeJS.Timeout;
   private alliedCount = 0;
   private enemyCount = 0;
+
+  private teamBlue: string[] = [];
+  private teamRed: string[] = [];
 
   constructor(private readonly minecraft: MinecraftService) {}
 
@@ -35,7 +40,86 @@ export class WorldWarService {
       alliedCount: this.alliedCount,
       enemyCount: this.enemyCount,
       position: this.warPosition,
+      teamBlue: this.teamBlue,
+      teamRed: this.teamRed,
     };
+  }
+
+  async startTwoTeamsWar() {
+    this.isWarActive = true;
+    this.teamBlue = [];
+    this.teamRed = [];
+
+    // 1. Fill 2 team territories (Blue & Red Wool)
+    await this.minecraft.execute(
+      "execute at @a run fill ~-16 -61 ~ ~-1 -61 ~15 minecraft:blue_wool",
+    );
+    await this.minecraft.execute(
+      "execute at @a run fill ~ -61 ~ ~15 -61 ~15 minecraft:red_wool",
+    );
+
+    // 2. Teleport streamer overhead looking straight down from the sky
+    await this.minecraft.execute("execute at @a run tp @p ~0 ~35 ~8 0 90");
+
+    // 3. Announcements & Sounds
+    await this.minecraft.execute(
+      `title @a title {"text":"⚔️ ĐẠI CHIẾN 2 PHE (BLUE vs RED) ⚔️","color":"gold","bold":true}`,
+    );
+    await this.minecraft.execute(
+      `title @a subtitle {"text":"Comment 1: TEAM XANH 🔵 | Comment 2: TEAM ĐỎ 🔴","color":"yellow","bold":true}`,
+    );
+    await this.minecraft.execute(
+      "playsound entity.ender_dragon.growl master @a ~ ~ ~ 1 1 1",
+    );
+
+    this.startBattlefieldHud();
+  }
+
+  async handleComment(username: string, commentText: string) {
+    const text = commentText.trim().toLowerCase();
+    const safeName = username.replace(/\\/g, "\\\\").replace(/"/g, '"');
+
+    if (text.includes("1") || text.includes("xanh") || text.includes("blue")) {
+      if (!this.teamBlue.includes(username)) {
+        this.teamBlue.push(username);
+      }
+
+      await this.minecraft.execute(
+        `tellraw @a {"text":"🔵 [Team Xanh] ","color":"blue","bold":true,"extra":[{"text":"${safeName} vừa gia nhập (Comment 1)!","color":"aqua"}]}`,
+      );
+
+      // Spawn Blue soldier & Scaled Text Display overhead
+      await this.minecraft.execute(
+        `execute at @a run summon recruits:villager_noble ~-8 -60 ~7 {CustomName:'{"text":"[Xanh] ${safeName}"}',RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}]}`,
+      );
+      await this.minecraft.execute(
+        `execute at @a run summon text_display ~-8 -56 ~7 {text:'{"text":"🔵 ${safeName}","color":"aqua","bold":true}',billboard:"center",see_through:1b,transformation:{scale:[3.0f,3.0f,3.0f]}}`,
+      );
+
+      return { status: "success", team: "blue", username };
+    }
+
+    if (text.includes("2") || text.includes("đỏ") || text.includes("do") || text.includes("red")) {
+      if (!this.teamRed.includes(username)) {
+        this.teamRed.push(username);
+      }
+
+      await this.minecraft.execute(
+        `tellraw @a {"text":"🔴 [Team Đỏ] ","color":"red","bold":true,"extra":[{"text":"${safeName} vừa gia nhập (Comment 2)!","color":"yellow"}]}`,
+      );
+
+      // Spawn Red soldier & Scaled Text Display overhead
+      await this.minecraft.execute(
+        `execute at @a run summon recruits:villager_noble ~8 -60 ~7 {CustomName:'{"text":"[Đỏ] ${safeName}"}',RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}]}`,
+      );
+      await this.minecraft.execute(
+        `execute at @a run summon text_display ~8 -56 ~7 {text:'{"text":"🔴 ${safeName}","color":"red","bold":true}',billboard:"center",see_through:1b,transformation:{scale:[3.0f,3.0f,3.0f]}}`,
+      );
+
+      return { status: "success", team: "red", username };
+    }
+
+    return { status: "ignored", reason: "No team match" };
   }
 
   async startWar(x: number, y: number, z: number) {
@@ -210,8 +294,11 @@ export class WorldWarService {
         return;
       }
 
+      const blueStr = `🔵 Team Xanh: ${this.teamBlue.length}`;
+      const redStr = `🔴 Team Đỏ: ${this.teamRed.length}`;
+
       void this.minecraft.execute(
-        `title @a actionbar {"text":"⚔️ WORLD WAR - WAVE ${this.currentWave} ⚔️  |  🪖 Đồng minh: ${this.alliedCount}  |  🎯 Lực lượng địch: ${this.enemyCount}","color":"red","bold":true}`,
+        `title @a actionbar {"text":"⚔️ WORLD WAR 2 PHE ⚔️  |  ${blueStr}  |  ${redStr}","color":"gold","bold":true}`,
       );
     }, 1500);
 

@@ -175,7 +175,21 @@ export class ControlPanelServer {
     private readonly game: GameActionService,
     private readonly port = 3050,
     private readonly tikTok?: TikTokService,
-  ) {}
+  ) {
+    if (this.tikTok) {
+      this.tikTok.onComment = (username, text) => {
+        void (async () => {
+          const res = await this.game.worldWarService.handleComment(username, text);
+          if (res.status === "success") {
+            this.addLog(
+              "system",
+              `💬 Comment '${text}' từ ${username} -> Team ${res.team === "blue" ? "XANH (🔵)" : "ĐỎ (🔴)"}`,
+            );
+          }
+        })();
+      };
+    }
+  }
 
   public addLog(type: LogEntry["type"], message: string) {
     const entry: LogEntry = {
@@ -255,6 +269,44 @@ export class ControlPanelServer {
               this.addLog("system", "🕊️ Đã dừng trận chiến World War");
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ status: "success" }));
+              return;
+            }
+
+            if (pathname === "/api/war/start-2teams" && req.method === "POST") {
+              await this.game.worldWarService.startTwoTeamsWar();
+              this.addLog(
+                "system",
+                "⚔️ Đã tạo 2 mảnh đất Wool (Blue ~-16..~-1 & Red ~..~15) & góc nhìn Streamer từ trên trời!",
+              );
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success" }));
+              return;
+            }
+
+            if (pathname === "/api/comment" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const username = String(body.username ?? "ViewerTester").trim();
+              const text = String(body.text ?? "1").trim();
+
+              const result = await this.game.worldWarService.handleComment(
+                username,
+                text,
+              );
+
+              if (result.status === "success") {
+                this.addLog(
+                  "system",
+                  `💬 Comment '${text}' từ ${username} -> Team ${result.team === "blue" ? "XANH (🔵)" : "ĐỎ (🔴)"}`,
+                );
+              } else {
+                this.addLog(
+                  "system",
+                  `💬 Comment '${text}' từ ${username} (Bỏ qua: Cần comment '1' cho Team Xanh hoặc '2' cho Team Đỏ)`,
+                );
+              }
+
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify(result));
               return;
             }
 

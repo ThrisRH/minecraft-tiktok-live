@@ -14,6 +14,7 @@ export class TikTokService {
   private connection?: TikTokConnection;
   private currentUsername: string | null = null;
   private isConnected = false;
+  public onComment?: (username: string, text: string) => void;
 
   constructor(private readonly dispatcher: Dispatcher) {}
 
@@ -122,6 +123,19 @@ export class TikTokService {
 
       if (count > 0) {
         void this.dispatcher.dispatch({ type: "like", count, username });
+      }
+    });
+
+    this.connection.on(WebcastEvent.CHAT, (data: any) => {
+      const username =
+        data?.user?.uniqueId ??
+        data?.user?.nickname ??
+        data?.nickname ??
+        "unknown";
+      const commentText = String(data?.comment ?? data?.text ?? "").trim();
+
+      if (commentText && this.onComment) {
+        this.onComment(username, commentText);
       }
     });
 

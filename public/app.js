@@ -110,6 +110,49 @@ function setupEventListeners() {
   document.getElementById("btn-clear-log").addEventListener("click", () => {
     document.getElementById("console-logs").innerHTML = "";
   });
+
+  // World War 2 Teams START Button
+  document.getElementById("btn-start-war-2teams").addEventListener("click", async () => {
+    try {
+      await fetch("/api/war/start-2teams", { method: "POST" });
+    } catch (err) {
+      console.error("Failed to start World War 2 Teams:", err);
+    }
+  });
+
+  // Comment Simulator Buttons
+  document.getElementById("btn-send-comment").addEventListener("click", async () => {
+    const user = document.getElementById("input-comment-user").value.trim() || "ViewerTester";
+    const text = document.getElementById("input-comment-text").value.trim() || "1";
+    await sendSimulatedComment(user, text);
+  });
+
+  document.getElementById("btn-quick-blue").addEventListener("click", async () => {
+    const randomUser = "ViewerBlue_" + Math.floor(Math.random() * 1000);
+    document.getElementById("input-comment-user").value = randomUser;
+    document.getElementById("input-comment-text").value = "1";
+    await sendSimulatedComment(randomUser, "1");
+  });
+
+  document.getElementById("btn-quick-red").addEventListener("click", async () => {
+    const randomUser = "ViewerRed_" + Math.floor(Math.random() * 1000);
+    document.getElementById("input-comment-user").value = randomUser;
+    document.getElementById("input-comment-text").value = "2";
+    await sendSimulatedComment(randomUser, "2");
+  });
+}
+
+async function sendSimulatedComment(username, text) {
+  try {
+    await fetch("/api/comment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, text }),
+    });
+    await updateWarTeamCounters();
+  } catch (err) {
+    console.error("Failed to send comment:", err);
+  }
 }
 
 function getUsername() {
@@ -202,6 +245,7 @@ function startLogPolling() {
       const res = await fetch("/api/logs");
       const logs = await res.json();
       renderLogs(logs);
+      await updateWarTeamCounters();
     } catch {
       // ignore
     }
@@ -209,6 +253,23 @@ function startLogPolling() {
 
   void pollLogs();
   setInterval(pollLogs, 1000);
+}
+
+async function updateWarTeamCounters() {
+  try {
+    const res = await fetch("/api/war/status");
+    const status = await res.json();
+    const blueCount = status?.teamBlue?.length ?? 0;
+    const redCount = status?.teamRed?.length ?? 0;
+
+    const elBlue = document.getElementById("cnt-team-blue");
+    const elRed = document.getElementById("cnt-team-red");
+
+    if (elBlue) elBlue.textContent = blueCount;
+    if (elRed) elRed.textContent = redCount;
+  } catch {
+    // ignore
+  }
 }
 
 function renderLogs(logs) {
