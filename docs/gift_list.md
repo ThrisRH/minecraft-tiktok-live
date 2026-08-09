@@ -23,6 +23,9 @@ This file contains the master list of supported TikTok gifts.
 - GG - 1 done (Fireworks)
 - Little Kisses - Enchanted Golden Apple + Iron Chestplate Prot 4 Blast Prot 3
 - Lucky Pig - Summon guardvillagers:guard với tên username
+- World War - Triệu hồi Tiểu đội Lính Viện trợ Đồng minh (Villager Noble / Bowman / Guard)
+- Air Strike - Pháo binh oanh tạc & bẫy Bedrock + TNT Gravity
+- Supply Drop - Hòm viện trợ trang bị TACZ & Táo vàng
 - compress tnt
 
 ## Agent Requirements

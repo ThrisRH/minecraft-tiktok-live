@@ -11,6 +11,7 @@ import {
 } from "../config/gacha-config.js";
 import { CorgiEvent } from "./events/corgi-event.js";
 import { WitherStormEvent } from "./events/wither-storm-event.js";
+import { WorldWarService } from "./world-war.service.js";
 
 export class GameActionService {
   private totalLikes = 0;
@@ -26,6 +27,7 @@ export class GameActionService {
 
   private readonly witherStormEvent: WitherStormEvent;
   private readonly corgiEvent: CorgiEvent;
+  public readonly worldWarService: WorldWarService;
 
   constructor(
     private readonly minecraft: MinecraftService,
@@ -43,6 +45,7 @@ export class GameActionService {
 
     this.witherStormEvent = new WitherStormEvent(eventContext);
     this.corgiEvent = new CorgiEvent(eventContext);
+    this.worldWarService = new WorldWarService(this.minecraft);
 
     this.giftActions = new GiftActionService({
       ...eventContext,
@@ -51,6 +54,16 @@ export class GameActionService {
       shamrockGachaGift: (gift: GiftEvent) => this.shamrockGachaGift(gift),
       moneyGunGift: (gift: GiftEvent) => this.moneyGunGift(gift),
       corgiGift: (gift: GiftEvent) => this.corgiGift(gift),
+      worldWarGift: (gift: GiftEvent) =>
+        this.worldWarService.spawnAlliedSquad(
+          gift.username,
+          gift.giftName,
+          gift.count,
+        ),
+      artilleryGift: (gift: GiftEvent) =>
+        this.worldWarService.triggerArtilleryStrike(gift.username),
+      supplyCrateGift: (gift: GiftEvent) =>
+        this.worldWarService.dropSupplyCrate(gift.username),
     });
   }
 

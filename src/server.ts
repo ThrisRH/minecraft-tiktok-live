@@ -137,6 +137,27 @@ const GIFT_CATALOG: GiftMetadata[] = [
     description: "Bẫy 4 cột Bedrock nhốt 2s & TNT Gravity",
     icon: "💣",
   },
+  {
+    id: "World War",
+    name: "World War",
+    category: "mob",
+    description: "Triệu hồi Tiểu đội Lính Viện trợ Đồng minh",
+    icon: "⚔️",
+  },
+  {
+    id: "Air Strike",
+    name: "Air Strike",
+    category: "trap",
+    description: "Pháo binh oanh tạc & Sấm sét",
+    icon: "💥",
+  },
+  {
+    id: "Supply Drop",
+    name: "Supply Drop",
+    category: "item",
+    description: "Hòm viện trợ trang bị TACZ & Táo vàng",
+    icon: "📦",
+  },
 ];
 
 interface LogEntry {
@@ -208,6 +229,32 @@ export class ControlPanelServer {
                 ? this.tikTok.getStatus()
                 : { connected: false, username: null };
               res.end(JSON.stringify(status));
+              return;
+            }
+
+            if (pathname === "/api/war/status" && req.method === "GET") {
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify(this.game.worldWarService.getWarStatus()));
+              return;
+            }
+
+            if (pathname === "/api/war/start" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const x = Number(body.x ?? 0);
+              const y = Number(body.y ?? 64);
+              const z = Number(body.z ?? 0);
+              await this.game.worldWarService.startWar(x, y, z);
+              this.addLog("system", `⚔️ Đã khởi tạo trận chiến World War tại pos (${x}, ${y}, ${z})`);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success" }));
+              return;
+            }
+
+            if (pathname === "/api/war/stop" && req.method === "POST") {
+              await this.game.worldWarService.stopWar();
+              this.addLog("system", "🕊️ Đã dừng trận chiến World War");
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success" }));
               return;
             }
 

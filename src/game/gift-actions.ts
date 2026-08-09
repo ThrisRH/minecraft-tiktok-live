@@ -13,6 +13,9 @@ interface GiftActionContext {
   shamrockGachaGift?(gift: GiftEvent): Promise<void>;
   moneyGunGift?(gift: GiftEvent): Promise<void>;
   corgiGift?(gift: GiftEvent): Promise<void>;
+  worldWarGift?(gift: GiftEvent): Promise<void>;
+  artilleryGift?(gift: GiftEvent): Promise<void>;
+  supplyCrateGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {

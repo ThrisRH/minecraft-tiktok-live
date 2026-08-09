@@ -58,6 +58,10 @@ export function createGiftActionRegistry(
     "Lucky Pig",
     "Lucky pig",
     "LuckyPig",
+    "World War",
+    "WorldWar",
+    "Air Strike",
+    "Supply Drop",
   ]);
 
   actions.set("Heart", (gift) =>
@@ -124,6 +128,26 @@ export function createGiftActionRegistry(
   );
   actions.set("LuckyPig", (gift) =>
     service.luckyPigGift({ ...gift, giftName: "LuckyPig" }),
+  );
+  actions.set("World War", (gift) =>
+    service.worldWarService.spawnAlliedSquad(
+      gift.username,
+      "World War",
+      gift.count,
+    ),
+  );
+  actions.set("WorldWar", (gift) =>
+    service.worldWarService.spawnAlliedSquad(
+      gift.username,
+      "WorldWar",
+      gift.count,
+    ),
+  );
+  actions.set("Air Strike", (gift) =>
+    service.worldWarService.triggerArtilleryStrike(gift.username),
+  );
+  actions.set("Supply Drop", (gift) =>
+    service.worldWarService.dropSupplyCrate(gift.username),
   );
 
   for (const giftName of supportedGiftNames) {
