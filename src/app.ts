@@ -39,7 +39,7 @@ async function bootstrap() {
     // Desktop GUI / Web Control Panel Mode
     if (mode === "gui" || mode === "server" || !mode) {
       const port = Number(process.env.PORT ?? 3050);
-      const server = new ControlPanelServer(dispatcher, game, port, defense);
+      const server = new ControlPanelServer(dispatcher, game, port, defense, tikTok);
       const url = await server.start();
 
       console.log(`\n==================================================`);

@@ -44,6 +44,53 @@ function setupEventListeners() {
     }
   });
 
+  // TikTok Live connection
+  const tiktokInput = document.getElementById("input-tiktok-username");
+  const btnConnectTiktok = document.getElementById("btn-connect-tiktok");
+
+  const savedTiktokUser = localStorage.getItem("tiktok_username");
+  if (savedTiktokUser && tiktokInput) {
+    tiktokInput.value = savedTiktokUser;
+  }
+
+  if (btnConnectTiktok) {
+    btnConnectTiktok.addEventListener("click", async () => {
+      const username = tiktokInput.value.trim();
+      if (!username) {
+        alert("Vui lòng nhập TikTok Username");
+        return;
+      }
+
+      localStorage.setItem("tiktok_username", username);
+      btnConnectTiktok.disabled = true;
+      btnConnectTiktok.textContent = "⏳ Đang kết nối...";
+
+      try {
+        const res = await fetch("/api/connect-tiktok", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          btnConnectTiktok.textContent = "🟢 Đã Kết Nối";
+          btnConnectTiktok.style.backgroundColor = "var(--color-success, #10b981)";
+        } else {
+          alert("Lỗi kết nối TikTok Live: " + (data.error || "Không thể kết nối"));
+          btnConnectTiktok.textContent = "🔗 Kết nối Live";
+          btnConnectTiktok.style.backgroundColor = "";
+        }
+      } catch (err) {
+        alert("Lỗi kết nối TikTok Live: " + err.message);
+        btnConnectTiktok.textContent = "🔗 Kết nối Live";
+        btnConnectTiktok.style.backgroundColor = "";
+      } finally {
+        btnConnectTiktok.disabled = false;
+      }
+    });
+  }
+
   // Username input
   const usernameInput = document.getElementById("input-username");
   usernameInput.addEventListener("input", (e) => {

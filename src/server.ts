@@ -6,6 +6,8 @@ import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
 import { DefenseActionService } from "./gameplay/defense/index.js";
 
+import { TikTokService } from "./tiktok/tiktok.service.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -255,6 +257,7 @@ export class ControlPanelServer {
     private readonly game: GameActionService,
     private readonly port = 3050,
     private readonly defense?: DefenseActionService,
+    private readonly tikTok?: TikTokService,
   ) {}
 
   public addLog(type: LogEntry["type"], message: string) {
@@ -354,6 +357,45 @@ export class ControlPanelServer {
 
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ status: "success", deaths: currentDeaths, targetPlayer: playerName }));
+              return;
+            }
+
+            if (pathname === "/api/tiktok-status" && req.method === "GET") {
+              const isConnected = this.tikTok ? this.tikTok.getIsConnected() : false;
+              const username = this.tikTok ? this.tikTok.getConnectedUsername() : undefined;
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ isConnected, username }));
+              return;
+            }
+
+            if (pathname === "/api/connect-tiktok" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const rawUser = String(body.username ?? "").trim();
+              const username = rawUser.startsWith("@") ? rawUser.slice(1) : rawUser;
+
+              if (!username) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ error: "Vui lòng nhập TikTok Username" }));
+                return;
+              }
+
+              if (this.tikTok) {
+                this.addLog("system", `📱 Đang kết nối TikTok Live stream của: @${username}...`);
+                try {
+                  await this.tikTok.connect(username);
+                  this.addLog("system", `🟢 Kết nối TikTok Live thành công cho channel: @${username}`);
+                  res.writeHead(200, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ status: "success", username }));
+                } catch (err) {
+                  const errMsg = err instanceof Error ? err.message : String(err);
+                  this.addLog("error", `❌ Lỗi kết nối TikTok Live (@${username}): ${errMsg}`);
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ error: errMsg }));
+                }
+              } else {
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ error: "TikTokService chưa được khởi tạo" }));
+              }
               return;
             }
 

@@ -39,10 +39,20 @@
       </div>
     </header>
 
-    <!-- Control Bar (Tester Username & Combo Count) -->
+    <!-- Control Bar (TikTok Live & Gameplay Controls) -->
     <section class="control-bar">
       <div class="input-group">
-        <label for="input-username">🎁 Người Gửi Quà (Viewer):</label>
+        <label for="input-tiktok-username">📱 TikTok Username Streamer:</label>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" id="input-tiktok-username" placeholder="@username_live...">
+          <button id="btn-connect-tiktok" class="btn btn-primary" style="white-space: nowrap;">
+            🔗 Kết nối Live
+          </button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="input-username">🎁 Người Gửi Quà (Viewer Test):</label>
         <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên người gửi quà...">
       </div>
 

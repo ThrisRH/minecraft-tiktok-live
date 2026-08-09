@@ -11,11 +11,37 @@ export interface TikTokServiceOptions {
 }
 
 export class TikTokService {
-  private connection!: TikTokConnection;
+  private connection?: TikTokConnection;
+  private connectedUsername?: string;
+  private isConnected = false;
 
   constructor(private readonly dispatcher: Dispatcher) {}
 
+  getConnectedUsername(): string | undefined {
+    return this.connectedUsername;
+  }
+
+  getIsConnected(): boolean {
+    return this.isConnected;
+  }
+
+  async disconnect() {
+    if (this.connection) {
+      try {
+        await (this.connection as any).disconnect?.();
+      } catch (err) {
+        console.warn("Lỗi khi ngắt kết nối TikTok:", err);
+      }
+      this.connection = undefined;
+    }
+    this.isConnected = false;
+    this.connectedUsername = undefined;
+  }
+
   async connect(username: string, options?: TikTokServiceOptions) {
+    if (this.connection) {
+      await this.disconnect();
+    }
     const signApiKey =
       options?.signApiKey ??
       process.env.EULER_SIGN_API_KEY ??
@@ -101,8 +127,10 @@ export class TikTokService {
     });
 
     await this.connection.connect();
+    this.isConnected = true;
+    this.connectedUsername = username;
 
-    console.log("TikTok connected");
+    console.log(`TikTok connected: @${username}`);
   }
 
   async fetchAvailableGifts() {
