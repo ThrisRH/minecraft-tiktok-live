@@ -272,7 +272,7 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // Lucky Pig -> Summon ngẫu nhiên recruits:villager_noble hoặc recruits:bowman (3 con mỗi count, không giáp, RecruitCost:0)
+  // Lucky Pig -> Summon 3 con bodyguard:bodyguard_gk (với Owner, ArmorItems, HandItems và CustomName)
   async luckyPigGift(gift: GiftEvent) {
     try {
       await this.context.sendMessage(`${gift.username} đã gửi tiếp viện!`);
@@ -291,18 +291,13 @@ export class GiftActionService {
     }
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
-    const options = [
-      `execute at @a run summon recruits:villager_noble ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0}`,
-      `execute at @a run summon recruits:bowman ~ ~ ~ {CustomName:'{"text":"${safeName}"}',RecruitCost:0}`,
-    ];
+    const command = `execute at @a run summon bodyguard:bodyguard_gk ~ ~ ~ {CustomName:'{"text":"${safeName}"}',Owner:[I;48272772,1687374940,-1995959969,764026847],ArmorItems:[{},{},{id:"minecraft:iron_chestplate",Count:1,tag:{Enchantments:[{id:"minecraft:protection",lvl:2}]}},{}],HandItems:[{id:"minecraft:stone_sword",Count:1,tag:{Enchantments:[{id:"minecraft:smite",lvl:2}]}},{}]}`;
 
     const giftCount = Math.max(1, gift.count ?? 1);
     const totalCount = giftCount * 3;
 
     for (let i = 0; i < totalCount; i++) {
-      const chosenCommand =
-        options[Math.floor(Math.random() * options.length)];
-      await this.executeWithRetry(chosenCommand);
+      await this.executeWithRetry(command);
     }
   }
 

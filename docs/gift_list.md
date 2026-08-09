@@ -22,7 +22,7 @@ This file contains the master list of supported TikTok gifts.
 - Journey Pass - 10 done (Full Leather Armor)
 - GG - 1 done (Fireworks)
 - Little Kisses - Enchanted Golden Apple + Iron Chestplate Prot 4 Blast Prot 3
-- Lucky Pig - Summon guardvillagers:guard với tên username
+- Lucky Pig - Summon 3 bodyguard:bodyguard_gk với tên username (Owner, giáp ngực sắt Bảo vệ II, kiếm đá Đập phá II)
 - compress tnt
 
 ## Agent Requirements

@@ -13,7 +13,7 @@
 | **Cap** | Summon Entity | `summon warden ~ ~ ~` (x1 mỗi count) |
 | **Doughnut** | Summon Entity | `summon terramity:black_hole ~ ~ ~` (x1 mỗi count) |
 | **Confetti** | Summon Entity | `summon ender_dragon ~ ~ ~` (x1 mỗi count) |
-| **Lucky Pig** | Summon Entity | Triệu hồi ngẫu nhiên 3 lính Recruits (`villager_noble` hoặc `bowman`) không giáp, phí thuê 0 (gắn tên người donate) |
+| **Lucky Pig** | Summon Entity | Triệu hồi 3 con Bodyguard (`bodyguard:bodyguard_gk`) có Owner, áo giáp sắt Bảo vệ 2, kiếm đá Đập phá 2 (gắn tên người donate) |
 | **Finger Heart** | Cho Vật Phẩm | `give @a golden_apple` (x1 mỗi count) |
 | **Journey Pass** | Cho Vật Phẩm | `give @a` Full set giáp da (Mũ, Áo, Quần, Giày) |
 | **GG** | Cho Vật Phẩm | `give @a bread` (x1 mỗi count) |
