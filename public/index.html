@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft Live — Desktop Control Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Minecraft Live — Bảng Điều Khiển Quà TikTok</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -14,24 +14,24 @@
     <!-- Header Navbar -->
     <header class="app-header">
       <div class="brand">
-        <div class="logo-icon">🎮</div>
+        <div class="logo-icon">⚔️</div>
         <div>
-          <h1>Minecraft Live</h1>
-          <span class="subtitle">Desktop Gift Test Control Panel</span>
+          <h1>Minecraft Live Control</h1>
+          <span class="subtitle">Bảng Điều Khiển Quà TikTok & Test RCON Live</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <div class="status-badge online">
+        <div class="status-badge online" title="Kết nối Minecraft RCON Server thành công">
           <span class="pulse-dot"></span>
-          MC RCON Connected
+          <span>RCON Minecraft: <strong>Đã Kết Nối</strong></span>
         </div>
         <div id="tiktok-status-badge" class="status-badge offline">
           <span class="pulse-dot"></span>
-          <span id="tiktok-status-text">TikTok Disconnected</span>
+          <span id="tiktok-status-text">TikTok Live: Chưa Kết Nối</span>
         </div>
         <button id="btn-test-all" class="btn btn-warning">
-          🚀 Test Tất Cả Quà (Auto)
+          🚀 Test Tất Cả Quà (Tự Động)
         </button>
       </div>
     </header>
@@ -39,9 +39,9 @@
     <!-- Control Bar (Tester Username & Combo Count & TikTok Connection) -->
     <section class="control-bar">
       <div class="input-group tiktok-group">
-        <label for="input-tiktok-id">📱 TikTok ID (Live):</label>
+        <label for="input-tiktok-id">📱 TikTok ID (Livestream):</label>
         <div class="input-with-button">
-          <input type="text" id="input-tiktok-id" placeholder="Nhập TikTok ID...">
+          <input type="text" id="input-tiktok-id" placeholder="Nhập ID TikTok Live (ví dụ: streamer123)...">
           <button id="btn-connect-tiktok" class="btn btn-primary">
             🔗 Kết Nối Live
           </button>
@@ -49,8 +49,8 @@
       </div>
 
       <div class="input-group">
-        <label for="input-username">👤 Người Gửi (Tester Name):</label>
-        <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên tester...">
+        <label for="input-username">👤 Người Gửi Quà (Tên Giả Lập):</label>
+        <input type="text" id="input-username" value="StreamTester" placeholder="Nhập tên người gửi quà...">
       </div>
 
       <div class="input-group">
@@ -67,7 +67,7 @@
 
       <div class="quick-action-group">
         <button id="btn-send-like" class="btn btn-secondary">
-          ❤️ Gửi 500 Tim (Milestone)
+          ❤️ Gửi 500 Tim (Thử Milestone)
         </button>
       </div>
     </section>
@@ -80,16 +80,16 @@
         <div class="filter-bar">
           <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="Tìm kiếm quà (Corgi, Wither, Rosa, Overreact...)...">
+            <input type="text" id="search-input" placeholder="Tìm kiếm quà theo tên tiếng Việt (Heo May Mắn, Corgi, Zombie, Wither, Black Hole, Bắn Tim...)...">
           </div>
 
           <div class="category-tabs">
             <button class="tab-chip active" data-category="all">Tất Cả (<span id="count-all">0</span>)</button>
-            <button class="tab-chip" data-category="gacha">🎲 Gacha</button>
-            <button class="tab-chip" data-category="event">🐉 Sự Kiện Nối Tiếp</button>
-            <button class="tab-chip" data-category="mob">🧟 Mobs & Bosses</button>
-            <button class="tab-chip" data-category="item">🍎 Vật Phẩm & Buff</button>
-            <button class="tab-chip" data-category="trap">💣 Bẫy Khống Chế</button>
+            <button class="tab-chip" data-category="gacha">🎲 Vòng Quay Gacha</button>
+            <button class="tab-chip" data-category="event">🐉 Sự Kiện Trùm</button>
+            <button class="tab-chip" data-category="mob">🧟 Triệu Hồi Mob & Boss</button>
+            <button class="tab-chip" data-category="item">🍎 Thưởng Vật Phẩm & Buff</button>
+            <button class="tab-chip" data-category="trap">💣 Bẫy Bộc Phá & Bedrock</button>
           </div>
         </div>
 
@@ -102,8 +102,8 @@
       <!-- Right Panel: Live Execution Terminal Log -->
       <aside class="console-section">
         <div class="console-header">
-          <h3>💻 Live Console Log</h3>
-          <button id="btn-clear-log" class="btn-icon" title="Xóa log">🗑️ Clear</button>
+          <h3>💻 Nhật Ký Lệnh RCON Live</h3>
+          <button id="btn-clear-log" class="btn-icon" title="Xóa toàn bộ nhật ký log">🗑️ Xóa Log</button>
         </div>
         <div id="console-logs" class="console-logs">
           <!-- Log entries populated dynamically -->

@@ -132,41 +132,80 @@ function renderGifts() {
   const grid = document.getElementById("gifts-grid");
   grid.innerHTML = "";
 
+  const categoryNames = {
+    gacha: "🎲 Gacha",
+    event: "🐉 Sự Kiện",
+    mob: "🧟 Mob",
+    item: "🍎 Vật Phẩm",
+    trap: "💣 Bẫy",
+  };
+
   const filtered = giftsCatalog.filter((gift) => {
     const matchesCategory = activeCategory === "all" || gift.category === activeCategory;
+    const searchLower = searchQuery.toLowerCase();
     const matchesSearch =
       !searchQuery ||
-      gift.name.toLowerCase().includes(searchQuery) ||
-      gift.description.toLowerCase().includes(searchQuery);
+      gift.name.toLowerCase().includes(searchLower) ||
+      (gift.titleVi && gift.titleVi.toLowerCase().includes(searchLower)) ||
+      gift.description.toLowerCase().includes(searchLower) ||
+      (gift.effectVi && gift.effectVi.toLowerCase().includes(searchLower)) ||
+      gift.id.toLowerCase().includes(searchLower);
     return matchesCategory && matchesSearch;
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Không tìm thấy quà phù hợp.</div>`;
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>Không tìm thấy quà phù hợp</h3>
+        <p>Thử tìm theo tên tiếng Việt như "Heo May Mắn", "Corgi", "Zombie" hoặc chọn danh mục khác.</p>
+      </div>`;
     return;
   }
 
   filtered.forEach((gift) => {
     const card = document.createElement("div");
-    card.className = "gift-card";
+    card.className = `gift-card category-${gift.category}`;
+
+    const catName = categoryNames[gift.category] || gift.category;
+    const titleViDisplay = gift.titleVi ? `<span class="title-vi" title="${escapeHtml(gift.titleVi)}">${escapeHtml(gift.titleVi)}</span>` : "";
+    const effectPill = gift.effectVi ? `<div class="effect-pill" title="${escapeHtml(gift.effectVi)}">${escapeHtml(gift.effectVi)}</div>` : "";
 
     card.innerHTML = `
       <div class="gift-header">
         <div class="gift-icon">${gift.icon}</div>
-        <div class="gift-title">
-          <h4>${gift.name}</h4>
-          <span class="gift-tag ${gift.category}">${gift.category}</span>
+        <div class="gift-title-group">
+          <div class="gift-name-row">
+            <h4 title="${escapeHtml(gift.name)}">${escapeHtml(gift.name)}</h4>
+            <span class="gift-tag ${gift.category}">${catName}</span>
+          </div>
+          ${titleViDisplay}
         </div>
       </div>
-      <div class="gift-desc">${gift.description}</div>
+      
+      <div class="gift-body">
+        ${effectPill}
+        <p class="gift-desc" title="${escapeHtml(gift.description)}">${escapeHtml(gift.description)}</p>
+      </div>
+
       <button class="btn-trigger" data-gift="${gift.id}">
-        ⚡ TRIGGER (x<span class="lbl-count">${selectedCount}</span>)
+        <span class="btn-left">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-text">KÍCH HOẠT</span>
+        </span>
+        <span class="btn-badge">x<span class="lbl-count">${selectedCount}</span></span>
       </button>
     `;
 
     const triggerBtn = card.querySelector(".btn-trigger");
-    triggerBtn.addEventListener("click", () => {
-      triggerGift(gift.id);
+    triggerBtn.addEventListener("click", async () => {
+      triggerBtn.classList.add("triggering");
+      triggerBtn.disabled = true;
+      await triggerGift(gift.id);
+      setTimeout(() => {
+        triggerBtn.classList.remove("triggering");
+        triggerBtn.disabled = false;
+      }, 400);
     });
 
     grid.appendChild(card);
