@@ -283,6 +283,27 @@ export class ControlPanelServer {
               return;
             }
 
+            if (pathname === "/api/war/reset-2teams" && req.method === "POST") {
+              await this.game.worldWarService.resetTwoTeamsWar();
+              this.addLog(
+                "system",
+                "🔄 Đã Reset trận đấu: Xóa toàn bộ bảng tên & khôi phục mặt đất thành Grass!",
+              );
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success" }));
+              return;
+            }
+
+            if (pathname === "/api/war/set-tag-scale" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const scale = Math.max(1, Number(body.scale ?? 15));
+              this.game.worldWarService.setNameTagScale(scale);
+              this.addLog("system", `📏 Đã điều chỉnh kích thước Bảng tên Viewer thành: ${scale}x`);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success", scale }));
+              return;
+            }
+
             if (pathname === "/api/comment" && req.method === "POST") {
               const body = await this.parseJsonBody(req);
               const username = String(body.username ?? "ViewerTester").trim();

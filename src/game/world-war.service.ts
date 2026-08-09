@@ -75,9 +75,53 @@ export class WorldWarService {
     this.startBattlefieldHud();
   }
 
+  async resetTwoTeamsWar() {
+    this.isWarActive = false;
+    this.teamBlue = [];
+    this.teamRed = [];
+
+    // 1. Clear all text_display name tags
+    await this.minecraft.execute("execute at @a run kill @e[type=text_display]");
+
+    // 2. Clear spawned soldiers
+    await this.minecraft.execute(
+      "execute at @a run kill @e[type=recruits:villager_noble]",
+    );
+
+    // 3. Replace all team territory wool back to grass_block
+    await this.minecraft.execute(
+      "execute at @a run fill ~-16 -61 ~ ~15 -61 ~15 minecraft:grass_block replace minecraft:blue_wool",
+    );
+    await this.minecraft.execute(
+      "execute at @a run fill ~-16 -61 ~ ~15 -61 ~15 minecraft:grass_block replace minecraft:red_wool",
+    );
+    await this.minecraft.execute(
+      "execute at @a run fill ~-16 -61 ~ ~15 -61 ~15 minecraft:grass_block",
+    );
+
+    // 4. Announcements
+    await this.minecraft.execute(
+      `title @a title {"text":"🔄 RESET GAME HOÀN TẤT 🔄","color":"green","bold":true}`,
+    );
+    await this.minecraft.execute(
+      `title @a subtitle {"text":"Đã dọn dẹp bảng tên & khôi phục đất cỏ!","color":"white"}`,
+    );
+    await this.minecraft.execute(
+      "playsound entity.player.levelup master @a ~ ~ ~ 1 1 1",
+    );
+  }
+
+  private nameTagScale = 15.0; // Scale 15.0x: Giant text tag readable from high overhead sky camera
+
+  public setNameTagScale(scale: number) {
+    this.nameTagScale = Math.max(1, Math.min(50, scale));
+  }
+
   async handleComment(username: string, commentText: string) {
     const text = commentText.trim().toLowerCase();
     const safeName = username.replace(/\\/g, "\\\\").replace(/"/g, '"');
+    const s = this.nameTagScale.toFixed(1);
+    const compoundStr = `transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],scale:[${s}f,${s}f,${s}f],translation:[0f,0f,0f]}`;
 
     if (text.includes("1") || text.includes("xanh") || text.includes("blue")) {
       if (!this.teamBlue.includes(username)) {
@@ -85,15 +129,17 @@ export class WorldWarService {
       }
 
       await this.minecraft.execute(
-        `tellraw @a {"text":"🔵 [Team Xanh] ","color":"blue","bold":true,"extra":[{"text":"${safeName} vừa gia nhập (Comment 1)!","color":"aqua"}]}`,
+        `tellraw @a {"text":"🔵 [Team Xanh] ","color":"blue","bold":true,"extra":[{"text":"${safeName} vừa gia nhập!","color":"aqua"}]}`,
       );
 
-      // Spawn Blue soldier & Scaled Text Display overhead
+      // 1. Spawn Team Blue Soldier
       await this.minecraft.execute(
-        `execute at @a run summon recruits:villager_noble ~-8 -60 ~7 {CustomName:'{"text":"[Xanh] ${safeName}"}',RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}]}`,
+        `execute at @a run summon recruits:villager_noble ~-8 -60 ~7 {CustomName:'{"text":"[Xanh] ${safeName}"}',CustomNameVisible:1b,RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}]}`,
       );
+
+      // 2. Single Clean Giant Text Display (Scale 12.0x - 20.0x)
       await this.minecraft.execute(
-        `execute at @a run summon text_display ~-8 -56 ~7 {text:'{"text":"🔵 ${safeName}","color":"aqua","bold":true}',billboard:"center",see_through:1b,transformation:{scale:[3.0f,3.0f,3.0f]}}`,
+        `execute at @a run summon text_display ~-8 -52 ~7 {text:'{"text":"🔵 ${safeName}","color":"aqua","bold":true}',billboard:"center",see_through:1b,shadow:1b,background:-1862270976,${compoundStr}}`,
       );
 
       return { status: "success", team: "blue", username };
@@ -105,15 +151,17 @@ export class WorldWarService {
       }
 
       await this.minecraft.execute(
-        `tellraw @a {"text":"🔴 [Team Đỏ] ","color":"red","bold":true,"extra":[{"text":"${safeName} vừa gia nhập (Comment 2)!","color":"yellow"}]}`,
+        `tellraw @a {"text":"🔴 [Team Đỏ] ","color":"red","bold":true,"extra":[{"text":"${safeName} vừa gia nhập!","color":"yellow"}]}`,
       );
 
-      // Spawn Red soldier & Scaled Text Display overhead
+      // 1. Spawn Team Red Soldier
       await this.minecraft.execute(
-        `execute at @a run summon recruits:villager_noble ~8 -60 ~7 {CustomName:'{"text":"[Đỏ] ${safeName}"}',RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}]}`,
+        `execute at @a run summon recruits:villager_noble ~8 -60 ~7 {CustomName:'{"text":"[Đỏ] ${safeName}"}',CustomNameVisible:1b,RecruitCost:0,ArmorItems:[{id:"minecraft:iron_boots",Count:1b},{id:"minecraft:iron_leggings",Count:1b},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:iron_helmet",Count:1b}],HandItems:[{id:"minecraft:iron_sword",Count:1b},{}]}`,
       );
+
+      // 2. Single Clean Giant Text Display (Scale 12.0x - 20.0x)
       await this.minecraft.execute(
-        `execute at @a run summon text_display ~8 -56 ~7 {text:'{"text":"🔴 ${safeName}","color":"red","bold":true}',billboard:"center",see_through:1b,transformation:{scale:[3.0f,3.0f,3.0f]}}`,
+        `execute at @a run summon text_display ~8 -52 ~7 {text:'{"text":"🔴 ${safeName}","color":"red","bold":true}',billboard:"center",see_through:1b,shadow:1b,background:-1862270976,${compoundStr}}`,
       );
 
       return { status: "success", team: "red", username };

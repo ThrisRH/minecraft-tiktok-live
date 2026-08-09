@@ -120,6 +120,18 @@ function setupEventListeners() {
     }
   });
 
+  // World War 2 Teams RESET Button
+  document.getElementById("btn-reset-war-2teams").addEventListener("click", async () => {
+    if (confirm("Bạn có chắc chắn muốn Reset Game? Thao tác này sẽ xóa toàn bộ bảng tên và khôi phục mặt đất thành Đất Cỏ (Grass).")) {
+      try {
+        await fetch("/api/war/reset-2teams", { method: "POST" });
+        await updateWarTeamCounters();
+      } catch (err) {
+        console.error("Failed to reset World War 2 Teams:", err);
+      }
+    }
+  });
+
   // Comment Simulator Buttons
   document.getElementById("btn-send-comment").addEventListener("click", async () => {
     const user = document.getElementById("input-comment-user").value.trim() || "ViewerTester";
@@ -139,6 +151,40 @@ function setupEventListeners() {
     document.getElementById("input-comment-user").value = randomUser;
     document.getElementById("input-comment-text").value = "2";
     await sendSimulatedComment(randomUser, "2");
+  });
+
+  // Tag Scale Handlers
+  const scaleInput = document.getElementById("input-tag-scale");
+  const scaleBtns = [
+    { btn: document.getElementById("btn-scale-15"), val: 15 },
+    { btn: document.getElementById("btn-scale-20"), val: 20 },
+    { btn: document.getElementById("btn-scale-25"), val: 25 },
+  ];
+
+  const setScale = async (scaleVal) => {
+    scaleInput.value = scaleVal;
+    scaleBtns.forEach((item) => {
+      if (item.val === scaleVal) item.btn.classList.add("active");
+      else item.btn.classList.remove("active");
+    });
+    try {
+      await fetch("/api/war/set-tag-scale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scale: scaleVal }),
+      });
+    } catch (err) {
+      console.error("Failed to set tag scale:", err);
+    }
+  };
+
+  scaleBtns.forEach((item) => {
+    item.btn.addEventListener("click", () => setScale(item.val));
+  });
+
+  scaleInput.addEventListener("input", (e) => {
+    const val = Math.max(1, Number(e.target.value || 15));
+    void setScale(val);
   });
 }
 
