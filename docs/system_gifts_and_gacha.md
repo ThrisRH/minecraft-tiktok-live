@@ -50,6 +50,9 @@
 | Zombie đột biến x1 | 9 (Thường) | `summon mutantmonsters:mutant_zombie` |
 | Creeper đột biến x1 | 8 (Không phổ biến) | `summon mutantmonsters:mutant_creeper` |
 | Skeleton đột biến x1 | 7 (Không phổ biến) | `summon mutantmonsters:mutant_skeleton` |
+| Wither Skeleton đột biến x1 | 2 (Thần thoại - Mythic) | `summon mutantmore:mutant_wither_skeleton` |
+| Jungle Zombie đột biến x1 | 2 (Thần thoại - Mythic) | `summon mutantmore:mutant_jungle_zombie` |
+| Shulker đột biến x1 | 2 (Thần thoại - Mythic) | `summon mutantmore:mutant_shulker` |
 
 ### C. Vòng Quay Shamrock Gacha (`shamrockGachaOptions`)
 | Tên Phần Thưởng | Trọng Số (Tỷ lệ) | Lệnh / Vật Phẩm |
@@ -61,4 +64,5 @@
 | Full Giáp Sắt (Áo Kim Cương Chống Nổ 5 & Giày Rơi Nhẹ Max) + Kiếm Sắt | 12 (Sử thi - Epic) | `give @a` Helmet/Leggings sắt, `diamond_chestplate` (Blast Protection V), `iron_boots` (Feather Falling IV), `iron_sword 1` |
 | Combo Dân Chủ (Áo Sắt Protection 3 + Súng Glock 17 + 60 Băng Đạn 9mm) | 12 (Sử thi - Epic) | `give @a iron_chestplate` (Protection III), `tacz:glock_17` (17 ammo, semi), `tacz:ammo 9mm` (x60) |
 | Full Set Kim Cương (Protection 4 & Chống Nổ 4) + Kiếm Kim Cương + Khiên | 6 (Huyền thoại - Legend) | `give @a` Full set giáp kim cương (Protection IV, Blast Protection IV), `diamond_sword` (Sharpness V, Smite V), `shield 1` |
+| Combo SCAR-L | 6 (Huyền thoại - Legend) | `give @a tacz:scar_l` (30 ammo, auto), `tacz:ammo 556x45` (x61) |
 | Combo Hoa Rơi Cửa Phật | 2 (Thần thoại - Mythic) | `give @a tacz:minigun` (20 ammo, auto), `tacz:ammo 308mm` (x200) |
