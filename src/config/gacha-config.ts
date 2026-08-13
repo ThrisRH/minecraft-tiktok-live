@@ -147,6 +147,29 @@ export const rosaGachaOptions: GachaOption[] = [
     weight: 7,
     color: "gold",
   },
+
+  // Mythic
+  {
+    id: "mutant_wither_skeleton",
+    name: "Wither Skeleton đột biến x1",
+    command: "execute at @a run summon mutantmore:mutant_wither_skeleton ~ ~ ~",
+    weight: 2,
+    color: "red",
+  },
+  {
+    id: "mutant_jungle_zombie",
+    name: "Jungle Zombie đột biến x1",
+    command: "execute at @a run summon mutantmore:mutant_jungle_zombie ~ ~ ~",
+    weight: 2,
+    color: "red",
+  },
+  {
+    id: "mutant_shulker",
+    name: "Shulker đột biến x1",
+    command: "execute at @a run summon mutantmore:mutant_shulker ~ ~ ~",
+    weight: 2,
+    color: "red",
+  },
 ];
 
 export const shamrockGachaOptions: GachaOption[] = [
@@ -220,12 +243,22 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "gold",
   },
 
+  // Legend: Combo SCAR-L (Súng SCAR-L + 61 viên đạn 556x45mm)
+  {
+    id: "legend_scar_l_combo",
+    name: "Combo SCAR-L",
+    command:
+      'execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:scar_l",GunCurrentAmmoCount:30,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:556x45"} 61',
+    weight: 6,
+    color: "gold",
+  },
+
   // Mythic: Combo hoa rơi cửa phật (Minigun + 200 băng đạn 308mm)
   {
     id: "mythic_minigun_combo",
     name: "Combo hoa rơi cửa phật",
     command:
-      'execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308mm"} 200',
+      'execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308"} 100',
     weight: 2,
     color: "red",
   },
