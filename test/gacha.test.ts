@@ -6,6 +6,7 @@ import { MinecraftService } from "../src/minecraft/minecraft.service.js";
 import {
   GachaOption,
   getRandomGachaOption,
+  rosaGachaOptions,
 } from "../src/config/gacha-config.js";
 
 test("getRandomGachaOption selects item based on weighted odds", () => {
@@ -322,7 +323,7 @@ test("Corgi combo gift summons extra Ender Dragon per additional count", async (
   );
 });
 
-test("Little Kisses gift triggers default gift message", async () => {
+test("Little Kisses gift summons mutantmonsters:mutant_snow_golem", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -337,17 +338,18 @@ test("Little Kisses gift triggers default gift message", async () => {
   await dispatcher.dispatch({
     type: "gift",
     giftName: "Little Kisses",
-    count: 1,
+    count: 2,
     username: "Sweetheart",
   });
 
-  assert.ok(
-    commands.some((cmd) => cmd.includes("Little Kisses")),
-    "Should send default gift message for Little Kisses",
+  assert.equal(
+    commands.filter((cmd) => cmd.includes("summon mutantmonsters:mutant_snow_golem")).length,
+    2,
+    "Should summon 2 mutant_snow_golem for count 2",
   );
 });
 
-test("Lucky Pig gift summons bodyguards with custom name", async () => {
+test("Lucky Pig gift summons wolves with custom name and netherite wolf armor", async () => {
   const commands: string[] = [];
   const minecraft = {
     say: async (_message: string) => undefined,
@@ -369,11 +371,23 @@ test("Lucky Pig gift summons bodyguards with custom name", async () => {
   assert.equal(
     commands.filter(
       (cmd) =>
-        cmd.includes("summon bodyguard:bodyguard_gk") && cmd.includes("PigGiver"),
+        cmd.includes("summon minecraft:wolf") &&
+        cmd.includes("PigGiver") &&
+        cmd.includes("netherite_wolf_armor"),
     ).length,
     6,
-    "Should summon 6 bodyguards for count 2 with custom name PigGiver",
+    "Should summon 6 wolves for count 2 with custom name PigGiver and netherite wolf armor",
   );
+});
+
+test("rosaGachaOptions Mythic items have ~5% total drop probability", async () => {
+  const totalWeight = rosaGachaOptions.reduce((sum, item) => sum + item.weight, 0);
+  const mythicWeight = rosaGachaOptions
+    .filter((item) => item.color === "red")
+    .reduce((sum, item) => sum + item.weight, 0);
+
+  const mythicRatio = mythicWeight / totalWeight;
+  assert.equal(mythicRatio, 0.05, "Rosa Gacha mythic rate should be exactly 0.05 (5%)");
 });
 
 test("Doughnut gift summons terramity:black_hole ~ 5 ~", async () => {

@@ -13,6 +13,7 @@ interface GiftActionContext {
   shamrockGachaGift?(gift: GiftEvent): Promise<void>;
   moneyGunGift?(gift: GiftEvent): Promise<void>;
   corgiGift?(gift: GiftEvent): Promise<void>;
+  boxingGlovesGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
@@ -268,11 +269,17 @@ export class GiftActionService {
     await this.handleGiveItemEffect(gift, "GG", "bread");
   }
 
+  // Little Kisses -> Summon mutantmonsters:mutant_snow_golem
   async littleKissesGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    await this.handleGiftEffect(
+      gift,
+      "Little Kisses",
+      "execute at @a run summon mutantmonsters:mutant_snow_golem ~ ~ ~",
+      1,
+    );
   }
 
-  // Lucky Pig -> Summon 3 con bodyguard:bodyguard_gk (với Owner, ArmorItems, HandItems và CustomName)
+  // Lucky Pig -> Summon 3 con minecraft:wolf (với Owner, Netherite wolf armor và CustomName)
   async luckyPigGift(gift: GiftEvent) {
     try {
       await this.context.sendMessage(`${gift.username} đã gửi tiếp viện!`);
@@ -291,7 +298,7 @@ export class GiftActionService {
     }
 
     const safeName = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
-    const command = `execute at @a run summon bodyguard:bodyguard_gk ~ ~ ~ {CustomName:'{"text":"${safeName}"}',Owner:[I;48272772,1687374940,-1995959969,764026847],ArmorItems:[{},{},{id:"minecraft:iron_chestplate",Count:1,tag:{Enchantments:[{id:"minecraft:protection",lvl:2}]}},{}],HandItems:[{id:"minecraft:stone_sword",Count:1,tag:{Enchantments:[{id:"minecraft:smite",lvl:2}]}},{}]}`;
+    const command = `execute at @a run summon minecraft:wolf ~ ~ ~ {CustomName:'{"text":"${safeName}"}',Owner:[I;48272772,1687374940,-1995959969,764026847],ForgeCaps:{"wolfarmorandstoragelegacy:wolf_armor":{armor:{id:"wolfarmorandstoragelegacy:netherite_wolf_armor",Count:1b}}}}`;
 
     const giftCount = Math.max(1, gift.count ?? 1);
     const totalCount = giftCount * 3;
@@ -339,6 +346,16 @@ export class GiftActionService {
   async corgiGift(gift: GiftEvent) {
     if (this.context.corgiGift) {
       return this.context.corgiGift({ ...gift, giftName: "Corgi" });
+    }
+    return this.defaultGift(gift);
+  }
+
+  async boxingGlovesGift(gift: GiftEvent) {
+    if (this.context.boxingGlovesGift) {
+      return this.context.boxingGlovesGift({
+        ...gift,
+        giftName: gift.giftName ?? "Boxing Gloves",
+      });
     }
     return this.defaultGift(gift);
   }

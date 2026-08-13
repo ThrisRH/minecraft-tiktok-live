@@ -13,14 +13,15 @@
 | **Cap** | Summon Entity | `summon warden ~ ~ ~` (x1 mỗi count) |
 | **Doughnut** | Summon Entity | `summon terramity:black_hole ~ ~ ~` (x1 mỗi count) |
 | **Confetti** | Summon Entity | `summon ender_dragon ~ ~ ~` (x1 mỗi count) |
-| **Lucky Pig** | Summon Entity | Triệu hồi 3 con Bodyguard (`bodyguard:bodyguard_gk`) có Owner, áo giáp sắt Bảo vệ 2, kiếm đá Đập phá 2 (gắn tên người donate) |
+| **Lucky Pig** | Summon Entity | Triệu hồi 3 con Sói Netherite Armor (`minecraft:wolf`) có Owner và giáp Netherite (gắn tên người donate) |
 | **Finger Heart** | Cho Vật Phẩm | `give @a golden_apple` (x1 mỗi count) |
 | **Journey Pass** | Cho Vật Phẩm | `give @a` Full set giáp da (Mũ, Áo, Quần, Giày) |
 | **GG** | Cho Vật Phẩm | `give @a bread` (x1 mỗi count) |
-| **Little Kisses** | Cho Vật Phẩm | `give @a enchanted_golden_apple 1` + `iron_chestplate` (Protection IV, Blast Protection III) |
+| **Little Kisses** | Summon Entity | `summon mutantmonsters:mutant_snow_golem` (x1 mỗi count) |
 | **Perfume** | Bẫy / Khống chế | Dựng 4 cột Bedrock nhốt 2s -> Summon `luckytntmod:gravity_tnt` -> Xóa Bedrock sau 1s |
 | **Corgi** | Sự kiện 5 phút | **Corgi Dragon**: Summon 2 Ender Dragon, đếm ngược HUD Actionbar 5 phút. Combo: +5m & +1 Ender Dragon |
 | **Money Gun** | Sự kiện 10 phút | **Wither Storm**: Summon Wither Storm Phase 7. Combo: +10m & +1 Wither Storm Phase 4 |
+| **Boxing Gloves** | Sự kiện 5 phút | **Đáy Biển Sâu**: Dò đại dương sâu -> Teleport -> Effect mù, thở dưới nước, nhìn rõ dưới nước 5 phút. Combo: +5m |
 | **Mặc định / Quà khác** | Thông báo | Gửi tin nhắn Chat & hiển thị Tiêu đề trên màn hình |
 
 ---
@@ -46,13 +47,13 @@
 ### B. Vòng Quay Rosa Gacha (`rosaGachaOptions`)
 | Tên Phần Thưởng | Trọng Số (Tỷ lệ) | Lệnh / Vật Phẩm |
 |---|---|---|
-| Creeper cảm tử x20 | 9 (Thường) | `summon mutantmonsters:creeper_minion` (x20) |
-| Zombie đột biến x1 | 9 (Thường) | `summon mutantmonsters:mutant_zombie` |
-| Creeper đột biến x1 | 8 (Không phổ biến) | `summon mutantmonsters:mutant_creeper` |
-| Skeleton đột biến x1 | 7 (Không phổ biến) | `summon mutantmonsters:mutant_skeleton` |
-| Wither Skeleton đột biến x1 | 2 (Thần thoại - Mythic) | `summon mutantmore:mutant_wither_skeleton` |
-| Jungle Zombie đột biến x1 | 2 (Thần thoại - Mythic) | `summon mutantmore:mutant_jungle_zombie` |
-| Shulker đột biến x1 | 2 (Thần thoại - Mythic) | `summon mutantmore:mutant_shulker` |
+| Creeper cảm tử x20 | 16 (Thường) | `summon mutantmonsters:creeper_minion` (x20) |
+| Zombie đột biến x1 | 15 (Thường) | `summon mutantmonsters:mutant_zombie` |
+| Creeper đột biến x1 | 14 (Không phổ biến) | `summon mutantmonsters:mutant_creeper` |
+| Skeleton đột biến x1 | 12 (Không phổ biến) | `summon mutantmonsters:mutant_skeleton` |
+| Wither Skeleton đột biến x1 | 1 (Thần thoại - Mythic, ~1.67%) | `summon mutantmore:mutant_wither_skeleton` |
+| Jungle Zombie đột biến x1 | 1 (Thần thoại - Mythic, ~1.67%) | `summon mutantmore:mutant_jungle_zombie` |
+| Shulker đột biến x1 | 1 (Thần thoại - Mythic, ~1.67%) | `summon mutantmore:mutant_shulker` |
 
 ### C. Vòng Quay Shamrock Gacha (`shamrockGachaOptions`)
 | Tên Phần Thưởng | Trọng Số (Tỷ lệ) | Lệnh / Vật Phẩm |

@@ -119,7 +119,7 @@ export const rosaGachaOptions: GachaOption[] = [
     command:
       'execute at @a run summon mutantmonsters:creeper_minion ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed",Base:1}]}',
     count: 20,
-    weight: 9,
+    weight: 16,
     color: "#A855F7",
   },
   {
@@ -128,7 +128,7 @@ export const rosaGachaOptions: GachaOption[] = [
     command:
       'execute at @a run summon mutantmonsters:mutant_creeper ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.5}]}',
     count: 1,
-    weight: 8,
+    weight: 14,
     color: "gold",
   },
   {
@@ -136,7 +136,7 @@ export const rosaGachaOptions: GachaOption[] = [
     name: "Zombie đột biến x1",
     command:
       'execute at @a run summon mutantmonsters:mutant_zombie ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.5}]}',
-    weight: 9,
+    weight: 15,
     color: "gold",
   },
   {
@@ -144,30 +144,30 @@ export const rosaGachaOptions: GachaOption[] = [
     name: "Skeleton đột biến x1",
     command:
       'execute at @a run summon mutantmonsters:mutant_skeleton ~ ~ ~ {Attributes:[{Name:"minecraft:generic.movement_speed"}]}',
-    weight: 7,
+    weight: 12,
     color: "gold",
   },
 
-  // Mythic
+  // Mythic (Tổng trọng số 3 / 60 = 5.0%)
   {
     id: "mutant_wither_skeleton",
     name: "Wither Skeleton đột biến x1",
     command: "execute at @a run summon mutantmore:mutant_wither_skeleton ~ ~ ~",
-    weight: 2,
+    weight: 1,
     color: "red",
   },
   {
     id: "mutant_jungle_zombie",
     name: "Jungle Zombie đột biến x1",
     command: "execute at @a run summon mutantmore:mutant_jungle_zombie ~ ~ ~",
-    weight: 2,
+    weight: 1,
     color: "red",
   },
   {
     id: "mutant_shulker",
     name: "Shulker đột biến x1",
     command: "execute at @a run summon mutantmore:mutant_shulker ~ ~ ~",
-    weight: 2,
+    weight: 1,
     color: "red",
   },
 ];

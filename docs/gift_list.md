@@ -21,8 +21,10 @@ This file contains the master list of supported TikTok gifts.
 - Finger Heart - 5 done (Gacha)
 - Journey Pass - 10 done (Full Leather Armor)
 - GG - 1 done (Fireworks)
-- Little Kisses - Enchanted Golden Apple + Iron Chestplate Prot 4 Blast Prot 3
-- Lucky Pig - Summon 3 bodyguard:bodyguard_gk với tên username (Owner, giáp ngực sắt Bảo vệ II, kiếm đá Đập phá II)
+- Little Kisses - Summon mutantmonsters:mutant_snow_golem
+- Lucky Pig - Summon 3 minecraft:wolf với tên username (Owner, giáp ngực Netherite wolf armor)
+- Money Gun - 30 u done (Wither Storm 10 phút)
+- Boxing Gloves - Sự kiện Đáy Biển Sâu 5 phút (Teleport đại dương sâu, gây mù, thở dưới nước, nhìn rõ dưới nước)
 - compress tnt
 
 ## Agent Requirements

@@ -11,6 +11,7 @@ import {
 } from "../config/gacha-config.js";
 import { CorgiEvent } from "./events/corgi-event.js";
 import { WitherStormEvent } from "./events/wither-storm-event.js";
+import { BoxingGlovesEvent } from "./events/boxing-gloves-event.js";
 
 export class GameActionService {
   private totalLikes = 0;
@@ -26,6 +27,7 @@ export class GameActionService {
 
   private readonly witherStormEvent: WitherStormEvent;
   private readonly corgiEvent: CorgiEvent;
+  private readonly boxingGlovesEvent: BoxingGlovesEvent;
 
   constructor(
     private readonly minecraft: MinecraftService,
@@ -43,6 +45,7 @@ export class GameActionService {
 
     this.witherStormEvent = new WitherStormEvent(eventContext);
     this.corgiEvent = new CorgiEvent(eventContext);
+    this.boxingGlovesEvent = new BoxingGlovesEvent(eventContext);
 
     this.giftActions = new GiftActionService({
       ...eventContext,
@@ -51,6 +54,7 @@ export class GameActionService {
       shamrockGachaGift: (gift: GiftEvent) => this.shamrockGachaGift(gift),
       moneyGunGift: (gift: GiftEvent) => this.moneyGunGift(gift),
       corgiGift: (gift: GiftEvent) => this.corgiGift(gift),
+      boxingGlovesGift: (gift: GiftEvent) => this.boxingGlovesGift(gift),
     });
   }
 
@@ -321,6 +325,10 @@ export class GameActionService {
 
   async corgiGift(gift: GiftEvent) {
     await this.corgiEvent.trigger(gift);
+  }
+
+  async boxingGlovesGift(gift: GiftEvent) {
+    await this.boxingGlovesEvent.trigger(gift);
   }
 
   private async processGachaQueue() {

@@ -58,6 +58,9 @@ export function createGiftActionRegistry(
     "Lucky Pig",
     "Lucky pig",
     "LuckyPig",
+    "Boxing Gloves",
+    "Boxing gloves",
+    "BoxingGloves",
   ]);
 
   actions.set("Heart", (gift) =>
@@ -124,6 +127,15 @@ export function createGiftActionRegistry(
   );
   actions.set("LuckyPig", (gift) =>
     service.luckyPigGift({ ...gift, giftName: "LuckyPig" }),
+  );
+  actions.set("Boxing Gloves", (gift) =>
+    service.boxingGlovesGift({ ...gift, giftName: "Boxing Gloves" }),
+  );
+  actions.set("Boxing gloves", (gift) =>
+    service.boxingGlovesGift({ ...gift, giftName: "Boxing gloves" }),
+  );
+  actions.set("BoxingGloves", (gift) =>
+    service.boxingGlovesGift({ ...gift, giftName: "BoxingGloves" }),
   );
 
   for (const giftName of supportedGiftNames) {
