@@ -2,83 +2,82 @@ import { GiftEvent } from "../../events/event.types.js";
 import { ContinuousEvent, ContinuousEventContext } from "./continuous-event.js";
 
 export class BoxingGlovesEvent extends ContinuousEvent {
-  private targetX = 1500;
-  private targetZ = 1500;
   private wasPlayerDead = false;
-  private waterTimerSeconds = 0;
-  private isLeviathanSummoned = false;
-  private pendingBabyCombos = 0;
+  private leviathanCount = 0;
+  private targetX = 3000;
+  private targetY = 42;
+  private targetZ = 3000;
+  private static readonly MAX_LEVIATHAN = 10;
 
-  constructor(context: ContinuousEventContext, durationSeconds = 180) {
+  constructor(context: ContinuousEventContext, durationSeconds = 300) {
     super(context, {
-      name: "Confetti",
+      name: "Corgi",
       defaultDurationSeconds: durationSeconds,
       hudIcon: "🌊",
-      hudTitle: "ĐÁY BIỂN SÂU",
-      warningTimeSeconds: 120,
-      dangerTimeSeconds: 45,
+      hudTitle: "LEVIATHAN",
+      warningTimeSeconds: 180,
+      dangerTimeSeconds: 60,
     });
   }
 
   protected async onStart(gift: GiftEvent): Promise<void> {
+    // Reset state hoàn toàn mỗi lần kích hoạt mới
     this.wasPlayerDead = false;
-    this.waterTimerSeconds = 0;
-    this.isLeviathanSummoned = false;
-    this.pendingBabyCombos = 0;
+    this.leviathanCount = 0;
 
     const safeUser = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
 
     await this.context.execute(
-      `title @a title {"text":"🌊 ĐÁY BIỂN SÂU ĐÃ XUẤT HIỆN! 🌊","color":"blue","bold":true}`,
+      `title @a title {"text":"🌊 LEVIATHAN ĐÃ THỨC GIẤC! 🌊","color":"dark_aqua","bold":true}`,
     );
     await this.context.execute(
-      `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 03:00","color":"gold"}`,
+      `title @a subtitle {"text":"Người gọi: ${safeUser} | Thời gian: 05:00","color":"gold"}`,
     );
     await this.context.execute(
-      "playsound entity.player.splash master @a ~ ~ ~ 1 1 1",
+      "playsound minecraft:entity.elder_guardian.curse master @a ~ ~ ~ 1 0.4 1",
+    );
+    await this.context.execute(
+      "playsound minecraft:ambient.underwater.loop.additions.ultra_rare ambient @a ~ ~ ~ 1 0.4 1",
     );
 
-    // 1. Dò tọa độ đại dương sâu (deep ocean)
+    // 1. Tìm tọa độ đại dương sâu
     const coords = await this.findDeepOceanCoords();
     this.targetX = coords.x;
+    this.targetY = coords.y - 20; // 20 block dưới mặt nước tìm được
     this.targetZ = coords.z;
 
-    // 2. Teleport player ra giữa đại dương sâu (20 block dưới mặt nước Y=42)
+    // 2. Teleport player xuống đại dương sâu (Y = tọa độ tìm được - 20)
     await this.context.execute(
-      `execute at @a run tp @a ${this.targetX} 42 ${this.targetZ}`,
+      `execute at @a run tp @a ${this.targetX} ${this.targetY} ${this.targetZ}`,
     );
 
-    // 3. Trao hiệu ứng (bao gồm mù, thở dưới nước, night vision, conduit power)
+    // 3. Trao hiệu ứng thở dưới nước
     await this.applyOceanEffects();
+
+    // 4. Đếm ngược 5 giây trước khi spawn Leviathan
+    const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+    for (let countdown = 5; countdown >= 1; countdown--) {
+      await this.context.execute(
+        `title @a subtitle {"text":"⚠️ Leviathan xuất hiện sau ${countdown}s...","color":"red","bold":true}`,
+      );
+      await sleep(1000);
+    }
+
+    // 5. Spawn con Leviathan đầu tiên với health 150
+    await this.spawnFirstLeviathan();
   }
 
-  protected async onExtend(count: number): Promise<void> {
+  protected async onExtend(_count: number): Promise<void> {
+    // Khi user tiếp tục gửi gift trong lúc đếm ngược, chỉ cộng thêm thời gian
+    // Không spawn thêm ở đây vì spawn chỉ xảy ra khi chết/hồi sinh
     await this.applyOceanEffects();
-
-    // Mỗi lần gửi gift cộng dồn thì summon 2 baby leviathan per extra count
-    const extraBabyCount = count * 2;
-
-    if (this.isLeviathanSummoned) {
-      for (let i = 0; i < extraBabyCount; i++) {
-        const offsetX = Math.floor(Math.random() * 21) - 10;
-        const offsetZ = Math.floor(Math.random() * 21) - 10;
-        await this.context.execute(
-          `execute at @a run summon cataclysm:the_baby_leviathan ~${offsetX} ~ ~${offsetZ} {Tags:["boxing_gloves_minion"]}`,
-        );
-      }
-      await this.context.execute(
-        `title @a subtitle {"text":"💥 Triệu hồi thêm ${extraBabyCount} Baby Leviathan!","color":"red"}`,
-      );
-    } else {
-      this.pendingBabyCombos += extraBabyCount;
-    }
   }
 
   protected async onTick(
     _remainingSeconds: number,
     _elapsedSeconds: number,
   ): Promise<void> {
-    // 1. Kiểm tra máu người chơi qua RCON
+    // 1. Kiểm tra máu người chơi
     const healthRes = (await this.context.execute(
       "data get entity @p Health",
     )) as string | undefined;
@@ -94,142 +93,100 @@ export class BoxingGlovesEvent extends ContinuousEvent {
       }
     }
 
+    // 2. Khi người chơi chết: đánh dấu trạng thái chết
     if (isDead) {
-      this.wasPlayerDead = true;
+      if (!this.wasPlayerDead) {
+        this.wasPlayerDead = true;
+      }
       return;
     }
 
-    // 2. Nếu người chơi vừa hồi sinh: Teleport lại đại dương sâu (Y=42)
+    // 3. Khi người chơi hồi sinh (vừa chết, giờ sống lại):
+    //    - Teleport trở lại đại dương
+    //    - Spawn thêm 1 con Leviathan (tối đa 10)
     if (this.wasPlayerDead) {
       this.wasPlayerDead = false;
       await this.context.execute(
-        `execute at @a run tp @a ${this.targetX} 42 ${this.targetZ}`,
+        `execute at @a run tp @a ${this.targetX} ${this.targetY} ${this.targetZ}`,
       );
       await this.applyOceanEffects();
-    }
-
-    // 3. Kiểm tra xem người chơi có ở dưới nước / ở khu vực nước không
-    const blockRes = (await this.context.execute(
-      "execute at @a run execute if block ~ ~ ~ minecraft:water run say in_water",
-    )) as string | undefined;
-
-    const isInWater = typeof blockRes === "string" && blockRes.includes("in_water");
-
-    if (isInWater || !this.isLeviathanSummoned) {
-      this.waterTimerSeconds++;
-    }
-
-    // 4. Nếu ở dưới nước >= 5s và chưa summon Leviathan -> Summon Leviathan + hiện thông báo + âm thanh ma mị!
-    if (this.waterTimerSeconds >= 5 && !this.isLeviathanSummoned) {
-      this.isLeviathanSummoned = true;
-      this.respawnCooldownSeconds = 10;
-      await this.summonLeviathanBoss();
-    }
-
-    if (this.respawnCooldownSeconds > 0) {
-      this.respawnCooldownSeconds--;
-    }
-
-    // 5. Nếu Leviathan đã được summon và hết cooldown -> Kiểm tra xem Leviathan có còn sống không. Nếu chết -> Hồi sinh lại!
-    if (this.isLeviathanSummoned && this.respawnCooldownSeconds === 0) {
-      const leviathanCheck = (await this.context.execute(
-        "execute at @a run execute if entity @e[type=cataclysm:the_leviathan]",
-      )) as string | undefined;
-
-      let isLeviathanAlive = false;
-      if (typeof leviathanCheck === "string") {
-        const lower = leviathanCheck.toLowerCase();
-        isLeviathanAlive =
-          (lower.includes("test passed") || lower.includes("found") || lower.includes("1")) &&
-          !lower.includes("no entity") &&
-          !lower.includes("test failed");
+      if (this.leviathanCount < BoxingGlovesEvent.MAX_LEVIATHAN) {
+        await this.spawnAdditionalLeviathan();
       }
-
-      if (!isLeviathanAlive) {
-        // Leviathan bị tiêu diệt -> Hồi sinh lại 1 con trong bán kính 50 block!
-        this.respawnCooldownSeconds = 10;
-        const offsetX = Math.floor(Math.random() * 101) - 50;
-        const offsetZ = Math.floor(Math.random() * 101) - 50;
-        await this.context.execute(
-          `execute at @a run summon cataclysm:the_leviathan ~${offsetX} ~ ~${offsetZ} {Tags:["boxing_gloves_boss"]}`,
-        );
-        await this.context.execute(
-          `title @a subtitle {"text":"⚡ Leviathan đã hồi sinh từ đại dương sâu!","color":"dark_red"}`,
-        );
-        await this.context.execute(
-          "playsound minecraft:entity.elder_guardian.curse master @a ~ ~ ~ 1 0.5 1",
-        );
-      }
+      return;
     }
 
-    // 6. Duy trì hiệu ứng liên tục (bao gồm gây mù, thở dưới nước...)
+    // 4. Duy trì hiệu ứng thở dưới nước
     await this.applyOceanEffects();
   }
 
   protected async onEnd(): Promise<void> {
-    // Dọn dẹp trùm cataclysm:the_leviathan và cataclysm:the_baby_leviathan khi kết thúc sự kiện
+    this.wasPlayerDead = false;
+    this.leviathanCount = 0;
+
+    // Kill tất cả leviathan
     await this.context.execute(
-      "execute at @a run tp @e[type=cataclysm:the_leviathan,tag=boxing_gloves_boss] 0 -999 0",
+      "execute at @a run tp @e[type=cataclysm:the_leviathan,tag=leviathan_boss] 0 -999 0",
     );
     await this.context.execute(
-      "execute at @a run kill @e[type=cataclysm:the_leviathan,tag=boxing_gloves_boss]",
-    );
-    await this.context.execute(
-      "execute at @a run tp @e[type=cataclysm:the_baby_leviathan,tag=boxing_gloves_minion] 0 -999 0",
-    );
-    await this.context.execute(
-      "execute at @a run kill @e[type=cataclysm:the_baby_leviathan,tag=boxing_gloves_minion]",
+      "execute at @a run kill @e[type=cataclysm:the_leviathan,tag=leviathan_boss]",
     );
 
-    // Xóa hiệu ứng
+    // Xóa hiệu ứng thở dưới nước
     await this.context.execute("effect clear @a minecraft:water_breathing");
 
     await this.context.execute(
-      `title @a title {"text":"✨ ĐÁY BIỂN SÂU ĐÃ KẾT THÚC! ✨","color":"green","bold":true}`,
+      `title @a title {"text":"✨ LEVIATHAN ĐÃ TAN BIẾN! ✨","color":"green","bold":true}`,
     );
     await this.context.execute(
-      `title @a actionbar {"text":"✨ ĐÁY BIỂN SÂU ĐÃ KẾT THÚC ✨","color":"green","bold":true}`,
+      `title @a actionbar {"text":"✨ SỰ KIỆN LEVIATHAN ĐÃ KẾT THÚC ✨","color":"green","bold":true}`,
     );
   }
 
-  private async summonLeviathanBoss(): Promise<void> {
-    // Summon Leviathan trong bán kính 50 block quanh player
+  /**
+   * Spawn con Leviathan đầu tiên với health 150 trong bán kính 50 block
+   */
+  private async spawnFirstLeviathan(): Promise<void> {
     const offsetX = Math.floor(Math.random() * 101) - 50;
     const offsetZ = Math.floor(Math.random() * 101) - 50;
     await this.context.execute(
-      `execute at @a run summon cataclysm:the_leviathan ~${offsetX} ~ ~${offsetZ} {Tags:["boxing_gloves_boss"]}`,
+      `execute at @a run summon cataclysm:the_leviathan ~${offsetX} ~ ~${offsetZ} {Tags:["leviathan_boss"]}`,
     );
+    // Merge thêm health 150 cho con đầu tiên (gần nhất)
+    await this.context.execute(
+      `data merge entity @e[type=cataclysm:the_leviathan,limit=1,sort=nearest] {Health:150.0f}`,
+    );
+    this.leviathanCount = 1;
+  }
 
-    // If there were pending baby combos, summon them too
-    if (this.pendingBabyCombos > 0) {
-      for (let i = 0; i < this.pendingBabyCombos; i++) {
-        const offsetX = Math.floor(Math.random() * 21) - 10;
-        const offsetZ = Math.floor(Math.random() * 21) - 10;
-        await this.context.execute(
-          `execute at @a run summon cataclysm:the_baby_leviathan ~${offsetX} ~ ~${offsetZ} {Tags:["boxing_gloves_minion"]}`,
-        );
-      }
-      this.pendingBabyCombos = 0;
-    }
+  /**
+   * Spawn thêm 1 con Leviathan ở bán kính 50 block sau khi player hồi sinh
+   */
+  private async spawnAdditionalLeviathan(): Promise<void> {
+    const offsetX = Math.floor(Math.random() * 101) - 50;
+    const offsetZ = Math.floor(Math.random() * 101) - 50;
+    await this.context.execute(
+      `execute at @a run summon cataclysm:the_leviathan ~${offsetX} ~ ~${offsetZ} {Tags:["leviathan_boss"]}`,
+    );
+    this.leviathanCount++;
 
-    // Announce thủy quái đã tới
     await this.context.execute(
-      `title @a title {"text":"☠️ THỦY QUÁI ĐÃ TỚI! ☠️","color":"dark_purple","bold":true}`,
+      `title @a subtitle {"text":"⚡ Leviathan thứ ${this.leviathanCount} đã xuất hiện! (${this.leviathanCount}/${BoxingGlovesEvent.MAX_LEVIATHAN})","color":"dark_red"}`,
     );
     await this.context.execute(
-      `title @a subtitle {"text":"Cataclysm Leviathan đã thức giấc từ vực thẫm!","color":"red"}`,
-    );
-
-    // Âm thanh ma mị
-    await this.context.execute(
-      "playsound minecraft:entity.elder_guardian.curse master @a ~ ~ ~ 1 0.4 1",
-    );
-    await this.context.execute(
-      "playsound minecraft:ambient.underwater.loop.additions.ultra_rare ambient @a ~ ~ ~ 1 0.4 1",
+      "playsound minecraft:entity.elder_guardian.curse master @a ~ ~ ~ 1 0.5 1",
     );
   }
 
-  private async findDeepOceanCoords(): Promise<{ x: number; z: number }> {
+  /**
+   * Tìm tọa độ đại dương sâu gần nhất.
+   * Trả về { x, y, z } — y là Y mặt nước tìm được (default 62 nếu không parse được).
+   */
+  private async findDeepOceanCoords(): Promise<{
+    x: number;
+    y: number;
+    z: number;
+  }> {
     const deepOceanBiomes = [
       "minecraft:deep_ocean",
       "minecraft:deep_lukewarm_ocean",
@@ -244,13 +201,17 @@ export class BoxingGlovesEvent extends ContinuousEvent {
         )) as string | undefined;
 
         if (typeof locateRes === "string") {
+          // locate biome trả về dạng [x, y, z] hoặc [x, ~, z]
           const match = locateRes.match(
-            /\[\s*(-?\d+)\s*,\s*(?:~|-?\d+)\s*,\s*(-?\d+)\s*\]/,
+            /\[\s*(-?\d+)\s*,\s*(~|-?\d+)\s*,\s*(-?\d+)\s*\]/,
           );
           if (match) {
+            const rawY = match[2];
+            const y = rawY === "~" ? 62 : parseInt(rawY, 10);
             return {
               x: parseInt(match[1], 10),
-              z: parseInt(match[2], 10),
+              y,
+              z: parseInt(match[3], 10),
             };
           }
         }
@@ -259,6 +220,7 @@ export class BoxingGlovesEvent extends ContinuousEvent {
       }
     }
 
+    // Fallback: tìm bất kỳ biome ocean nào
     try {
       const locateRes = (await this.context.execute(
         "locate biome #minecraft:is_ocean",
@@ -266,12 +228,15 @@ export class BoxingGlovesEvent extends ContinuousEvent {
 
       if (typeof locateRes === "string") {
         const match = locateRes.match(
-          /\[\s*(-?\d+)\s*,\s*(?:~|-?\d+)\s*,\s*(-?\d+)\s*\]/,
+          /\[\s*(-?\d+)\s*,\s*(~|-?\d+)\s*,\s*(-?\d+)\s*\]/,
         );
         if (match) {
+          const rawY = match[2];
+          const y = rawY === "~" ? 62 : parseInt(rawY, 10);
           return {
             x: parseInt(match[1], 10),
-            z: parseInt(match[2], 10),
+            y,
+            z: parseInt(match[3], 10),
           };
         }
       }
@@ -279,13 +244,15 @@ export class BoxingGlovesEvent extends ContinuousEvent {
       console.warn("Failed to locate #minecraft:is_ocean:", err);
     }
 
-    return { x: 3000, z: 3000 };
+    // Fallback cuối: tọa độ mặc định, Y=62 (mặt nước thông thường)
+    return { x: 3000, y: 62, z: 3000 };
   }
 
+  /**
+   * Duy trì hiệu ứng thở dưới nước cho player
+   */
   private async applyOceanEffects(): Promise<void> {
     const duration = Math.max(10, this.remainingSeconds);
-
-    // Thở dưới nước (water_breathing)
     await this.context.execute(
       `effect give @a minecraft:water_breathing ${duration} 0 true`,
     );

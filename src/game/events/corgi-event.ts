@@ -6,7 +6,7 @@ export class CorgiEvent extends ContinuousEvent {
 
   constructor(context: ContinuousEventContext, durationSeconds = 300) {
     super(context, {
-      name: "Corgi",
+      name: "Confetti",
       defaultDurationSeconds: durationSeconds,
       hudIcon: "🐉",
       hudTitle: "ĐẠI TIỆC NHÀ RỒNG",
@@ -29,7 +29,7 @@ export class CorgiEvent extends ContinuousEvent {
       "playsound entity.ender_dragon.growl master @a ~ ~ ~ 1 1 1",
     );
 
-    // Triệu hồi 2 con Ender Dragon cho lần đầu kích hoạt quà Corgi ("Đại tiệc nhà rồng")
+    // Triệu hồi 2 con Ender Dragon cho lần đầu kích hoạt sự kiện
     for (let i = 0; i < 2; i++) {
       await this.context.execute(
         `execute at @p run summon ender_dragon ~ ~10 ~ {DragonPhase:1,Tags:["corgi_dragon"]}`,
@@ -38,7 +38,7 @@ export class CorgiEvent extends ContinuousEvent {
   }
 
   protected async onExtend(count: number): Promise<void> {
-    // Với mỗi quà Corgi gửi thêm trong combo, triệu hồi thêm Ender Dragon tương ứng
+    // Với mỗi quà gửi thêm trong combo, triệu hồi thêm Ender Dragon tương ứng
     for (let i = 0; i < count; i++) {
       await this.context.execute(
         `execute at @p run summon ender_dragon ~ ~10 ~ {DragonPhase:1,Tags:["corgi_dragon"]}`,
@@ -80,7 +80,7 @@ export class CorgiEvent extends ContinuousEvent {
       return;
     }
 
-    // 3. Nếu người chơi vừa bấm Hồi Sinh (trước đó bị chết, giờ đã sống lại)
+    // 3. Nếu người chơi vừa hồi sinh (trước đó bị chết, giờ đã sống lại)
     if (this.wasPlayerDead) {
       this.wasPlayerDead = false;
       for (let i = 0; i < 2; i++) {
@@ -91,7 +91,7 @@ export class CorgiEvent extends ContinuousEvent {
       return;
     }
 
-    // 4. Nếu người chơi đang sống bình thường: Dọn dẹp rồng đã hết máu và tự động triệu hồi 2 rồng mới gần người chơi nếu rồng bị diệt hết
+    // 4. Nếu người chơi đang sống bình thường: Dọn dẹp rồng đã hết máu và tự động triệu hồi 2 rồng mới nếu rồng bị diệt hết
     await this.context.execute(
       "execute as @e[type=ender_dragon,tag=corgi_dragon,nbt={Health:0f}] run tp @s 0 -999 0",
     );
@@ -106,7 +106,7 @@ export class CorgiEvent extends ContinuousEvent {
       'execute if entity @e[type=ender_dragon,tag=corgi_batch] run execute at @p run summon ender_dragon ~ ~10 ~ {DragonPhase:1,Tags:["corgi_dragon"]}',
     );
     await this.context.execute(
-      'execute if entity @e[tag=corgi_batch] run tag @e[tag=corgi_batch] remove corgi_batch',
+      "execute if entity @e[tag=corgi_batch] run tag @e[tag=corgi_batch] remove corgi_batch",
     );
   }
 

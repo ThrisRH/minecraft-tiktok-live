@@ -55,6 +55,7 @@ export class GameActionService {
       moneyGunGift: (gift: GiftEvent) => this.moneyGunGift(gift),
       corgiGift: (gift: GiftEvent) => this.corgiGift(gift),
       boxingGlovesGift: (gift: GiftEvent) => this.boxingGlovesGift(gift),
+      confettiGift: (gift: GiftEvent) => this.confettiGift(gift),
     });
   }
 
@@ -88,9 +89,6 @@ export class GameActionService {
   }
   async doughnutGift(gift: GiftEvent) {
     return this.giftActions.doughnutGift(gift);
-  }
-  async confettiGift(gift: GiftEvent) {
-    return this.giftActions.confettiGift(gift);
   }
   async fingerHeartGift(gift: GiftEvent) {
     return this.giftActions.fingerHeartGift(gift);
@@ -323,16 +321,18 @@ export class GameActionService {
     await this.witherStormEvent.trigger(gift);
   }
 
+  // Corgi gift -> Leviathan event (BoxingGlovesEvent)
   async corgiGift(gift: GiftEvent) {
-    await this.corgiEvent.trigger(gift);
+    await this.boxingGlovesEvent.trigger(gift);
   }
 
   async boxingGlovesGift(gift: GiftEvent) {
     await this.defaultGift(gift);
   }
 
+  // Confetti gift -> Dragon event (CorgiEvent)
   async confettiGift(gift: GiftEvent) {
-    await this.boxingGlovesEvent.trigger(gift);
+    await this.corgiEvent.trigger(gift);
   }
 
   private async processGachaQueue() {

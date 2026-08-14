@@ -14,6 +14,7 @@ interface GiftActionContext {
   moneyGunGift?(gift: GiftEvent): Promise<void>;
   corgiGift?(gift: GiftEvent): Promise<void>;
   boxingGlovesGift?(gift: GiftEvent): Promise<void>;
+  confettiGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
@@ -259,7 +260,8 @@ export class GiftActionService {
   }
 
   async journeyPassGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    const command = "summon mutantmonsters:mutant_snow_golem" as const;
+    await this.handleGiftEffect(gift, "Journey Pass", command, 1);
   }
 
   // GG -> Bánh mì
@@ -267,14 +269,44 @@ export class GiftActionService {
     await this.handleGiveItemEffect(gift, "GG", "bread");
   }
 
-  // Little Kisses -> Summon mutantmonsters:mutant_snow_golem
+  // Little Kisses -> Summon dân làng có súng (bowman) với full trang bị
   async littleKissesGift(gift: GiftEvent) {
-    await this.handleGiftEffect(
-      gift,
-      "Little Kisses",
-      "execute at @a run summon mutantmonsters:mutant_snow_golem ~ ~ ~",
-      1,
-    );
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Little Kisses!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
+
+    try {
+      await this.context.showLiveParticipant(
+        gift.username,
+        gift.giftName ?? "Little Kisses",
+        gift.count,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const count = Math.max(1, gift.count ?? 1);
+    // Command phức tạp với NBT đầy đủ — chạy trực tiếp, không qua buildTaggedCommand
+    const command =
+      `execute at @a run summon recruits:bowman ~ ~ ~ ` +
+      `{HandItems:[{id:"tacz:modern_kinetic_gun",Count:1b,tag:{GunId:"tacz:scar_l",GunCurrentAmmoCount:30,HasBulletInBarrel:1b,GunFireMode:"AUTO"}},{}],` +
+      `ArmorItems:[` +
+      `{id:"minecraft:iron_boots",Count:1b,tag:{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]}},` +
+      `{id:"minecraft:iron_leggings",Count:1b,tag:{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]}},` +
+      `{id:"minecraft:iron_chestplate",Count:1b,tag:{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]}},` +
+      `{id:"minecraft:iron_helmet",Count:1b,tag:{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]}}` +
+      `],isOwned:1b,OwnerUUID:[I;48272772,1687374940,-1995959969,764026847]}`;
+
+    const sleep = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+    for (let i = 0; i < count; i++) {
+      await this.executeWithRetry(command);
+      if (i < count - 1) await sleep(500);
+    }
   }
 
   // Lucky Pig -> Summon 3 con minecraft:wolf (với Owner, Netherite wolf armor và CustomName)
@@ -334,11 +366,35 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
-  // Doughnut black hole
+  // Doughnut black hole — spawn đúng số lượng combo, delay 1 giây giữa mỗi con
   async doughnutGift(gift: GiftEvent) {
-    const command = "summon terramity:black_hole ~ ~10 ~" as const;
+    try {
+      await this.context.sendMessage(
+        `${gift.username} đã gửi x${gift.count} Doughnut!`,
+      );
+    } catch (error) {
+      console.warn("Failed to send gift notification:", error);
+    }
 
-    await this.handleGiftEffect(gift, "Doughnut", command, 1, undefined, true);
+    try {
+      await this.context.showLiveParticipant(
+        gift.username,
+        gift.giftName ?? "Doughnut",
+        gift.count,
+      );
+    } catch (error) {
+      console.warn("Failed to show live participant:", error);
+    }
+
+    const total = Math.max(1, gift.count ?? 1);
+    for (let i = 0; i < total; i++) {
+      await this.executeWithRetry(
+        "execute at @a run summon terramity:black_hole ~ ~10 ~",
+      );
+      if (i < total - 1) {
+        await this.delay(5000);
+      }
+    }
   }
 
   async corgiGift(gift: GiftEvent) {

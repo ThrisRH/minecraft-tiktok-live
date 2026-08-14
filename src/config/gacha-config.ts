@@ -273,13 +273,13 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "gold",
   },
 
-  // Mythic: Combo hoa rơi cửa phật (Minigun + 100 đạn 308 + Full giáp Netherite protection/blast 15 & feather falling 255 +30 tim + Regen & Resistance 30s)
+  // Mythic: Combo hoa rơi cửa phật (Minigun + 200 đạn 308 (give 2 lần x100) + Full giáp Netherite protection/blast 15 & feather falling 255 +30 tim + Regen & Resistance 30s)
   {
     id: "mythic_minigun_combo",
     name: "Combo hoa rơi cửa phật",
     command:
-      'execute at @a run give @a netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s},{id:"minecraft:feather_falling",lvl:255s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308"} 100; execute at @a run effect give @a minecraft:health_boost 999999 14 true; execute at @a run effect give @a minecraft:instant_health 1 255 true; execute at @a run effect give @a minecraft:regeneration 30 255 true; execute at @a run effect give @a minecraft:resistance 30 255 true',
-    weight: 2,
+      'execute at @a run give @a netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s},{id:"minecraft:feather_falling",lvl:255s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308"} 100; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308"} 100; execute at @a run effect give @a minecraft:health_boost 999999 14 true; execute at @a run effect give @a minecraft:instant_health 1 255 true; execute at @a run effect give @a minecraft:regeneration 30 255 true; execute at @a run effect give @a minecraft:resistance 30 255 true',
+    weight: 5,
     color: "red",
   },
 ];

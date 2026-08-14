@@ -92,7 +92,10 @@ export abstract class ContinuousEvent {
         `${gift.username} đã gửi x${gift.count} ${this.options.name}!`,
       );
     } catch (error) {
-      console.warn(`Failed to send ${this.options.name} gift notification:`, error);
+      console.warn(
+        `Failed to send ${this.options.name} gift notification:`,
+        error,
+      );
     }
 
     try {
@@ -102,7 +105,10 @@ export abstract class ContinuousEvent {
         gift.count,
       );
     } catch (error) {
-      console.warn(`Failed to show live participant for ${this.options.name}:`, error);
+      console.warn(
+        `Failed to show live participant for ${this.options.name}:`,
+        error,
+      );
     }
 
     const totalCount = Math.max(1, gift.count ?? 1);
@@ -126,7 +132,10 @@ export abstract class ContinuousEvent {
 
   protected abstract onStart(gift: GiftEvent): Promise<void>;
   protected abstract onExtend(count: number): Promise<void>;
-  protected abstract onTick(remainingSeconds: number, elapsedSeconds: number): Promise<void>;
+  protected abstract onTick(
+    remainingSeconds: number,
+    elapsedSeconds: number,
+  ): Promise<void>;
   protected abstract onEnd(): Promise<void>;
 
   private startCountdown() {
@@ -134,8 +143,11 @@ export abstract class ContinuousEvent {
       return;
     }
 
-    this.remainingSeconds = this.options.defaultDurationSeconds;
-    const initialDuration = this.options.defaultDurationSeconds;
+    // Only set remainingSeconds if not already configured (e.g. by trigger with extraCount)
+    if (this.remainingSeconds <= 0) {
+      this.remainingSeconds = this.options.defaultDurationSeconds;
+    }
+    const initialDuration = this.remainingSeconds;
 
     const tick = async () => {
       this.remainingSeconds -= 1;
@@ -149,7 +161,10 @@ export abstract class ContinuousEvent {
         try {
           await this.onEnd();
         } catch (error) {
-          console.warn(`Failed to finalize ${this.options.name} countdown:`, error);
+          console.warn(
+            `Failed to finalize ${this.options.name} countdown:`,
+            error,
+          );
         }
         return;
       }
@@ -188,7 +203,9 @@ export abstract class ContinuousEvent {
       0,
       Math.min(
         totalBars,
-        Math.ceil((remaining / this.options.defaultDurationSeconds) * totalBars),
+        Math.ceil(
+          (remaining / this.options.defaultDurationSeconds) * totalBars,
+        ),
       ),
     );
     const barStr = "▰".repeat(filledBars) + "▱".repeat(totalBars - filledBars);
