@@ -27,7 +27,7 @@ async function bootstrap() {
     // Desktop GUI / Web Control Panel Mode
     if (mode === "gui" || mode === "server" || !mode) {
       const port = Number(process.env.PORT ?? 3050);
-      const server = new ControlPanelServer(dispatcher, game, port);
+      const server = new ControlPanelServer(dispatcher, game, port, tikTok);
       const url = await server.start();
 
       console.log(`\n==================================================`);
@@ -46,7 +46,19 @@ async function bootstrap() {
       const tikTokUsername = process.env.TIKTOK_USERNAME;
       if (tikTokUsername) {
         console.log(`📱 Đang kết nối TikTok Live của: ${tikTokUsername}`);
-        await tikTok.connect(tikTokUsername);
+        try {
+          await tikTok.connect(tikTokUsername);
+          server.addLog(
+            "system",
+            `✅ Tự động kết nối thành công TikTok Live của: @${tikTokUsername}`,
+          );
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          server.addLog(
+            "error",
+            `❌ Lỗi tự động kết nối TikTok Live (@${tikTokUsername}): ${errMsg}`,
+          );
+        }
       }
       return;
     }

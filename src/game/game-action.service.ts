@@ -328,6 +328,10 @@ export class GameActionService {
   }
 
   async boxingGlovesGift(gift: GiftEvent) {
+    await this.defaultGift(gift);
+  }
+
+  async confettiGift(gift: GiftEvent) {
     await this.boxingGlovesEvent.trigger(gift);
   }
 

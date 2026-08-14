@@ -173,12 +173,12 @@ export const rosaGachaOptions: GachaOption[] = [
 ];
 
 export const shamrockGachaOptions: GachaOption[] = [
-  // Common: Full giáp da + kiếm gỗ + bánh mì x 12
+  // Common: +2 trái tim (Health Boost level 0 -> +4 HP)
   {
-    id: "leather_armor_wood_sword_bread",
-    name: "Combo lá rách đùm lá rách hơn",
+    id: "combo_vua_thay_than",
+    name: "combo vừa thay thận",
     command:
-      "execute at @a run give @a leather_helmet 1; execute at @a run give @a leather_chestplate 1; execute at @a run give @a leather_leggings 1; execute at @a run give @a leather_boots 1; execute at @a run give @a wooden_sword 1; execute at @a run give @a bread 12",
+      "execute at @a run effect give @a minecraft:health_boost 999999 0 true; execute at @a run effect give @a minecraft:instant_health 1 255 true",
     weight: 30,
     color: "gray",
   },
@@ -223,12 +223,22 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "#A855F7",
   },
 
-  // Epic: Combo dân chủ (Áo sắt protection 3 + súng Glock 17 + 60 băng đạn 9mm)
+  // Epic: Combo dân chủ (Full giáp sắt protection & blast 3 + SPAS-12 full attachments + 60 đạn 12g)
   {
     id: "democracy_combo_epic",
     name: "Combo Dân Chủ",
     command:
-      'execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:protection",lvl:3s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:glock_17",GunCurrentAmmoCount:17,HasBulletInBarrel:1b,GunFireMode:"SEMI",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:9mm"} 60',
+      'execute at @a run give @a iron_helmet{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a iron_chestplate{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a iron_leggings{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a iron_boots{Enchantments:[{id:"minecraft:protection",lvl:3s},{id:"minecraft:blast_protection",lvl:3s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:spas_12",GunCurrentAmmoCount:8,HasBulletInBarrel:1b,GunFireMode:"SEMI",AttachmentEXTENDED_MAG:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:shotgun_extended_mag_3"}},AttachmentSCOPE:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:sight_coyote"}},AttachmentMUZZLE:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:muzzle_silencer_sg"}},AttachmentSTOCK:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:stock_heavy_spas_12"}}} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:12g"} 60',
+    weight: 12,
+    color: "#A855F7",
+  },
+
+  // Epic: Combo người không phổi (+10 trái tim)
+  {
+    id: "combo_nguoi_khong_phoi",
+    name: "combo người không phổi",
+    command:
+      "execute at @a run effect give @a minecraft:health_boost 999999 4 true; execute at @a run effect give @a minecraft:instant_health 1 255 true",
     weight: 12,
     color: "#A855F7",
   },
@@ -243,22 +253,32 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "gold",
   },
 
-  // Legend: Combo SCAR-L (Súng SCAR-L + 61 viên đạn 556x45mm)
+  // Legend: Combo SCAR-L (Full giáp kim cương protection/blast 5 & feather falling 4 + SCAR-L full attachments + 61 đạn 556x45)
   {
     id: "legend_scar_l_combo",
     name: "Combo SCAR-L",
     command:
-      'execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:scar_l",GunCurrentAmmoCount:30,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:556x45"} 61',
+      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:5s},{id:"minecraft:blast_protection",lvl:5s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:protection",lvl:5s},{id:"minecraft:blast_protection",lvl:5s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:5s},{id:"minecraft:blast_protection",lvl:5s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:5s},{id:"minecraft:blast_protection",lvl:5s},{id:"minecraft:feather_falling",lvl:4s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:scar_l",GunCurrentAmmoCount:65,HasBulletInBarrel:1b,GunFireMode:"AUTO",AttachmentEXTENDED_MAG:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:extended_mag_3"}},AttachmentSCOPE:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:sight_pk06_rifle"}},AttachmentMUZZLE:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:muzzle_compensator_trident"}},AttachmentLASER:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:laser_lopro"}},AttachmentGRIP:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:grip_vertical_ranger"}},AttachmentSTOCK:{id:"tacz:attachment",Count:1b,tag:{AttachmentId:"tacz:stock_ripstock"}}} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:556x45"} 61',
     weight: 6,
     color: "gold",
   },
 
-  // Mythic: Combo hoa rơi cửa phật (Minigun + 200 băng đạn 308mm)
+  // Legend: Combo đã uống sữa ensure (+20 trái tim)
+  {
+    id: "combo_da_uong_sua_ensure",
+    name: "combo đã uống sữa ensure",
+    command:
+      "execute at @a run effect give @a minecraft:health_boost 999999 9 true; execute at @a run effect give @a minecraft:instant_health 1 255 true",
+    weight: 6,
+    color: "gold",
+  },
+
+  // Mythic: Combo hoa rơi cửa phật (Minigun + 100 đạn 308 + Full giáp Netherite protection/blast 15 & feather falling 255 +30 tim + Regen & Resistance 30s)
   {
     id: "mythic_minigun_combo",
     name: "Combo hoa rơi cửa phật",
     command:
-      'execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308"} 200',
+      'execute at @a run give @a netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s},{id:"minecraft:feather_falling",lvl:255s}]} 1; execute at @a run give @a tacz:modern_kinetic_gun{GunId:"tacz:minigun",GunCurrentAmmoCount:20,HasBulletInBarrel:1b,GunFireMode:"AUTO",SceneCredits:0b} 1; execute at @a run give @a tacz:ammo{AmmoId:"tacz:308"} 100; execute at @a run effect give @a minecraft:health_boost 999999 14 true; execute at @a run effect give @a minecraft:instant_health 1 255 true; execute at @a run effect give @a minecraft:regeneration 30 255 true; execute at @a run effect give @a minecraft:resistance 30 255 true',
     weight: 2,
     color: "red",
   },

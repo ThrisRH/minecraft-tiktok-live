@@ -69,8 +69,6 @@ export class GiftActionService {
       skipPayload,
     );
 
-    console.log(taggedCommand);
-
     // Delay cố định 500ms giữa mỗi con mob theo yêu cầu
     const delayMs = 500;
 
@@ -351,16 +349,16 @@ export class GiftActionService {
   }
 
   async boxingGlovesGift(gift: GiftEvent) {
-    if (this.context.boxingGlovesGift) {
-      return this.context.boxingGlovesGift({
-        ...gift,
-        giftName: gift.giftName ?? "Boxing Gloves",
-      });
-    }
     return this.defaultGift(gift);
   }
 
   async confettiGift(gift: GiftEvent) {
+    if (this.context.confettiGift) {
+      return this.context.confettiGift({
+        ...gift,
+        giftName: gift.giftName ?? "Confetti",
+      });
+    }
     return this.defaultGift(gift);
   }
 }

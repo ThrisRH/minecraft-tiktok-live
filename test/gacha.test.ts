@@ -7,6 +7,7 @@ import {
   GachaOption,
   getRandomGachaOption,
   rosaGachaOptions,
+  shamrockGachaOptions,
 } from "../src/config/gacha-config.js";
 
 test("getRandomGachaOption selects item based on weighted odds", () => {
@@ -429,14 +430,52 @@ test("Confetti gift triggers default gift message", async () => {
 
   await dispatcher.dispatch({
     type: "gift",
-    giftName: "Confetti",
+    giftName: "Boxing Gloves",
     count: 1,
     username: "Kevin",
   });
 
   assert.ok(
-    commands.some((cmd) => cmd.includes("Confetti")),
-    "Confetti should send default gift message",
+    commands.some((cmd) => cmd.includes("Boxing Gloves")),
+    "Boxing Gloves should send default gift message",
   );
+});
+
+test("shamrockGachaOptions contains combo vừa thay thận, combo người không phổi, and combo đã uống sữa ensure", () => {
+  const thayThan = shamrockGachaOptions.find((opt) => opt.id === "combo_vua_thay_than");
+  const khongPhoi = shamrockGachaOptions.find((opt) => opt.id === "combo_nguoi_khong_phoi");
+  const ensure = shamrockGachaOptions.find((opt) => opt.id === "combo_da_uong_sua_ensure");
+
+  assert.ok(thayThan, "Should contain combo vừa thay thận");
+  assert.equal(thayThan.name, "combo vừa thay thận");
+  assert.ok(thayThan.command.includes("health_boost 999999 0"));
+
+  assert.ok(khongPhoi, "Should contain combo người không phổi");
+  assert.equal(khongPhoi.name, "combo người không phổi");
+  assert.ok(khongPhoi.command.includes("health_boost 999999 4"));
+
+  assert.ok(ensure, "Should contain combo đã uống sữa ensure");
+  assert.equal(ensure.name, "combo đã uống sữa ensure");
+  assert.ok(ensure.command.includes("health_boost 999999 9"));
+
+  const democracy = shamrockGachaOptions.find((opt) => opt.id === "democracy_combo_epic");
+  assert.ok(democracy, "Should contain Combo Dân Chủ");
+  assert.ok(democracy.command.includes("spas_12"));
+  assert.ok(democracy.command.includes("tacz:12g"));
+  assert.ok(democracy.command.includes("iron_helmet"));
+
+  const scarL = shamrockGachaOptions.find((opt) => opt.id === "legend_scar_l_combo");
+  assert.ok(scarL, "Should contain Combo SCAR-L");
+  assert.ok(scarL.command.includes("scar_l"));
+  assert.ok(scarL.command.includes("diamond_boots"));
+  assert.ok(scarL.command.includes("feather_falling"));
+
+  const mythicMinigun = shamrockGachaOptions.find((opt) => opt.id === "mythic_minigun_combo");
+  assert.ok(mythicMinigun, "Should contain Combo hoa rơi cửa phật");
+  assert.ok(mythicMinigun.command.includes("netherite_boots"));
+  assert.ok(mythicMinigun.command.includes("lvl:255s"));
+  assert.ok(mythicMinigun.command.includes("health_boost 999999 14"));
+  assert.ok(mythicMinigun.command.includes("regeneration 30 255"));
+  assert.ok(mythicMinigun.command.includes("resistance 30 255"));
 });
 

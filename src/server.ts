@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { Dispatcher } from "./events/dispatcher.js";
 import { GameActionService } from "./game/game-action.service.js";
+import type { TikTokService } from "./tiktok/tiktok.service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,127 +15,172 @@ export interface GiftMetadata {
   category: "gacha" | "event" | "mob" | "item" | "trap";
   description: string;
   icon: string;
+  titleVi?: string;
+  effectVi?: string;
 }
 
 const GIFT_CATALOG: GiftMetadata[] = [
   {
     id: "Heart",
     name: "Heart",
+    titleVi: "Bắn Tim Gacha",
     category: "gacha",
-    description: "Vòng quay Gacha Thường",
-    icon: "🎲",
+    description: "Quay thưởng Gacha ngẫu nhiên triệu hồi Mobs/Items/Events",
+    effectVi: "🎲 Vòng Quay Gacha",
+    icon: "💖",
   },
   {
     id: "Overreact",
     name: "Overreact",
+    titleVi: "Quá Khích Gacha",
     category: "gacha",
-    description: "Vòng quay Gacha Thường",
-    icon: "🎲",
+    description: "Vòng quay Gacha Thường ngẫu nhiên triệu hồi quà bất ngờ",
+    effectVi: "🎲 Vòng Quay Gacha",
+    icon: "😲",
   },
   {
     id: "Rosa",
     name: "Rosa",
+    titleVi: "Hoa Hồng Đột Biến",
     category: "gacha",
-    description: "Vòng quay Rosa Gacha (Quái đột biến)",
+    description: "Vòng quay Gacha triệu hồi Quái vật Đột Biến (Mythic 5%)",
+    effectVi: "☣️ Gacha Đột Biến",
     icon: "🌹",
   },
   {
     id: "Shamrock",
     name: "Shamrock",
+    titleVi: "Cỏ 4 Lá May Mắn",
     category: "gacha",
-    description: "Vòng quay Shamrock Gacha (Cân bằng)",
+    description: "Vòng quay Shamrock Gacha Cân Bằng với quà siêu hấp dẫn",
+    effectVi: "🍀 Gacha Shamrock",
     icon: "☘️",
   },
   {
     id: "Corgi",
     name: "Corgi",
+    titleVi: "Chó Corgi Rồng",
     category: "event",
-    description: "Sự kiện đếm ngược Corgi Dragon (5 phút)",
-    icon: "🐉",
+    description: "Sự kiện 5 phút: Triệu hồi 2 Rồng Ender Dragon + Đếm ngược HUD",
+    effectVi: "🐉 Sự Kiện 5 Phút",
+    icon: "🐕",
   },
   {
     id: "Money Gun",
     name: "Money Gun",
+    titleVi: "Súng Tiêu Tiền",
     category: "event",
-    description: "Sự kiện đếm ngược Wither Storm (10 phút)",
-    icon: "☠️",
+    description: "Sự kiện 10 phút: Triệu hồi Siêu Trùm Wither Storm Phase 7",
+    effectVi: "☠️ Trùm Wither Storm",
+    icon: "💸",
+  },
+  {
+    id: "Boxing Gloves",
+    name: "Boxing Gloves",
+    titleVi: "Găng Tay Boxing",
+    category: "normal",
+    description: "Gửi thông báo tặng gift Găng Tay Boxing",
+    effectVi: "🥊 Thông Báo Gift",
+    icon: "🥊",
   },
   {
     id: "Rose",
     name: "Rose",
+    titleVi: "Hoa Hồng Thường",
     category: "mob",
-    description: "Triệu hồi Zombie",
-    icon: "🧟",
+    description: "Triệu hồi 1 Quái vật Zombie tấn công ngay lập tức",
+    effectVi: "🧟 1x Zombie",
+    icon: "🌹",
   },
   {
     id: "TikTok",
     name: "TikTok",
+    titleVi: "TikTok Creeper",
     category: "mob",
-    description: "Triệu hồi Creeper",
-    icon: "🧨",
+    description: "Triệu hồi 1 Quái vật Creeper bộc phá nguy hiểm",
+    effectVi: "🧨 1x Creeper",
+    icon: "🎵",
   },
   {
     id: "Cap",
     name: "Cap",
+    titleVi: "Mũ Lưỡi Trai",
     category: "mob",
-    description: "Triệu hồi Warden",
-    icon: "👾",
+    description: "Triệu hồi Quái trùm hầm ngục Warden cực kỳ nguy hiểm",
+    effectVi: "👾 Boss Warden",
+    icon: "🧢",
   },
   {
     id: "Doughnut",
     name: "Doughnut",
+    titleVi: "Bánh Donut Hố Đen",
     category: "mob",
-    description: "Triệu hồi Hố đen (Black Hole)",
-    icon: "🕳️",
+    description: "Triệu hồi Hố Đen Vũ Trụ (Black Hole) hút mọi thứ xung quanh",
+    effectVi: "🕳️ Hố Đen Vũ Trụ",
+    icon: "🍩",
   },
   {
     id: "Confetti",
     name: "Confetti",
-    category: "mob",
-    description: "Triệu hồi Ender Dragon",
-    icon: "🐲",
+    titleVi: "Pháo Hoa Đáy Biển",
+    category: "event",
+    description: "Sự kiện 3 phút: Teleport đại dương sâu Y=42 & 5s sau xuất hiện Trùm Leviathan (Hồi sinh liên tục, Combo +2 Baby Leviathan)",
+    effectVi: "🌊 Sự Kiện Đáy Biển Sâu (3 Phút)",
+    icon: "🎉",
   },
   {
     id: "Lucky Pig",
     name: "Lucky Pig",
+    titleVi: "Heo May Mắn",
     category: "mob",
-    description: "Triệu hồi Vệ binh Guard Villager (Full giáp)",
-    icon: "🛡️",
-  },
-  {
-    id: "Finger Heart",
-    name: "Finger Heart",
-    category: "item",
-    description: "Cho Táo Vàng (Golden Apple)",
-    icon: "🍎",
-  },
-  {
-    id: "Journey Pass",
-    name: "Journey Pass",
-    category: "item",
-    description: "Cho Full set Giáp Da",
-    icon: "👕",
-  },
-  {
-    id: "GG",
-    name: "GG",
-    category: "item",
-    description: "Cho Bánh mì (Bread)",
-    icon: "🍞",
+    description: "Triệu hồi 3 Sói Săn Giáp Netherite (Owner UUID, Netherite Wolf Armor)",
+    effectVi: "🐺 3x Sói Giáp Netherite",
+    icon: "🐺",
   },
   {
     id: "Little Kisses",
     name: "Little Kisses",
+    titleVi: "Nụ Hôn Ngọt Ngào",
+    category: "mob",
+    description: "Triệu hồi 1 Quái vật Người Tuyết Đột Biến (Mutant Snow Golem)",
+    effectVi: "☃️ 1x Người Tuyết Đột Biến",
+    icon: "☃️",
+  },
+  {
+    id: "Finger Heart",
+    name: "Finger Heart",
+    titleVi: "Tim Ngón Tay",
     category: "item",
-    description: "Cho Táo Vàng Phù Phép + Áo Sắt Phù Phép",
-    icon: "💋",
+    description: "Viện trợ 1 Táo Vàng (Golden Apple) tiếp sức hồi máu",
+    effectVi: "🍎 1x Táo Vàng",
+    icon: "🫰",
+  },
+  {
+    id: "Journey Pass",
+    name: "Journey Pass",
+    titleVi: "Vé Hành Trình",
+    category: "item",
+    description: "Trang bị 1 Bộ Giáp Da Đầy Đủ (Mũ, Áo, Quần, Giày)",
+    effectVi: "👕 Full Set Giáp Da",
+    icon: "🎟️",
+  },
+  {
+    id: "GG",
+    name: "GG",
+    titleVi: "Bánh Mì GG",
+    category: "item",
+    description: "Tặng 1 Bánh Mì (Bread) tiếp tế năng lượng tức thì",
+    effectVi: "🍞 1x Bánh Mì",
+    icon: "🍞",
   },
   {
     id: "Perfume",
     name: "Perfume",
+    titleVi: "Nước Hoa Bẫy",
     category: "trap",
-    description: "Bẫy 4 cột Bedrock nhốt 2s & TNT Gravity",
-    icon: "💣",
+    description: "Nhốt streamer trong lồng Bedrock 2 giây & Thả nổ TNT Gravity",
+    effectVi: "💣 Lồng Bedrock & TNT",
+    icon: "🧪",
   },
 ];
 
@@ -152,6 +198,7 @@ export class ControlPanelServer {
     private readonly dispatcher: Dispatcher,
     private readonly game: GameActionService,
     private readonly port = 3050,
+    private readonly tikTok?: TikTokService,
   ) {}
 
   public addLog(type: LogEntry["type"], message: string) {
@@ -197,6 +244,75 @@ export class ControlPanelServer {
             if (pathname === "/api/logs" && req.method === "GET") {
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(JSON.stringify(this.logs));
+              return;
+            }
+
+            if (pathname === "/api/tiktok-status" && req.method === "GET") {
+              res.writeHead(200, { "Content-Type": "application/json" });
+              const status = this.tikTok
+                ? this.tikTok.getStatus()
+                : { connected: false, username: null };
+              res.end(JSON.stringify(status));
+              return;
+            }
+
+            if (pathname === "/api/connect-tiktok" && req.method === "POST") {
+              const body = await this.parseJsonBody(req);
+              const rawUser = String(body.username ?? "").trim();
+              const username = rawUser.replace(/^@/, "");
+
+              if (!username) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    status: "error",
+                    message: "TikTok ID / Username là bắt buộc",
+                  }),
+                );
+                return;
+              }
+
+              if (!this.tikTok) {
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    status: "error",
+                    message: "TikTokService chưa được khởi tạo",
+                  }),
+                );
+                return;
+              }
+
+              this.addLog("system", `📱 Đang kết nối TikTok Live tới: @${username}...`);
+
+              try {
+                await this.tikTok.connect(username);
+                this.addLog(
+                  "system",
+                  `✅ Đã kết nối thành công TikTok Live của: @${username}`,
+                );
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ status: "success", username }));
+              } catch (err: unknown) {
+                const errMsg =
+                  err instanceof Error ? err.message : String(err);
+                this.addLog(
+                  "error",
+                  `❌ Lỗi kết nối TikTok Live (@${username}): ${errMsg}`,
+                );
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ status: "error", message: errMsg }));
+              }
+              return;
+            }
+
+            if (pathname === "/api/disconnect-tiktok" && req.method === "POST") {
+              if (this.tikTok) {
+                this.tikTok.disconnect();
+                this.addLog("system", `🔌 Đã ngắt kết nối TikTok Live`);
+              }
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ status: "success" }));
               return;
             }
 

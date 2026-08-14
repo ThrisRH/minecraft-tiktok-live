@@ -3,8 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log(process.env.RCON_PASSWORD);
-
 export async function connectRcon() {
   return await Rcon.connect({
     host: process.env.RCON_HOST!,

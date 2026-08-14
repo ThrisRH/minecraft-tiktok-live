@@ -24,8 +24,8 @@ This file contains the master list of supported TikTok gifts.
 - Little Kisses - Summon mutantmonsters:mutant_snow_golem
 - Lucky Pig - Summon 3 minecraft:wolf với tên username (Owner, giáp ngực Netherite wolf armor)
 - Money Gun - 30 u done (Wither Storm 10 phút)
-- Boxing Gloves - Sự kiện Đáy Biển Sâu 5 phút (Teleport đại dương sâu, gây mù, thở dưới nước, nhìn rõ dưới nước)
-- compress tnt
+- Confetti - Sự kiện Đáy Biển Sâu 3 phút (Teleport Y=42 chìm 20 block dưới đại dương sâu, 5s sau xuất hiện Cataclysm Leviathan, chết tự hồi sinh, combo +2 Baby Leviathan)
+- Boxing Gloves - Thông báo gift Boxing Gloves
 
 ## Agent Requirements
 
