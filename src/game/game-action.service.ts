@@ -484,11 +484,23 @@ export class GameActionService {
     await this.minecraft.execute(
       `execute at @a run effect give @a minecraft:health_boost 999999 ${amplifier} true`,
     );
+
+    // Chờ 100ms để Minecraft đồng bộ thanh máu tối đa mới, sau đó bơm đầy full máu
+    await this.delay(100);
+
+    // Bơm instant_health nhiều lần và cấp regeneration tức thời để đảm bảo hồi 100% full máu
     await this.minecraft.execute(
       "execute at @a run effect give @a minecraft:instant_health 1 255 true",
     );
+    await this.minecraft.execute(
+      "execute at @a run effect give @a minecraft:instant_health 1 255 true",
+    );
+    await this.minecraft.execute(
+      "execute at @a run effect give @a minecraft:regeneration 1 255 true",
+    );
+
     await this.sendMessage(
-      `❤️ Đã cộng dồn +10 tim! Tổng số tim cộng thêm hiện tại: +${this.extraHeartsBonus} tim (${this.extraHeartsBonus * 2} HP)`,
+      `❤️ Đã cộng dồn +10 tim & hồi đầy máu! Tổng số tim cộng thêm hiện tại: +${this.extraHeartsBonus} tim (${this.extraHeartsBonus * 2} HP)`,
     );
   }
 
