@@ -448,9 +448,9 @@ test("shamrockGachaOptions contains updated gacha options", () => {
   const vuaLiDon = shamrockGachaOptions.find((opt) => opt.id === "iron_armor_epic_set");
   const siuCapDoDich = shamrockGachaOptions.find((opt) => opt.id === "legend_diamond_set_and_shield");
 
-  assert.ok(ngocEnder, "Should contain combo ngọc ender");
-  assert.equal(ngocEnder.name, "Ngọc Ender");
-  assert.ok(ngocEnder.command.includes("give @a ender_pearl 16"));
+  assert.ok(ngocEnder, "Should contain combo dịch chuyển thần chưởng");
+  assert.equal(ngocEnder.name, "dịch chuyển thần chưởng");
+  assert.ok(ngocEnder.command.includes("give @a ender_pearl 1"));
 
   assert.ok(khongPhoi, "Should contain combo người không phổi");
   assert.equal(khongPhoi.name, "combo người không phổi");

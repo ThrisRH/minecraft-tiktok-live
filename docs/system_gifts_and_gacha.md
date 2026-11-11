@@ -84,7 +84,7 @@
 
 | Tên Phần Thưởng                                                         | Trọng Số (Tỷ lệ)               | Lệnh / Vật Phẩm                                                                                                             |
 | ----------------------------------------------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| Ngọc Ender x16                                                          | 30 (Thường - Common)           | `give @a ender_pearl 16`                                                                                                    |
+| dịch chuyển thần chưởng (1 Ngọc Ender)                                  | 30 (Thường - Common)           | `give @a ender_pearl 1`                                                                                                     |
 | Táo Vàng Phù Phép + 2 Táo Vàng                                          | 20 (Hiếm - Rare)               | `give @a enchanted_golden_apple 1`, `golden_apple 2`                                                                        |
 | Full Giáp Sắt + Kiếm Sắt + Khiên                                        | 20 (Hiếm - Rare)               | `give @a` Full set giáp sắt, `iron_sword 1`, `shield 1`                                                                     |
 | Combo Thợ Đục                                                           | 15 (Không phổ biến - Uncommon) | `give @a iron_pickaxe 1`, `leather_chestplate` (Blast Protection V)                                                         |

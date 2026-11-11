@@ -173,11 +173,11 @@ export const rosaGachaOptions: GachaOption[] = [
 ];
 
 export const shamrockGachaOptions: GachaOption[] = [
-  // Common: Ngọc Ender x16
+  // Common: 1 Ngọc Ender (dịch chuyển thần chưởng)
   {
     id: "combo_ngoc_ender",
-    name: "Ngọc Ender",
-    command: "execute at @a run give @a ender_pearl 16",
+    name: "dịch chuyển thần chưởng",
+    command: "execute at @a run give @a ender_pearl 1",
     weight: 30,
     color: "gray",
   },
