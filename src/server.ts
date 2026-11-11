@@ -20,6 +20,7 @@ export interface GiftMetadata {
 }
 
 const GIFT_CATALOG: GiftMetadata[] = [
+  // ── GACHA ─────────────────────────────────────────────────────────────────
   {
     id: "Heart",
     name: "Heart",
@@ -56,14 +57,27 @@ const GIFT_CATALOG: GiftMetadata[] = [
     effectVi: "🍀 Gacha Shamrock",
     icon: "☘️",
   },
+
+  // ── SỰ KIỆN TRÙM ──────────────────────────────────────────────────────────
   {
     id: "Corgi",
     name: "Corgi",
-    titleVi: "Chó Corgi Rồng",
+    titleVi: "Corgi — Leviathan",
     category: "event",
-    description: "Sự kiện 5 phút: Triệu hồi 2 Rồng Ender Dragon + Đếm ngược HUD",
-    effectVi: "🐉 Sự Kiện 5 Phút",
+    description:
+      "Sự kiện 5 phút: Teleport đáy đại dương sâu, spawn Trùm Leviathan (HP 150), hồi sinh thêm 1 con, tối đa 10 con",
+    effectVi: "🌊 Sự Kiện Leviathan (5 Phút)",
     icon: "🐕",
+  },
+  {
+    id: "Night Star",
+    name: "Night Star",
+    titleVi: "Đại Tiệc Nhà Rồng",
+    category: "event",
+    description:
+      "Sự kiện 5 phút: Lần đầu spawn 2 Ender Dragon, mỗi combo tiếp theo spawn thêm 1 con rồng",
+    effectVi: "🐉 Sự Kiện Đại Tiệc Nhà Rồng (5 Phút)",
+    icon: "🌟",
   },
   {
     id: "Money Gun",
@@ -74,15 +88,8 @@ const GIFT_CATALOG: GiftMetadata[] = [
     effectVi: "☠️ Trùm Wither Storm",
     icon: "💸",
   },
-  {
-    id: "Boxing Gloves",
-    name: "Boxing Gloves",
-    titleVi: "Găng Tay Boxing",
-    category: "normal",
-    description: "Gửi thông báo tặng gift Găng Tay Boxing",
-    effectVi: "🥊 Thông Báo Gift",
-    icon: "🥊",
-  },
+
+  // ── TRIỆU HỒI MOB & BOSS ──────────────────────────────────────────────────
   {
     id: "Rose",
     name: "Rose",
@@ -102,38 +109,22 @@ const GIFT_CATALOG: GiftMetadata[] = [
     icon: "🎵",
   },
   {
-    id: "Cap",
-    name: "Cap",
-    titleVi: "Mũ Lưỡi Trai",
-    category: "mob",
-    description: "Triệu hồi Quái trùm hầm ngục Warden cực kỳ nguy hiểm",
-    effectVi: "👾 Boss Warden",
-    icon: "🧢",
-  },
-  {
     id: "Doughnut",
     name: "Doughnut",
     titleVi: "Bánh Donut Hố Đen",
     category: "mob",
-    description: "Triệu hồi Hố Đen Vũ Trụ (Black Hole) hút mọi thứ xung quanh",
+    description:
+      "Triệu hồi Hố Đen Vũ Trụ (Black Hole) hút mọi thứ xung quanh (delay 5 giây/con)",
     effectVi: "🕳️ Hố Đen Vũ Trụ",
     icon: "🍩",
-  },
-  {
-    id: "Confetti",
-    name: "Confetti",
-    titleVi: "Pháo Hoa Đáy Biển",
-    category: "event",
-    description: "Sự kiện 3 phút: Teleport đại dương sâu Y=42 & 5s sau xuất hiện Trùm Leviathan (Hồi sinh liên tục, Combo +2 Baby Leviathan)",
-    effectVi: "🌊 Sự Kiện Đáy Biển Sâu (3 Phút)",
-    icon: "🎉",
   },
   {
     id: "Lucky Pig",
     name: "Lucky Pig",
     titleVi: "Heo May Mắn",
     category: "mob",
-    description: "Triệu hồi 3 Sói Săn Giáp Netherite (Owner UUID, Netherite Wolf Armor)",
+    description:
+      "Triệu hồi 3 Sói Săn Giáp Netherite (Owner UUID, Netherite Wolf Armor) mỗi combo",
     effectVi: "🐺 3x Sói Giáp Netherite",
     icon: "🐺",
   },
@@ -142,10 +133,41 @@ const GIFT_CATALOG: GiftMetadata[] = [
     name: "Little Kisses",
     titleVi: "Nụ Hôn Ngọt Ngào",
     category: "mob",
-    description: "Triệu hồi 1 Quái vật Người Tuyết Đột Biến (Mutant Snow Golem)",
-    effectVi: "☃️ 1x Người Tuyết Đột Biến",
-    icon: "☃️",
+    description:
+      "Triệu hồi 1 Lính Cung Thủ (Bowman) với SCAR-L AUTO + Giáp Sắt Enchant Protection III",
+    effectVi: "🏹 1x Cung Thủ SCAR-L",
+    icon: "💋",
   },
+  {
+    id: "Boxing Gloves",
+    name: "Boxing Gloves",
+    titleVi: "Găng Tay Boxing — Phobos",
+    category: "mob",
+    description: "Triệu hồi Boss Phobos (luckytntmod) tấn công người chơi",
+    effectVi: "🥊 1x Boss Phobos",
+    icon: "🥊",
+  },
+  {
+    id: "Confetti",
+    name: "Confetti",
+    titleVi: "Pháo Hoa — Ignis",
+    category: "mob",
+    description:
+      "Triệu hồi Boss Ignis (cataclysm) phun lửa tấn công ngay lập tức",
+    effectVi: "🔥 1x Boss Ignis",
+    icon: "🎉",
+  },
+  {
+    id: "Cap",
+    name: "Cap",
+    titleVi: "Mũ Lưỡi Trai",
+    category: "mob",
+    description: "Gửi thông báo tặng gift Mũ (default gift)",
+    effectVi: "🧢 Thông Báo Gift",
+    icon: "🧢",
+  },
+
+  // ── VẬT PHẨM & BUFF ───────────────────────────────────────────────────────
   {
     id: "Finger Heart",
     name: "Finger Heart",
@@ -160,8 +182,9 @@ const GIFT_CATALOG: GiftMetadata[] = [
     name: "Journey Pass",
     titleVi: "Vé Hành Trình",
     category: "item",
-    description: "Trang bị 1 Bộ Giáp Da Đầy Đủ (Mũ, Áo, Quần, Giày)",
-    effectVi: "👕 Full Set Giáp Da",
+    description:
+      "Triệu hồi 1 Yeti Tuyết Đột Biến (Mutant Snow Golem) bảo vệ người chơi",
+    effectVi: "☃️ 1x Yeti Đột Biến",
     icon: "🎟️",
   },
   {
@@ -173,6 +196,8 @@ const GIFT_CATALOG: GiftMetadata[] = [
     effectVi: "🍞 1x Bánh Mì",
     icon: "🍞",
   },
+
+  // ── BẪY & BEDROCK ─────────────────────────────────────────────────────────
   {
     id: "Perfume",
     name: "Perfume",
@@ -220,7 +245,10 @@ export class ControlPanelServer {
       this.server = http.createServer((req, res) => {
         void (async () => {
           try {
-            const parsedUrl = new URL(req.url ?? "/", `http://localhost:${this.port}`);
+            const parsedUrl = new URL(
+              req.url ?? "/",
+              `http://localhost:${this.port}`,
+            );
             const pathname = parsedUrl.pathname;
 
             // CORS headers
@@ -283,7 +311,10 @@ export class ControlPanelServer {
                 return;
               }
 
-              this.addLog("system", `📱 Đang kết nối TikTok Live tới: @${username}...`);
+              this.addLog(
+                "system",
+                `📱 Đang kết nối TikTok Live tới: @${username}...`,
+              );
 
               try {
                 await this.tikTok.connect(username);
@@ -294,8 +325,7 @@ export class ControlPanelServer {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ status: "success", username }));
               } catch (err: unknown) {
-                const errMsg =
-                  err instanceof Error ? err.message : String(err);
+                const errMsg = err instanceof Error ? err.message : String(err);
                 this.addLog(
                   "error",
                   `❌ Lỗi kết nối TikTok Live (@${username}): ${errMsg}`,
@@ -306,7 +336,10 @@ export class ControlPanelServer {
               return;
             }
 
-            if (pathname === "/api/disconnect-tiktok" && req.method === "POST") {
+            if (
+              pathname === "/api/disconnect-tiktok" &&
+              req.method === "POST"
+            ) {
               if (this.tikTok) {
                 this.tikTok.disconnect();
                 this.addLog("system", `🔌 Đã ngắt kết nối TikTok Live`);
@@ -322,7 +355,10 @@ export class ControlPanelServer {
               const count = Math.max(1, Number(body.count ?? 1));
               const username = String(body.username ?? "DesktopTester");
 
-              this.addLog("gift", `🎁 Triggers gift: ${giftName} (x${count}) từ user: ${username}`);
+              this.addLog(
+                "gift",
+                `🎁 Triggers gift: ${giftName} (x${count}) từ user: ${username}`,
+              );
 
               void this.dispatcher
                 .dispatch({
@@ -332,15 +368,29 @@ export class ControlPanelServer {
                   username,
                 })
                 .then(() => {
-                  this.addLog("system", `✅ Hoàn thành kích hoạt gift: ${giftName}`);
+                  this.addLog(
+                    "system",
+                    `✅ Hoàn thành kích hoạt gift: ${giftName}`,
+                  );
                 })
                 .catch((err: unknown) => {
-                  const errMsg = err instanceof Error ? err.message : String(err);
-                  this.addLog("error", `❌ Lỗi khi gửi gift ${giftName}: ${errMsg}`);
+                  const errMsg =
+                    err instanceof Error ? err.message : String(err);
+                  this.addLog(
+                    "error",
+                    `❌ Lỗi khi gửi gift ${giftName}: ${errMsg}`,
+                  );
                 });
 
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ status: "success", giftName, count, username }));
+              res.end(
+                JSON.stringify({
+                  status: "success",
+                  giftName,
+                  count,
+                  username,
+                }),
+              );
               return;
             }
 
@@ -349,15 +399,22 @@ export class ControlPanelServer {
               const count = Math.max(1, Number(body.count ?? 1));
               const username = String(body.username ?? "DesktopTester");
 
-              this.addLog("like", `❤️ Gửi ${count} lượt Like từ user: ${username}`);
+              this.addLog(
+                "like",
+                `❤️ Gửi ${count} lượt Like từ user: ${username}`,
+              );
 
               void this.game
                 .like(count, username)
                 .then(() => {
-                  this.addLog("system", `✅ Hoàn thành xử lý Like cho: ${username}`);
+                  this.addLog(
+                    "system",
+                    `✅ Hoàn thành xử lý Like cho: ${username}`,
+                  );
                 })
                 .catch((err: unknown) => {
-                  const errMsg = err instanceof Error ? err.message : String(err);
+                  const errMsg =
+                    err instanceof Error ? err.message : String(err);
                   this.addLog("error", `❌ Lỗi khi xử lý Like: ${errMsg}`);
                 });
 
@@ -372,7 +429,10 @@ export class ControlPanelServer {
               const delayMs = Math.max(0, Number(body.delayMs ?? 1000));
               const username = String(body.username ?? "AutoTester");
 
-              this.addLog("system", `🚀 Bắt đầu chuỗi tự động test tất cả các quà...`);
+              this.addLog(
+                "system",
+                `🚀 Bắt đầu chuỗi tự động test tất cả các quà...`,
+              );
 
               void this.dispatcher
                 .testAllGifts({
@@ -380,14 +440,21 @@ export class ControlPanelServer {
                   delayMs,
                   username,
                   onGiftStart: (name, idx, total) => {
-                    this.addLog("gift", `[${idx + 1}/${total}] 🎁 Auto Testing: ${name}`);
+                    this.addLog(
+                      "gift",
+                      `[${idx + 1}/${total}] 🎁 Auto Testing: ${name}`,
+                    );
                   },
                 })
                 .then(() => {
-                  this.addLog("system", `✅ Đã test xong toàn bộ danh sách quà!`);
+                  this.addLog(
+                    "system",
+                    `✅ Đã test xong toàn bộ danh sách quà!`,
+                  );
                 })
                 .catch((err: unknown) => {
-                  const errMsg = err instanceof Error ? err.message : String(err);
+                  const errMsg =
+                    err instanceof Error ? err.message : String(err);
                   this.addLog("error", `❌ Lỗi khi auto test: ${errMsg}`);
                 });
 
@@ -397,7 +464,10 @@ export class ControlPanelServer {
             }
 
             // Serve Static Files
-            let filePath = path.join(publicDir, pathname === "/" ? "index.html" : pathname);
+            let filePath = path.join(
+              publicDir,
+              pathname === "/" ? "index.html" : pathname,
+            );
 
             if (!fs.existsSync(filePath)) {
               filePath = path.join(publicDir, "index.html");
@@ -428,7 +498,10 @@ export class ControlPanelServer {
 
       this.server.listen(this.port, () => {
         const url = `http://localhost:${this.port}`;
-        this.addLog("system", `🖥️ Desktop Control Panel Server đang chạy tại: ${url}`);
+        this.addLog(
+          "system",
+          `🖥️ Desktop Control Panel Server đang chạy tại: ${url}`,
+        );
         resolve(url);
       });
 
@@ -436,7 +509,9 @@ export class ControlPanelServer {
     });
   }
 
-  private parseJsonBody(req: http.IncomingMessage): Promise<Record<string, unknown>> {
+  private parseJsonBody(
+    req: http.IncomingMessage,
+  ): Promise<Record<string, unknown>> {
     return new Promise((resolve) => {
       let body = "";
       req.on("data", (chunk) => {

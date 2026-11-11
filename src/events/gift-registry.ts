@@ -61,6 +61,8 @@ export function createGiftActionRegistry(
     "Boxing Gloves",
     "Boxing gloves",
     "BoxingGloves",
+    "Night Star",
+    "NightStar",
   ]);
 
   actions.set("Heart", (gift) =>
@@ -136,6 +138,12 @@ export function createGiftActionRegistry(
   );
   actions.set("BoxingGloves", (gift) =>
     service.boxingGlovesGift({ ...gift, giftName: "BoxingGloves" }),
+  );
+  actions.set("Night Star", (gift) =>
+    service.nightStarGift({ ...gift, giftName: "Night Star" }),
+  );
+  actions.set("NightStar", (gift) =>
+    service.nightStarGift({ ...gift, giftName: "NightStar" }),
   );
 
   for (const giftName of supportedGiftNames) {

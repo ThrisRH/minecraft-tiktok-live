@@ -3,10 +3,11 @@ import { ContinuousEvent, ContinuousEventContext } from "./continuous-event.js";
 
 export class CorgiEvent extends ContinuousEvent {
   private wasPlayerDead = false;
+  private dragonCount = 2;
 
   constructor(context: ContinuousEventContext, durationSeconds = 300) {
     super(context, {
-      name: "Confetti",
+      name: "Night Star",
       defaultDurationSeconds: durationSeconds,
       hudIcon: "🐉",
       hudTitle: "ĐẠI TIỆC NHÀ RỒNG",
@@ -17,6 +18,7 @@ export class CorgiEvent extends ContinuousEvent {
 
   protected async onStart(gift: GiftEvent): Promise<void> {
     this.wasPlayerDead = false;
+    this.dragonCount = 2;
     const safeUser = gift.username.replace(/\\/g, "\\\\").replace(/"/g, '"');
 
     await this.context.execute(
@@ -29,7 +31,7 @@ export class CorgiEvent extends ContinuousEvent {
       "playsound entity.ender_dragon.growl master @a ~ ~ ~ 1 1 1",
     );
 
-    // Triệu hồi 2 con Ender Dragon cho lần đầu kích hoạt sự kiện
+    // Lần đầu kích hoạt: spawn 2 con rồng
     for (let i = 0; i < 2; i++) {
       await this.context.execute(
         `execute at @p run summon ender_dragon ~ ~10 ~ {DragonPhase:1,Tags:["corgi_dragon"]}`,
@@ -38,12 +40,22 @@ export class CorgiEvent extends ContinuousEvent {
   }
 
   protected async onExtend(count: number): Promise<void> {
-    // Với mỗi quà gửi thêm trong combo, triệu hồi thêm Ender Dragon tương ứng
+    // count = số con cần spawn thêm (continuous-event đã tính extraCount = totalCombo - 1)
+    // x1 → onStart(2), onExtend không gọi
+    // x2 → onStart(2), onExtend(1) → tổng 3
+    // x5 → onStart(2), onExtend(4) → tổng 6
     for (let i = 0; i < count; i++) {
+      this.dragonCount++;
       await this.context.execute(
         `execute at @p run summon ender_dragon ~ ~10 ~ {DragonPhase:1,Tags:["corgi_dragon"]}`,
       );
     }
+    await this.context.execute(
+      `title @a subtitle {"text":"🐉 Thêm ${count} rồng xuất hiện! (Tổng: ${this.dragonCount})","color":"light_purple","bold":true}`,
+    );
+    await this.context.execute(
+      "playsound entity.ender_dragon.growl master @a ~ ~ ~ 1 0.8 1",
+    );
   }
 
   protected async onTick(

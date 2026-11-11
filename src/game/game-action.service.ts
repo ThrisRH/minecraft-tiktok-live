@@ -56,6 +56,7 @@ export class GameActionService {
       corgiGift: (gift: GiftEvent) => this.corgiGift(gift),
       boxingGlovesGift: (gift: GiftEvent) => this.boxingGlovesGift(gift),
       confettiGift: (gift: GiftEvent) => this.confettiGift(gift),
+      nightStarGift: (gift: GiftEvent) => this.nightStarGift(gift),
     });
   }
 
@@ -327,11 +328,16 @@ export class GameActionService {
   }
 
   async boxingGlovesGift(gift: GiftEvent) {
-    await this.defaultGift(gift);
+    return this.giftActions.boxingGlovesGift(gift);
   }
 
-  // Confetti gift -> Dragon event (CorgiEvent)
+  // Confetti gift -> Summon cataclysm:ignis (xử lý trong gift-actions)
   async confettiGift(gift: GiftEvent) {
+    return this.giftActions.confettiGift(gift);
+  }
+
+  // Night Star gift -> Đại Tiệc Nhà Rồng event (CorgiEvent)
+  async nightStarGift(gift: GiftEvent) {
     await this.corgiEvent.trigger(gift);
   }
 

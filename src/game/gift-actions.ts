@@ -15,6 +15,7 @@ interface GiftActionContext {
   corgiGift?(gift: GiftEvent): Promise<void>;
   boxingGlovesGift?(gift: GiftEvent): Promise<void>;
   confettiGift?(gift: GiftEvent): Promise<void>;
+  nightStarGift?(gift: GiftEvent): Promise<void>;
 }
 
 export class GiftActionService {
@@ -404,15 +405,31 @@ export class GiftActionService {
     return this.defaultGift(gift);
   }
 
+  // Boxing Gloves -> Summon luckytntmod:phobos
   async boxingGlovesGift(gift: GiftEvent) {
-    return this.defaultGift(gift);
+    const command = "summon luckytntmod:phobos" as const;
+    await this.handleGiftEffect(
+      gift,
+      "Boxing Gloves",
+      command,
+      1,
+      undefined,
+      true,
+    );
   }
 
+  // Confetti -> Summon cataclysm:ignis × count
   async confettiGift(gift: GiftEvent) {
-    if (this.context.confettiGift) {
-      return this.context.confettiGift({
+    const command = "summon cataclysm:ignis" as const;
+    await this.handleGiftEffect(gift, "Confetti", command, 1, undefined, true);
+  }
+
+  // Night Star -> Sự kiện Đại Tiệc Nhà Rồng (CorgiEvent)
+  async nightStarGift(gift: GiftEvent) {
+    if (this.context.nightStarGift) {
+      return this.context.nightStarGift({
         ...gift,
-        giftName: gift.giftName ?? "Confetti",
+        giftName: gift.giftName ?? "Night Star",
       });
     }
     return this.defaultGift(gift);
