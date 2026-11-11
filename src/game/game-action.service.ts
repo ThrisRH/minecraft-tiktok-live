@@ -29,6 +29,13 @@ export class GameActionService {
   private readonly corgiEvent: CorgiEvent;
   private readonly boxingGlovesEvent: BoxingGlovesEvent;
 
+  // Quản lý cộng dồn tim cho combo người không phổi
+  private extraHeartsBonus = 0;
+
+  // Quản lý thời gian tồn tại của nỏ Apocalypse (Cầu nguyện đi Bro)
+  private crossbowTimerId?: NodeJS.Timeout;
+  private crossbowRemainingSeconds = 0;
+
   constructor(
     private readonly minecraft: MinecraftService,
     private readonly sandService?: SandService,
@@ -442,6 +449,13 @@ export class GameActionService {
             await this.delay(300);
           }
         }
+
+        // Xử lý logic cộng dồn đặc biệt
+        if (winningOption.id === "combo_nguoi_khong_phoi") {
+          await this.handleStackingHearts();
+        } else if (winningOption.id === "combo_cau_nguyen_di_bro") {
+          await this.handleCrossbowTimer(45);
+        }
       }
     } finally {
       this.isGachaSpinning = false;
@@ -455,6 +469,66 @@ export class GameActionService {
     }
 
     await this.minecraft.execute("execute at @a run summon zombie ~ ~ ~");
+  }
+
+  /**
+   * Cộng dồn 10 trái tim (+20 HP) mỗi lần trúng Combo Người Không Phổi
+   */
+  private async handleStackingHearts() {
+    this.extraHeartsBonus += 10;
+    // Cấp độ amplifier của health_boost = số tim / 2 - 1
+    // 10 tim (20 HP) -> amplifier 4 (level 5)
+    // 20 tim (40 HP) -> amplifier 9 (level 10)
+    // n tim -> amplifier = (n / 2) - 1
+    const amplifier = Math.max(0, Math.floor(this.extraHeartsBonus / 2) - 1);
+    await this.minecraft.execute(
+      `execute at @a run effect give @a minecraft:health_boost 999999 ${amplifier} true`,
+    );
+    await this.minecraft.execute(
+      "execute at @a run effect give @a minecraft:instant_health 1 255 true",
+    );
+    await this.sendMessage(
+      `❤️ Đã cộng dồn +10 tim! Tổng số tim cộng thêm hiện tại: +${this.extraHeartsBonus} tim (${this.extraHeartsBonus * 2} HP)`,
+    );
+  }
+
+  /**
+   * Quản lý thời gian tồn tại nỏ Apocalypse Crossbow (cộng dồn 45s mỗi lần)
+   */
+  private async handleCrossbowTimer(secondsToAdd: number) {
+    this.crossbowRemainingSeconds += secondsToAdd;
+
+    await this.sendMessage(
+      `🏹 Cầu nguyện đi Bro: Nhận Nỏ Apocalypse! Thời gian nỏ còn lại: ${this.crossbowRemainingSeconds}s`,
+    );
+
+    if (this.crossbowTimerId) {
+      // Đã có timer đang chạy, đã cộng dồn remainingSeconds
+      return;
+    }
+
+    this.crossbowTimerId = setInterval(async () => {
+      this.crossbowRemainingSeconds -= 1;
+
+      if (this.crossbowRemainingSeconds <= 0) {
+        if (this.crossbowTimerId) {
+          clearInterval(this.crossbowTimerId);
+          this.crossbowTimerId = undefined;
+        }
+        this.crossbowRemainingSeconds = 0;
+
+        // Xóa cây nỏ khỏi túi đồ người chơi
+        await this.minecraft.execute(
+          "execute at @a run clear @a arcanevortex:apocalypse_crossbow",
+        );
+        await this.minecraft.execute(
+          'title @a actionbar {"text":"⚠️ Nỏ Apocalypse Crossbow đã hết thời gian và biến mất!","color":"red","bold":true}',
+        );
+        await this.sendMessage(
+          "⚠️ Nỏ Apocalypse Crossbow đã hết thời gian sử dụng và tự động biến mất!",
+        );
+      }
+    }, 1000);
   }
 
   private delay(ms: number) {

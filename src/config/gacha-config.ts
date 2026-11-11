@@ -173,12 +173,11 @@ export const rosaGachaOptions: GachaOption[] = [
 ];
 
 export const shamrockGachaOptions: GachaOption[] = [
-  // Common: +2 trái tim (Health Boost level 0 -> +4 HP)
+  // Common: Ngọc Ender x16
   {
-    id: "combo_vua_thay_than",
-    name: "combo vừa thay thận",
-    command:
-      "execute at @a run effect give @a minecraft:health_boost 999999 0 true; execute at @a run effect give @a minecraft:instant_health 1 255 true",
+    id: "combo_ngoc_ender",
+    name: "Ngọc Ender",
+    command: "execute at @a run give @a ender_pearl 16",
     weight: 30,
     color: "gray",
   },
@@ -213,12 +212,12 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "green",
   },
 
-  // Epic: Combo vua lì đòn
+  // Epic: Combo vua lì đòn (Áo netherite protection 5, còn lại giữ nguyên)
   {
     id: "iron_armor_epic_set",
     name: "Combo vua lì đòn",
     command:
-      'execute at @a run give @a iron_helmet 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:blast_protection",lvl:5s}]} 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots{Enchantments:[{id:"minecraft:feather_falling",lvl:4s}]} 1; execute at @a run give @a iron_sword 1',
+      'execute at @a run give @a iron_helmet 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:5s}]} 1; execute at @a run give @a iron_leggings 1; execute at @a run give @a iron_boots{Enchantments:[{id:"minecraft:feather_falling",lvl:4s}]} 1; execute at @a run give @a iron_sword 1',
     weight: 12,
     color: "#A855F7",
   },
@@ -233,22 +232,21 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "#A855F7",
   },
 
-  // Epic: Combo người không phổi (+10 trái tim)
+  // Epic: Combo người không phổi (Cộng dồn +10 trái tim mỗi lần quay trúng)
   {
     id: "combo_nguoi_khong_phoi",
     name: "combo người không phổi",
-    command:
-      "execute at @a run effect give @a minecraft:health_boost 999999 4 true; execute at @a run effect give @a minecraft:instant_health 1 255 true",
+    command: "",
     weight: 12,
     color: "#A855F7",
   },
 
-  // Legend: Full set kim cương (full protection & chống nổ) + kiếm kim cương (sharpness & smite) + khiên
+  // Legend: Siêu cấp dô địch (Áo netherite protect 6, thay kiếm và khiên thành cataclysm:wrath_of_the_desert)
   {
     id: "legend_diamond_set_and_shield",
     name: "Combo siu cấp dô địch",
     command:
-      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_chestplate{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5s},{id:"minecraft:smite",lvl:5s}]} 1; execute at @a run give @a shield 1',
+      'execute at @a run give @a diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:6s}]} 1; execute at @a run give @a diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:4s},{id:"minecraft:blast_protection",lvl:4s}]} 1; execute at @a run give @a cataclysm:wrath_of_the_desert 1',
     weight: 6,
     color: "gold",
   },
@@ -263,12 +261,12 @@ export const shamrockGachaOptions: GachaOption[] = [
     color: "gold",
   },
 
-  // Legend: Combo đã uống sữa ensure (+20 trái tim)
+  // Legend: Cầu nguyện đi Bro [arcanevortex:apocalypse_crossbow + giáp giống hoa rơi cửa phật, không cộng tim, nỏ biến mất sau 45s (cộng dồn 45s mỗi lần)]
   {
-    id: "combo_da_uong_sua_ensure",
-    name: "combo đã uống sữa ensure",
+    id: "combo_cau_nguyen_di_bro",
+    name: "Cầu nguyện đi Bro",
     command:
-      "execute at @a run effect give @a minecraft:health_boost 999999 9 true; execute at @a run effect give @a minecraft:instant_health 1 255 true",
+      'execute at @a run give @a netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s}]} 1; execute at @a run give @a netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:15s},{id:"minecraft:blast_protection",lvl:15s},{id:"minecraft:feather_falling",lvl:255s}]} 1; execute at @a run give @a arcanevortex:apocalypse_crossbow 1',
     weight: 6,
     color: "gold",
   },

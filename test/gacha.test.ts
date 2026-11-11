@@ -441,22 +441,33 @@ test("Confetti gift triggers default gift message", async () => {
   );
 });
 
-test("shamrockGachaOptions contains combo vừa thay thận, combo người không phổi, and combo đã uống sữa ensure", () => {
-  const thayThan = shamrockGachaOptions.find((opt) => opt.id === "combo_vua_thay_than");
+test("shamrockGachaOptions contains updated gacha options", () => {
+  const ngocEnder = shamrockGachaOptions.find((opt) => opt.id === "combo_ngoc_ender");
   const khongPhoi = shamrockGachaOptions.find((opt) => opt.id === "combo_nguoi_khong_phoi");
-  const ensure = shamrockGachaOptions.find((opt) => opt.id === "combo_da_uong_sua_ensure");
+  const cauNguyen = shamrockGachaOptions.find((opt) => opt.id === "combo_cau_nguyen_di_bro");
+  const vuaLiDon = shamrockGachaOptions.find((opt) => opt.id === "iron_armor_epic_set");
+  const siuCapDoDich = shamrockGachaOptions.find((opt) => opt.id === "legend_diamond_set_and_shield");
 
-  assert.ok(thayThan, "Should contain combo vừa thay thận");
-  assert.equal(thayThan.name, "combo vừa thay thận");
-  assert.ok(thayThan.command.includes("health_boost 999999 0"));
+  assert.ok(ngocEnder, "Should contain combo ngọc ender");
+  assert.equal(ngocEnder.name, "Ngọc Ender");
+  assert.ok(ngocEnder.command.includes("give @a ender_pearl 16"));
 
   assert.ok(khongPhoi, "Should contain combo người không phổi");
   assert.equal(khongPhoi.name, "combo người không phổi");
-  assert.ok(khongPhoi.command.includes("health_boost 999999 4"));
 
-  assert.ok(ensure, "Should contain combo đã uống sữa ensure");
-  assert.equal(ensure.name, "combo đã uống sữa ensure");
-  assert.ok(ensure.command.includes("health_boost 999999 9"));
+  assert.ok(vuaLiDon, "Should contain combo vua lì đòn");
+  assert.ok(vuaLiDon.command.includes("netherite_chestplate"));
+  assert.ok(vuaLiDon.command.includes('lvl:5s'));
+
+  assert.ok(siuCapDoDich, "Should contain combo siu cấp dô địch");
+  assert.ok(siuCapDoDich.command.includes("netherite_chestplate"));
+  assert.ok(siuCapDoDich.command.includes('lvl:6s'));
+  assert.ok(siuCapDoDich.command.includes("cataclysm:wrath_of_the_desert"));
+
+  assert.ok(cauNguyen, "Should contain combo Cầu nguyện đi Bro");
+  assert.equal(cauNguyen.name, "Cầu nguyện đi Bro");
+  assert.ok(cauNguyen.command.includes("arcanevortex:apocalypse_crossbow"));
+  assert.ok(cauNguyen.command.includes("netherite_chestplate"));
 
   const democracy = shamrockGachaOptions.find((opt) => opt.id === "democracy_combo_epic");
   assert.ok(democracy, "Should contain Combo Dân Chủ");
